@@ -1,0 +1,496 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Prediction Details - Targetorate{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-1">
+                                {% if prediction.prediction_type == 'monthly_forecast' %}
+                                    <i class="fas fa-calendar-alt me-2"></i>Monthly Forecast
+                                {% elif prediction.prediction_type == 'campaign_performance' %}
+                                    <i class="fas fa-bullseye me-2"></i>Campaign Performance
+                                {% elif prediction.prediction_type == 'revenue_prediction' %}
+                                    <i class="fas fa-dollar-sign me-2"></i>Revenue Prediction
+                                {% else %}
+                                    <i class="fas fa-cogs me-2"></i>Optimization Analysis
+                                {% endif %}
+                            </h2>
+                            <p class="mb-0">Generated on {{ prediction.created_at|date:"M d, Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <span class="badge bg-light text-dark fs-6">
+                                Confidence: {{ prediction.confidence_score|floatformat:0 }}%
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prediction Results -->
+    <div class="row mb-4">
+        {% if prediction.prediction_type == 'monthly_forecast' %}
+            <!-- Monthly Forecast Results -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Predicted Revenue</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    ${{ prediction.predicted_metrics.predicted_revenue|floatformat:2 }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Predicted Spend</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    ${{ prediction.predicted_metrics.predicted_spend|floatformat:2 }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Predicted ROAS</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ prediction.predicted_metrics.predicted_roi|floatformat:2 }}x
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Predicted CTR</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ prediction.predicted_metrics.predicted_ctr|floatformat:2 }}%
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-bullseye fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% elif prediction.prediction_type == 'revenue_prediction' %}
+            <!-- Revenue Prediction Results -->
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Predicted Monthly Revenue</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    ${{ prediction.predicted_metrics.predicted_monthly_revenue|floatformat:2 }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Growth Rate</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ prediction.predicted_metrics.growth_rate|floatformat:1 }}%
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-trending-up fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Confidence Interval</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ prediction.predicted_metrics.confidence_interval }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-chart-bar fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% elif prediction.prediction_type == 'campaign_performance' %}
+            <!-- Campaign Performance Results -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total Campaigns</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ prediction.predicted_metrics.total_campaigns }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-bullseye fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Avg Campaign CTR</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ prediction.predicted_metrics.avg_campaign_ctr|floatformat:2 }}%
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Avg Campaign ROAS</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ prediction.predicted_metrics.avg_campaign_roas|floatformat:2 }}x
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Top Campaigns</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ prediction.predicted_metrics.top_campaigns|length }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-trophy fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            <!-- Optimization Results -->
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Optimization Opportunities</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ prediction.predicted_metrics.platforms_needing_optimization }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-cogs fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Total Platforms</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ prediction.predicted_metrics.total_platforms }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-layer-group fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Potential Improvement</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ prediction.predicted_metrics.potential_improvement }}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-arrow-up fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Detailed Results -->
+    <div class="row">
+        <!-- Insights -->
+        {% if prediction.insights %}
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-lightbulb me-2"></i>AI Insights
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for insight in prediction.insights %}
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading">{{ insight.title }}</h6>
+                        <p class="mb-0">{{ insight.description }}</p>
+                        {% if insight.priority %}
+                        <small class="text-muted">
+                            Priority: 
+                            <span class="badge bg-{% if insight.priority == 'high' %}danger{% elif insight.priority == 'medium' %}warning{% else %}info{% endif %}">
+                                {{ insight.priority|title }}
+                            </span>
+                        </small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recommendations -->
+        {% if prediction.recommendations %}
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-list-check me-2"></i>Recommendations
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for rec in prediction.recommendations %}
+                    <div class="alert alert-success">
+                        <h6 class="alert-heading">{{ rec.title }}</h6>
+                        <p class="mb-1">{{ rec.description }}</p>
+                        {% if rec.action %}
+                        <small><strong>Action:</strong> {{ rec.action }}</small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Campaign Performance Details -->
+        {% if prediction.prediction_type == 'campaign_performance' and prediction.predicted_metrics.top_campaigns %}
+        <div class="col-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-trophy me-2"></i>Top Performing Campaigns
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Campaign</th>
+                                    <th>Impressions</th>
+                                    <th>Clicks</th>
+                                    <th>Spend</th>
+                                    <th>Revenue</th>
+                                    <th>CTR</th>
+                                    <th>ROAS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for campaign in prediction.predicted_metrics.top_campaigns %}
+                                <tr>
+                                    <td><strong>{{ campaign.Campaign }}</strong></td>
+                                    <td>{{ campaign.Impressions|floatformat:0 }}</td>
+                                    <td>{{ campaign.Clicks|floatformat:0 }}</td>
+                                    <td>${{ campaign.Spend|floatformat:2 }}</td>
+                                    <td>${{ campaign.Revenue|floatformat:2 }}</td>
+                                    <td>{{ campaign.CTR|floatformat:2 }}%</td>
+                                    <td>{{ campaign.ROAS|floatformat:2 }}x</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Optimization Opportunities -->
+        {% if prediction.prediction_type == 'optimization' and prediction.predicted_metrics.optimization_opportunities %}
+        <div class="col-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Optimization Opportunities
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Platform</th>
+                                    <th>Issue</th>
+                                    <th>Current Value</th>
+                                    <th>Recommendation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for opp in prediction.predicted_metrics.optimization_opportunities %}
+                                <tr>
+                                    <td><strong>{{ opp.platform }}</strong></td>
+                                    <td>
+                                        <span class="badge bg-warning">{{ opp.issue }}</span>
+                                    </td>
+                                    <td>{{ opp.current_value }}</td>
+                                    <td>{{ opp.recommendation }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{% url 'unified_data_list' %}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-arrow-left me-2"></i>Back to Data
+            </a>
+            <a href="{% url 'generate_prediction' prediction.unified_data.id %}" class="btn btn-primary me-2">
+                <i class="fas fa-magic me-2"></i>Generate Another Prediction
+            </a>
+            <button class="btn btn-success" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Print Report
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+.text-gray-800 {
+    color: #5a5c69 !important;
+}
+.text-xs {
+    font-size: 0.7rem;
+}
+.font-weight-bold {
+    font-weight: 700 !important;
+}
+</style>
+{% endblock %} 

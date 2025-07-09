@@ -1,0 +1,205 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Connect Tools - Targetorate{% endblock %}
+{% block content %}
+<style>
+  .tool-card {
+    transition: box-shadow 0.2s, transform 0.2s;
+    cursor: pointer;
+    border-radius: 1rem;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background: #fff;
+  }
+  .tool-card.selected, .tool-card:hover {
+    box-shadow: 0 4px 24px rgba(0,123,255,0.15);
+    border-color: #0d6efd;
+    transform: translateY(-2px) scale(1.02);
+  }
+  .tool-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: #0d6efd;
+  }
+  .stepper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    justify-content: center;
+  }
+  .step {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 0 8px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .step.active {
+    background: #0d6efd;
+    color: #fff;
+  }
+  .step-line {
+    flex: 1;
+    height: 2px;
+    background: #e9ecef;
+    margin: 0 4px;
+  }
+</style>
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Connect Your Marketing Tools</h2>
+  <div class="d-flex justify-content-center mb-3">
+    <button id="sync-all-btn" class="btn btn-primary">Sync All Data</button>
+  </div>
+  <div class="stepper mb-4">
+    <div class="step active">1</div>
+    <div class="step-line"></div>
+    <div class="step">2</div>
+    <div class="step-line"></div>
+    <div class="step">3</div>
+  </div>
+  <div class="row justify-content-center mb-5">
+    <div class="col-md-2 mb-3">
+      <div class="tool-card text-center p-3" onclick="selectTool('google_ads')" id="card-google_ads">
+        <div class="tool-icon"><i class="fab fa-google"></i></div>
+        <div class="fw-bold">Google Ads</div>
+      </div>
+    </div>
+    <div class="col-md-2 mb-3">
+      <div class="tool-card text-center p-3" onclick="selectTool('linkedin_ads')" id="card-linkedin_ads">
+        <div class="tool-icon"><i class="fab fa-linkedin"></i></div>
+        <div class="fw-bold">LinkedIn Ads</div>
+      </div>
+    </div>
+    <div class="col-md-2 mb-3">
+      <div class="tool-card text-center p-3" onclick="selectTool('mailchimp')" id="card-mailchimp">
+        <div class="tool-icon"><i class="fab fa-mailchimp"></i></div>
+        <div class="fw-bold">Mailchimp</div>
+      </div>
+    </div>
+    <div class="col-md-2 mb-3">
+      <div class="tool-card text-center p-3" onclick="selectTool('zoho')" id="card-zoho">
+        <div class="tool-icon"><i class="fas fa-cloud"></i></div>
+        <div class="fw-bold">Zoho</div>
+      </div>
+    </div>
+    <div class="col-md-2 mb-3">
+      <div class="tool-card text-center p-3" onclick="selectTool('demandbase')" id="card-demandbase">
+        <div class="tool-icon"><i class="fas fa-database"></i></div>
+        <div class="fw-bold">Demandbase</div>
+      </div>
+    </div>
+  </div>
+  <div id="connect-forms" class="row justify-content-center">
+    <div id="form-google_ads" class="tool-form col-md-6" style="display:none;">
+      <div class="card shadow-sm p-4">
+        <h4 class="mb-3"><i class="fab fa-google me-2"></i>Connect Google Ads</h4>
+        <form method="post" action="{% url 'connect_google_ads' %}">
+          {% csrf_token %}
+          {{ google_ads_form.as_p }}
+          <button type="submit" class="btn btn-success w-100">Connect</button>
+        </form>
+      </div>
+    </div>
+    <div id="form-linkedin_ads" class="tool-form col-md-6" style="display:none;">
+      <div class="card shadow-sm p-4">
+        <h4 class="mb-3"><i class="fab fa-linkedin me-2"></i>Connect LinkedIn Ads</h4>
+        <form method="post" action="{% url 'connect_linkedin_ads' %}">
+          {% csrf_token %}
+          {{ linkedin_ads_form.as_p }}
+          <button type="submit" class="btn btn-success w-100">Connect</button>
+        </form>
+      </div>
+    </div>
+    <div id="form-mailchimp" class="tool-form col-md-6" style="display:none;">
+      <div class="card shadow-sm p-4">
+        <h4 class="mb-3"><i class="fab fa-mailchimp me-2"></i>Connect Mailchimp</h4>
+        <form method="post" action="{% url 'connect_mailchimp' %}">
+          {% csrf_token %}
+          {{ mailchimp_form.as_p }}
+          <button type="submit" class="btn btn-success w-100">Connect</button>
+        </form>
+      </div>
+    </div>
+    <div id="form-zoho" class="tool-form col-md-6" style="display:none;">
+      <div class="card shadow-sm p-4">
+        <h4 class="mb-3"><i class="fas fa-cloud me-2"></i>Connect Zoho</h4>
+        <form method="post" action="{% url 'connect_zoho' %}">
+          {% csrf_token %}
+          {{ zoho_form.as_p }}
+          <button type="submit" class="btn btn-success w-100">Connect</button>
+        </form>
+      </div>
+    </div>
+    <div id="form-demandbase" class="tool-form col-md-6" style="display:none;">
+      <div class="card shadow-sm p-4">
+        <h4 class="mb-3"><i class="fas fa-database me-2"></i>Connect Demandbase</h4>
+        <form method="post" action="{% url 'connect_demandbase' %}">
+          {% csrf_token %}
+          <p>No credentials required. Click connect to import data.</p>
+          <button type="submit" class="btn btn-success w-100">Connect</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="sync-toast" class="toast align-items-center text-bg-primary border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 9999; display:none;">
+  <div class="d-flex">
+    <div class="toast-body" id="sync-toast-body">Syncing...</div>
+    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+</div>
+<script>
+function selectTool(val) {
+  var forms = document.getElementsByClassName('tool-form');
+  for (var i = 0; i < forms.length; i++) {
+    forms[i].style.display = 'none';
+  }
+  var cards = document.getElementsByClassName('tool-card');
+  for (var i = 0; i < cards.length; i++) {
+    cards[i].classList.remove('selected');
+  }
+  if (val) {
+    var formDiv = document.getElementById('form-' + val);
+    var cardDiv = document.getElementById('card-' + val);
+    if (formDiv) formDiv.style.display = 'block';
+    if (cardDiv) cardDiv.classList.add('selected');
+  }
+}
+// Sync All Data AJAX logic
+window.addEventListener('DOMContentLoaded', function() {
+  var syncBtn = document.getElementById('sync-all-btn');
+  var toast = document.getElementById('sync-toast');
+  var toastBody = document.getElementById('sync-toast-body');
+  if (syncBtn) {
+    syncBtn.addEventListener('click', function() {
+      syncBtn.disabled = true;
+      toastBody.textContent = 'Syncing all data...';
+      toast.style.display = 'block';
+      fetch('/dashboard/sync-all/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+          'Accept': 'application/json',
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'ok') {
+          toastBody.textContent = 'Sync complete!';
+        } else {
+          toastBody.textContent = 'Sync failed: ' + (data.message || 'Unknown error');
+        }
+        setTimeout(() => { toast.style.display = 'none'; syncBtn.disabled = false; }, 3000);
+      })
+      .catch(err => {
+        toastBody.textContent = 'Sync failed: ' + err;
+        setTimeout(() => { toast.style.display = 'none'; syncBtn.disabled = false; }, 3000);
+      });
+    });
+  }
+});
+</script>
+{% endblock %} 

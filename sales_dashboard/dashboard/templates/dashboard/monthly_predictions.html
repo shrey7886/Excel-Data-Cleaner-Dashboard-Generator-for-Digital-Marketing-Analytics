@@ -1,0 +1,123 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Monthly Predictions - Targetorate{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-magic me-2"></i>Predictions for {{ summary.month|date:'F Y' }}</h2>
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="stats-card">
+                <h4>{{ summary.total_campaigns }}</h4>
+                <p>Total Campaigns</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card">
+                <h4>${{ summary.total_spend|floatformat:0 }}</h4>
+                <p>Total Spend</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card">
+                <h4>${{ summary.total_revenue|floatformat:0 }}</h4>
+                <p>Total Revenue</p>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Predictions & Insights</h5>
+            </div>
+            <div>
+                <a href="{% url 'download_monthly_predictions' summary.id %}" class="btn btn-outline-success">
+                    <i class="fas fa-file-excel me-1"></i>Download Predictions (Excel)
+                </a>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card mt-2">
+                <div class="card-body">
+                    {% if predictions %}
+                        <ul>
+                            {% for p in predictions %}
+                                <li>
+                                    <strong>{{ p.prediction_type|capfirst }}</strong>:
+                                    {% if p.predicted_metrics %}
+                                        {{ p.predicted_metrics }}
+                                    {% endif %}
+                                    {% if p.insights %}
+                                        <ul>
+                                            {% for insight in p.insights %}
+                                                <li>{{ insight }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No predictions available for this month.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Predicted Metrics Chart</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="predictedMetricsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var predictions = [
+            {% for p in predictions %}
+                {% if p.predicted_metrics %}
+                    {
+                        label: '{{ p.prediction_type|capfirst }}',
+                        data: {{ p.predicted_metrics|safe }},
+                    },
+                {% endif %}
+            {% endfor %}
+        ];
+        var ctx = document.getElementById('predictedMetricsChart').getContext('2d');
+        var chartData = {
+            labels: [],
+            datasets: []
+        };
+        if (predictions.length > 0) {
+            // Assume all predicted_metrics are dicts with the same keys
+            chartData.labels = Object.keys(predictions[0].data);
+            chartData.datasets = predictions.map(function(p, idx) {
+                return {
+                    label: p.label,
+                    data: Object.values(p.data),
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                };
+            });
+        }
+        new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true },
+                    title: { display: true, text: 'Predicted Metrics' }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %} 

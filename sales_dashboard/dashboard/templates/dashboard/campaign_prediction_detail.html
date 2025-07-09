@@ -1,0 +1,207 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Prediction Details - Targetorate{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-robot text-primary"></i> Prediction Details
+        </h1>
+        <a href="{% url 'ml_predictions' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Predictions
+        </a>
+    </div>
+
+    <!-- Prediction Overview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle"></i> Prediction Overview
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Type:</strong> {{ prediction.prediction_type|title }}</p>
+                            <p><strong>Model Used:</strong> {{ prediction.model_used|title }}</p>
+                            <p><strong>Model Version:</strong> {{ prediction.model_version }}</p>
+                            <p><strong>Confidence Score:</strong> {{ prediction.confidence_score|floatformat:0 }}%</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Created:</strong> {{ prediction.created_at|date:"M d, Y H:i" }}</p>
+                            <p><strong>Status:</strong> 
+                                {% if prediction.is_active %}
+                                    <span class="badge badge-success">Active</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">Inactive</span>
+                                {% endif %}
+                            </p>
+                            {% if prediction.target_date %}
+                                <p><strong>Target Date:</strong> {{ prediction.target_date|date:"M d, Y" }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Predicted Metrics -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-chart-bar"></i> Predicted Metrics
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if prediction.predicted_metrics %}
+                        <div class="row">
+                            {% if prediction.predicted_metrics.random_forest %}
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="font-weight-bold">Random Forest Predictions</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>CTR:</strong></td>
+                                                    <td>{{ prediction.predicted_metrics.random_forest.ctr|floatformat:4 }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>ROI:</strong></td>
+                                                    <td>{{ prediction.predicted_metrics.random_forest.roi|floatformat:2 }}x</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>CPA:</strong></td>
+                                                    <td>${{ prediction.predicted_metrics.random_forest.cpa|floatformat:2 }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            {% if prediction.predicted_metrics.logistic %}
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="font-weight-bold">Logistic Regression Predictions</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>High Performance Probability:</strong></td>
+                                                    <td>{{ prediction.predicted_metrics.logistic.high_performance_probability|floatformat:1 }}%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Profitable Probability:</strong></td>
+                                                    <td>{{ prediction.predicted_metrics.logistic.profitable_probability|floatformat:1 }}%</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            {% if prediction.predicted_metrics.cluster is not None %}
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="font-weight-bold">Cluster Analysis</h6>
+                                    <p><strong>Predicted Cluster:</strong> {{ prediction.predicted_metrics.cluster }}</p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if prediction.predicted_metrics.forecasts %}
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="font-weight-bold">Trend Forecasts</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <tbody>
+                                                {% for metric, data in prediction.predicted_metrics.forecasts.items %}
+                                                <tr>
+                                                    <td><strong>{{ metric|title }}:</strong></td>
+                                                    <td>
+                                                        {% if data.trend == 'increasing' %}
+                                                            <span class="text-success">↗ {{ data.change_percent|floatformat:1 }}%</span>
+                                                        {% elif data.trend == 'decreasing' %}
+                                                            <span class="text-danger">↘ {{ data.change_percent|floatformat:1 }}%</span>
+                                                        {% else %}
+                                                            <span class="text-secondary">→ {{ data.change_percent|floatformat:1 }}%</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No predicted metrics available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Insights -->
+    {% if prediction.insights %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-lightbulb"></i> AI Insights
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for insight in prediction.insights %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-left-info shadow h-100">
+                                <div class="card-body">
+                                    <h6 class="font-weight-bold">{{ insight.title }}</h6>
+                                    <p class="text-sm">{{ insight.description }}</p>
+                                    {% if insight.recommendation %}
+                                        <p class="text-sm text-primary"><strong>Recommendation:</strong> {{ insight.recommendation }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recommendations -->
+    {% if prediction.recommendations %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-tasks"></i> Recommendations
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for recommendation in prediction.recommendations %}
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success mr-2"></i>
+                            {{ recommendation }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

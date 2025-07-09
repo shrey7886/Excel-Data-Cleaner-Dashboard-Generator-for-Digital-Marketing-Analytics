@@ -1,0 +1,55 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Monthly Analysis{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Monthly Analysis</h2>
+  {% if prediction_message %}
+    <div class="alert alert-success">{{ prediction_message }}</div>
+  {% endif %}
+  {% if show_predict_button %}
+    <form method="post" class="mb-3">
+      {% csrf_token %}
+      <button type="submit" name="predict_next" class="btn btn-primary">
+        <i class="fas fa-magic me-1"></i> Predict Next Month
+      </button>
+    </form>
+  {% endif %}
+  <div class="card mb-4"><div class="card-body">
+    <h5>Monthly Summaries</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Total Campaigns</th>
+            <th>Total Spend</th>
+            <th>Total Revenue</th>
+            <th>Impressions</th>
+            <th>Clicks</th>
+            <th>Conversions</th>
+            <th>ROAS</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for summary in summaries %}
+          <tr>
+            <td>{{ summary.month|date:"F Y" }}</td>
+            <td>{{ summary.total_campaigns }}</td>
+            <td>${{ summary.total_spend|floatformat:2 }}</td>
+            <td>${{ summary.total_revenue|floatformat:2 }}</td>
+            <td>{{ summary.total_impressions }}</td>
+            <td>{{ summary.total_clicks }}</td>
+            <td>{{ summary.total_conversions }}</td>
+            <td>{{ summary.overall_roas|floatformat:2 }}</td>
+            <td>
+              <a href="{% url 'monthly_summary_detail' summary.id %}" class="btn btn-sm btn-info">View</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+</div>
+{% endblock %} 

@@ -1,0 +1,255 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}AI Predictions & Forecasts - Targetorate{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-robot text-primary"></i> AI Predictions & Forecasts
+        </h1>
+        <button class="btn btn-primary" onclick="generateNewPrediction()">
+            <i class="fas fa-plus"></i> Generate New Prediction
+        </button>
+    </div>
+
+    <!-- AI Insights Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-lightbulb"></i> AI Insights & Recommendations
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if ai_insights %}
+                        <div class="row">
+                            {% for insight in ai_insights %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-left-{% if insight.priority == 'high' %}danger{% elif insight.priority == 'medium' %}warning{% else %}info{% endif %} shadow h-100">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-{% if insight.priority == 'high' %}danger{% elif insight.priority == 'medium' %}warning{% else %}info{% endif %} text-uppercase mb-1">
+                                                    {{ insight.type|title }}
+                                                </div>
+                                                <div class="h6 mb-0 font-weight-bold text-gray-800">{{ insight.title }}</div>
+                                                <div class="text-sm text-gray-600 mt-2">{{ insight.description }}</div>
+                                                <div class="text-sm text-primary mt-2">
+                                                    <strong>Recommendation:</strong> {{ insight.recommendation }}
+                                                </div>
+                                                <div class="text-xs text-muted mt-2">
+                                                    Confidence: {{ insight.confidence|floatformat:0 }}%
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No AI insights available at the moment.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Forecasts -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-chart-line"></i> 6-Month Forecast
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if monthly_forecast_data %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Month</th>
+                                        <th>Impressions</th>
+                                        <th>Clicks</th>
+                                        <th>Spend</th>
+                                        <th>CTR</th>
+                                        <th>ROI</th>
+                                        <th>Trend</th>
+                                        <th>Confidence</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for month_key, month_data in monthly_forecast_data.items %}
+                                    <tr>
+                                        <td><strong>{{ month_data.month }}</strong></td>
+                                        <td>{{ month_data.predictions.impressions.value|floatformat:0 }}</td>
+                                        <td>{{ month_data.predictions.clicks.value|floatformat:0 }}</td>
+                                        <td>${{ month_data.predictions.spend.value|floatformat:2 }}</td>
+                                        <td>{{ month_data.predictions.ctr.value|floatformat:2 }}%</td>
+                                        <td>{{ month_data.predictions.roi.value|floatformat:2 }}x</td>
+                                        <td>
+                                            {% if month_data.predictions.impressions.trend == 'increasing' %}
+                                                <span class="badge badge-success">↗ Increasing</span>
+                                            {% elif month_data.predictions.impressions.trend == 'decreasing' %}
+                                                <span class="badge badge-danger">↘ Decreasing</span>
+                                            {% else %}
+                                                <span class="badge badge-secondary">→ Stable</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ month_data.predictions.impressions.confidence|floatformat:0 }}%</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No forecast data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Campaign Predictions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-bullseye"></i> Campaign Performance Predictions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if campaign_predictions %}
+                        <div class="row">
+                            {% for prediction in campaign_predictions %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-left-primary shadow h-100">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Campaign Prediction
+                                                </div>
+                                                {% if prediction.campaign %}
+                                                    <div class="h6 mb-0 font-weight-bold text-gray-800">{{ prediction.campaign.name }}</div>
+                                                {% endif %}
+                                                <div class="text-sm text-gray-600 mt-2">
+                                                    <strong>Predicted CTR:</strong> {{ prediction.predicted_metrics.random_forest.ctr|floatformat:3 }}<br>
+                                                    <strong>Predicted ROI:</strong> {{ prediction.predicted_metrics.random_forest.roi|floatformat:2 }}x<br>
+                                                    <strong>Confidence:</strong> {{ prediction.confidence_score|floatformat:0 }}%
+                                                </div>
+                                                <div class="mt-2">
+                                                    <a href="{% url 'campaign_prediction_detail' prediction.id %}" class="btn btn-sm btn-outline-primary">
+                                                        View Details
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No campaign predictions available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Future Forecasts -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-calendar-alt"></i> Future Forecasts
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if future_forecasts %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Forecast Date</th>
+                                        <th>Predicted Impressions</th>
+                                        <th>Predicted Clicks</th>
+                                        <th>Predicted Spend</th>
+                                        <th>Predicted Revenue</th>
+                                        <th>Predicted ROI</th>
+                                        <th>Trend</th>
+                                        <th>Confidence</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for forecast in future_forecasts %}
+                                    <tr>
+                                        <td><strong>{{ forecast.forecast_date|date:"M Y" }}</strong></td>
+                                        <td>{{ forecast.predicted_impressions|floatformat:0 }}</td>
+                                        <td>{{ forecast.predicted_clicks|floatformat:0 }}</td>
+                                        <td>${{ forecast.predicted_spend|floatformat:2 }}</td>
+                                        <td>${{ forecast.predicted_revenue|floatformat:2 }}</td>
+                                        <td>{{ forecast.predicted_roi|floatformat:2 }}x</td>
+                                        <td>
+                                            {% if forecast.trend_direction == 'increasing' %}
+                                                <span class="badge badge-success">↗ {{ forecast.trend_direction|title }}</span>
+                                            {% elif forecast.trend_direction == 'decreasing' %}
+                                                <span class="badge badge-danger">↘ {{ forecast.trend_direction|title }}</span>
+                                            {% else %}
+                                                <span class="badge badge-secondary">→ {{ forecast.trend_direction|title }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ forecast.confidence_score|floatformat:0 }}%</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No future forecasts available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function generateNewPrediction() {
+    if (confirm('Generate a new ML prediction? This may take a few moments.')) {
+        fetch('{% url "generate_ml_prediction" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                client_id: {{ client.id }},
+                prediction_type: 'campaign'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('New prediction generated successfully!');
+                location.reload();
+            } else {
+                alert('Error generating prediction: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error generating prediction');
+        });
+    }
+}
+</script>
+{% endblock %} 

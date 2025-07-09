@@ -1,0 +1,384 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Register - Targetorate{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>
+                        Join Targetorate
+                    </h4>
+                    <p class="mb-0 mt-2" style="font-size: 0.9rem;">Create your account to access AI-powered marketing analytics</p>
+                </div>
+                <div class="card-body p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post" id="registerForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="first_name" class="form-label">
+                                        <i class="fas fa-user me-2"></i>First Name
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="first_name" 
+                                           name="first_name" 
+                                           placeholder="Enter your first name"
+                                           autocomplete="given-name"
+                                           required>
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.first_name.errors %}
+                                                <small><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="last_name" class="form-label">
+                                        <i class="fas fa-user me-2"></i>Last Name
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="last_name" 
+                                           name="last_name" 
+                                           placeholder="Enter your last name"
+                                           autocomplete="family-name"
+                                           required>
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.last_name.errors %}
+                                                <small><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="fas fa-at me-2"></i>Username
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="username" 
+                                   name="username" 
+                                   placeholder="Choose a username"
+                                   autocomplete="username"
+                                   required>
+                            {% if form.username.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.username.errors %}
+                                        <small><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>Email
+                            </label>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="email" 
+                                   name="email" 
+                                   placeholder="Enter your email address"
+                                   autocomplete="email"
+                                   required>
+                            {% if form.email.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.email.errors %}
+                                        <small><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="company" class="form-label">
+                                <i class="fas fa-building me-2"></i>Company
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="company" 
+                                   name="company" 
+                                   placeholder="Enter your company name"
+                                   autocomplete="organization"
+                                   required>
+                            {% if form.company.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.company.errors %}
+                                        <small><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">
+                                        <i class="fas fa-phone me-2"></i>Phone (Optional)
+                                    </label>
+                                    <input type="tel" 
+                                           class="form-control" 
+                                           id="phone" 
+                                           name="phone" 
+                                           placeholder="Enter your phone number"
+                                           autocomplete="tel">
+                                    {% if form.phone.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.phone.errors %}
+                                                <small><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="department" class="form-label">
+                                        <i class="fas fa-users me-2"></i>Department (Optional)
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="department" 
+                                           name="department" 
+                                           placeholder="Enter your department"
+                                           autocomplete="organization-title">
+                                    {% if form.department.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.department.errors %}
+                                                <small><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="role" class="form-label">
+                                <i class="fas fa-briefcase me-2"></i>Role
+                            </label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="">Select your role</option>
+                                <option value="marketing_manager">Marketing Manager</option>
+                                <option value="digital_marketer">Digital Marketer</option>
+                                <option value="analyst">Analyst</option>
+                                <option value="consultant">Consultant</option>
+                                <option value="other">Other</option>
+                            </select>
+                            {% if form.role.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.role.errors %}
+                                        <small><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password1" class="form-label">
+                                <i class="fas fa-lock me-2"></i>Password
+                            </label>
+                            <div class="input-group">
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="password1" 
+                                       name="password1" 
+                                       placeholder="Create a strong password"
+                                       autocomplete="new-password"
+                                       required>
+                                <button class="btn btn-outline-secondary" 
+                                        type="button" 
+                                        id="togglePassword1"
+                                        title="Show/Hide Password">
+                                    <i class="fas fa-eye" id="eyeIcon1"></i>
+                                </button>
+                            </div>
+                            {% if form.password1.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.password1.errors %}
+                                        <small><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password2" class="form-label">
+                                <i class="fas fa-lock me-2"></i>Confirm Password
+                            </label>
+                            <div class="input-group">
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="password2" 
+                                       name="password2" 
+                                       placeholder="Confirm your password"
+                                       autocomplete="new-password"
+                                       required>
+                                <button class="btn btn-outline-secondary" 
+                                        type="button" 
+                                        id="togglePassword2"
+                                        title="Show/Hide Password">
+                                    <i class="fas fa-eye" id="eyeIcon2"></i>
+                                </button>
+                            </div>
+                            {% if form.password2.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.password2.errors %}
+                                        <small><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>
+                                Create Account
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    <div class="text-center">
+                        <p class="mb-2 text-muted">Already have an account?</p>
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Sign In
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border-radius: 15px;
+}
+
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+.btn {
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.input-group .btn {
+    border-left: none;
+}
+
+.input-group .form-control {
+    border-right: none;
+}
+
+.input-group .form-control:focus + .btn {
+    border-color: #198754;
+}
+
+.alert {
+    border-radius: 10px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Clear form fields on page load
+    const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="password"], select');
+    inputs.forEach(input => {
+        input.value = '';
+    });
+    
+    // Toggle password visibility for password1
+    const togglePassword1 = document.getElementById('togglePassword1');
+    const password1 = document.getElementById('password1');
+    const eyeIcon1 = document.getElementById('eyeIcon1');
+    
+    togglePassword1.addEventListener('click', function() {
+        const type = password1.getAttribute('type') === 'password' ? 'text' : 'password';
+        password1.setAttribute('type', type);
+        eyeIcon1.classList.toggle('fa-eye');
+        eyeIcon1.classList.toggle('fa-eye-slash');
+    });
+    
+    // Toggle password visibility for password2
+    const togglePassword2 = document.getElementById('togglePassword2');
+    const password2 = document.getElementById('password2');
+    const eyeIcon2 = document.getElementById('eyeIcon2');
+    
+    togglePassword2.addEventListener('click', function() {
+        const type = password2.getAttribute('type') === 'password' ? 'text' : 'password';
+        password2.setAttribute('type', type);
+        eyeIcon2.classList.toggle('fa-eye');
+        eyeIcon2.classList.toggle('fa-eye-slash');
+    });
+    
+    // Form validation
+    const form = document.getElementById('registerForm');
+    form.addEventListener('submit', function(e) {
+        const requiredFields = ['first_name', 'last_name', 'username', 'email', 'company', 'role', 'password1', 'password2'];
+        let isValid = true;
+        
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        // Check if passwords match
+        const password1 = document.getElementById('password1').value;
+        const password2 = document.getElementById('password2').value;
+        
+        if (password1 !== password2) {
+            isValid = false;
+            alert('Passwords do not match!');
+            return false;
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields');
+            return false;
+        }
+    });
+    
+    // Auto-focus on first name field
+    document.getElementById('first_name').focus();
+});
+</script>
+{% endblock %} 

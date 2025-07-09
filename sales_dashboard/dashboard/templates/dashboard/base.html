@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Targetorate - Marketing Analytics Dashboard{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #28a745;
+            --info-color: #17a2b8;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+        }
+        
+        .top-navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0.5rem 0;
+        }
+        
+        .top-navbar .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .top-navbar .nav-link {
+            color: rgba(255,255,255,.9) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 0.375rem;
+            margin: 0 0.25rem;
+        }
+        
+        .top-navbar .nav-link:hover {
+            color: white !important;
+            background-color: rgba(255,255,255,.15);
+            transform: translateY(-1px);
+        }
+        
+        .top-navbar .nav-link.active {
+            color: white !important;
+            background-color: rgba(255,255,255,.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar {
+            min-height: 100vh;
+            background: white;
+            border-right: 1px solid #e3e6f0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+        
+        .sidebar .nav-link {
+            color: #5a5c69;
+            padding: 0.875rem 1rem;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .sidebar .nav-link:hover {
+            color: var(--primary-color);
+            background-color: #f8f9fc;
+            border-color: #e3e6f0;
+            transform: translateX(5px);
+        }
+        
+        .sidebar .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .main-content {
+            background-color: #f8f9fc;
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2);
+        }
+        
+        .btn {
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .client-portal-btn {
+            background: linear-gradient(135deg, var(--success-color) 0%, #20c997 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+        }
+        
+        .client-portal-btn:hover {
+            background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+            color: white;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .alert {
+            border-radius: 0.75rem;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .dropdown-menu {
+            border-radius: 0.75rem;
+            border: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .dropdown-item {
+            border-radius: 0.5rem;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fc;
+            transform: translateX(5px);
+        }
+        
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        .quick-actions {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        
+        .quick-action-btn {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            color: #5a5c69;
+            background: #f8f9fc;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .quick-action-btn:hover {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .quick-action-btn i {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-card h3 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats-card p {
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+            
+            .sidebar.show {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg top-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'dashboard' %}">
+                <i class="fas fa-chart-line me-2"></i>Targetorate
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <!-- No extra links beside Targetorate -->
+                </ul>
+                <!-- User Menu (unchanged) -->
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-1"></i>
+                                {{ user.first_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><h6 class="dropdown-header">Account</h6></li>
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="fas fa-user-cog me-2"></i>Profile Settings
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">
+                                <i class="fas fa-user-plus me-1"></i>Register
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <button id="sync-all-btn" class="btn btn-primary ms-2">Sync All Data</button>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse" id="sidebar">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h5 class="text-dark fw-bold">Navigation</h5>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
+                               href="{% url 'dashboard' %}">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        {% if user.is_authenticated and user.profile.client %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if 'client_portal' in request.resolver_match.url_name %}active{% endif %}" 
+                                   href="{% url 'client_portal' %}">
+                                    <i class="fas fa-user-tie me-2"></i>
+                                    Client Portal
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'connect_tools_portal' %}active{% endif %}" 
+                                   href="{% url 'connect_tools_portal' %}">
+                                    <i class="fas fa-plug me-2"></i>
+                                    Connect Tools
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if 'analysis' in request.resolver_match.url_name %}active{% endif %}" 
+                                   href="{% url 'google_ads_analysis' %}">
+                                    <i class="fas fa-chart-line me-2"></i>
+                                    Platform Analytics
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'unified_analytics' %}active{% endif %}" 
+                                   href="{% url 'unified_analytics' %}">
+                                    <i class="fas fa-layer-group me-2"></i>
+                                    Unified Analytics
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" 
+                               href="{% url 'profile' %}">
+                                <i class="fas fa-user me-2"></i>
+                                Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <!-- Welcome Banner for Client Portal -->
+                {% if user.is_authenticated and user.profile.client and 'client_portal' in request.resolver_match.url_name %}
+                    <div class="welcome-banner">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h3 class="mb-1">Welcome to Your Client Portal!</h3>
+                                <p class="mb-0">Manage your marketing data, view insights, and track performance</p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <a href="{% url 'client_reports' %}" class="btn btn-outline-light">
+                                    <i class="fas fa-chart-bar me-1"></i>View Reports
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'warning' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Page content -->
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <div id="sync-toast" class="toast align-items-center text-bg-primary border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 9999; display:none;">
+      <div class="d-flex">
+        <div class="toast-body" id="sync-toast-body">Syncing...</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Show loading spinner for form submissions and navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show loading spinner for form submissions
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    document.getElementById('loadingSpinner').style.display = 'flex';
+                });
+            });
+            
+            // Show loading spinner for navigation links
+            const navLinks = document.querySelectorAll('a[href^="/"]');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Don't show spinner for dropdown toggles or modal triggers
+                    if (!this.getAttribute('data-bs-toggle') && !this.getAttribute('data-bs-target')) {
+                        document.getElementById('loadingSpinner').style.display = 'flex';
+                    }
+                });
+            });
+            
+            // Auto-hide alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+            
+            // Mobile sidebar toggle
+            const sidebarToggle = document.querySelector('.navbar-toggler');
+            const sidebar = document.getElementById('sidebar');
+            
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                });
+            }
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                        sidebar.classList.remove('show');
+                    }
+                }
+            });
+
+            var syncBtn = document.getElementById('sync-all-btn');
+            var toast = document.getElementById('sync-toast');
+            var toastBody = document.getElementById('sync-toast-body');
+            if (syncBtn) {
+                syncBtn.addEventListener('click', function() {
+                    syncBtn.disabled = true;
+                    toastBody.textContent = 'Syncing all data...';
+                    toast.style.display = 'block';
+                    fetch('/dashboard/sync-all/', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                            'Accept': 'application/json',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'ok') {
+                            toastBody.textContent = 'Sync complete!';
+                        } else {
+                            toastBody.textContent = 'Sync failed: ' + (data.message || 'Unknown error');
+                        }
+                        setTimeout(() => { toast.style.display = 'none'; syncBtn.disabled = false; }, 3000);
+                    })
+                    .catch(err => {
+                        toastBody.textContent = 'Sync failed: ' + err;
+                        setTimeout(() => { toast.style.display = 'none'; syncBtn.disabled = false; }, 3000);
+                    });
+                });
+            }
+        });
+        
+        // Error handling for AJAX requests
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript error:', e.error);
+            // You can add custom error handling here
+        });
+
+        // Make all .back-btn buttons go to the homepage
+        document.addEventListener('DOMContentLoaded', function() {
+            var backBtns = document.querySelectorAll('.back-btn');
+            backBtns.forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location = '/';
+                });
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

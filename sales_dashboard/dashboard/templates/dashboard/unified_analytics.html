@@ -1,0 +1,87 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Unified Analytics{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Unified Analytics</h2>
+  <div class="row mb-4">
+    <div class="col-md-2"><div class="card"><div class="card-body"><h6>Total Spend</h6><h4>${{ total_spend|floatformat:2 }}</h4></div></div></div>
+    <div class="col-md-2"><div class="card"><div class="card-body"><h6>Total Clicks</h6><h4>{{ total_clicks }}</h4></div></div></div>
+    <div class="col-md-2"><div class="card"><div class="card-body"><h6>Total Impressions</h6><h4>{{ total_impressions }}</h4></div></div></div>
+    <div class="col-md-2"><div class="card"><div class="card-body"><h6>Total Conversions</h6><h4>{{ total_conversions }}</h4></div></div></div>
+    <div class="col-md-2"><div class="card"><div class="card-body"><h6>Avg CTR</h6><h4>{{ avg_ctr|floatformat:2 }}%</h4></div></div></div>
+    <div class="col-md-2"><div class="card"><div class="card-body"><h6>Avg CPL</h6><h4>${{ avg_cpl|floatformat:2 }}</h4></div></div></div>
+  </div>
+  <div class="mb-3">
+    <a href="{% url 'download_unified_analytics' %}" class="btn btn-success"><i class="fas fa-download"></i> Download Excel</a>
+  </div>
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <h6>Spend by Platform</h6>
+        <canvas id="spendChart"></canvas>
+      </div></div>
+    </div>
+    <div class="col-md-6">
+      <div class="card"><div class="card-body">
+        <h6>Conversions by Platform</h6>
+        <canvas id="conversionsChart"></canvas>
+      </div></div>
+    </div>
+  </div>
+  <div class="card mb-4"><div class="card-body">
+    <h5>Insights</h5>
+    <ul>
+      {% for insight in insights %}
+      <li>{{ insight }}</li>
+      {% empty %}
+      <li>No insights available. Upload more data for analysis.</li>
+      {% endfor %}
+    </ul>
+  </div></div>
+  <div class="card mb-4"><div class="card-body">
+    <h5>Unified Data Table</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead>
+          <tr>
+            {% for col in unified_df.0.keys %}
+            <th>{{ col|title }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in unified_df %}
+          <tr>
+            {% for val in row.values %}
+            <td>{{ val }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const spendData = {
+  labels: {{ spend_labels|safe }},
+  datasets: [{
+    label: 'Spend',
+    data: {{ spend_values|safe }},
+    backgroundColor: 'rgba(54, 162, 235, 0.6)'
+  }]
+};
+const conversionsData = {
+  labels: {{ conversions_labels|safe }},
+  datasets: [{
+    label: 'Conversions',
+    data: {{ conversions_values|safe }},
+    backgroundColor: 'rgba(255, 99, 132, 0.6)'
+  }]
+};
+new Chart(document.getElementById('spendChart'), {type: 'bar', data: spendData});
+new Chart(document.getElementById('conversionsChart'), {type: 'bar', data: conversionsData});
+setTimeout(function(){ window.location.reload(); }, 30000);
+</script>
+{% endblock %} 

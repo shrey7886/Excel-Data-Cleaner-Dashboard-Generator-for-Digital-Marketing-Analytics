@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h1>{{ campaign.name }} ({{ campaign.platform }})</h1>
+  
+  <!-- Campaign Info -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">📋 Campaign Information</h5>
+        </div>
+        <div class="card-body">
+          <p><strong>Start Date:</strong> {{ campaign.start_date }}</p>
+          <p><strong>End Date:</strong> {{ campaign.end_date|default:'Active' }}</p>
+          <p><strong>Platform:</strong> <span class="badge bg-primary">{{ campaign.platform }}</span></p>
+          <p><strong>Total Reports:</strong> {{ reports.count }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ML Predictions -->
+    {% if ml_predictions.ml_available %}
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">🤖 AI Predictions</h5>
+        </div>
+        <div class="card-body">
+          {% if ml_predictions.predictions.random_forest %}
+            <h6>📊 Performance Predictions</h6>
+            {% for metric, value in ml_predictions.predictions.random_forest.items %}
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-capitalize">{{ metric }}:</span>
+              <span class="badge bg-info">{{ value|floatformat:4 }}</span>
+            </div>
+            {% endfor %}
+          {% endif %}
+          
+          {% if ml_predictions.predictions.logistic %}
+            <h6 class="mt-3">🎯 Success Probability</h6>
+            {% for metric, prob in ml_predictions.predictions.logistic.items %}
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-capitalize">{{ metric }}:</span>
+              <span class="badge {% if prob > 0.7 %}bg-success{% elif prob > 0.4 %}bg-warning{% else %}bg-danger{% endif %}">
+                {{ prob|floatformat:1 }}%
+              </span>
+            </div>
+            {% endfor %}
+          {% endif %}
+          
+          {% if ml_predictions.predictions.cluster %}
+            <h6 class="mt-3">🎯 Campaign Cluster</h6>
+            <span class="badge bg-secondary">Cluster {{ ml_predictions.predictions.cluster }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Reports Table -->
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">📈 Performance Reports</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Impressions</th>
+              <th>Clicks</th>
+              <th>Spend</th>
+              <th>CTR</th>
+              <th>CPA</th>
+              <th>ROI</th>
+              <th>Conversions</th>
+              <th>Leads</th>
+              <th>Deals</th>
+              <th>Intent Score</th>
+              <th>CPL</th>
+              <th>Demographic</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for report in reports %}
+            <tr>
+              <td>{{ report.report_date }}</td>
+              <td>{{ report.impressions|default:'-' }}</td>
+              <td>{{ report.clicks|default:'-' }}</td>
+              <td>${{ report.spend|default:'-' }}</td>
+              <td>{{ report.ctr|floatformat:4|default:'-' }}</td>
+              <td>${{ report.cpa|floatformat:2|default:'-' }}</td>
+              <td>{{ report.roi|floatformat:2|default:'-' }}</td>
+              <td>{{ report.conversions|default:'-' }}</td>
+              <td>{{ report.leads|default:'-' }}</td>
+              <td>{{ report.deals|default:'-' }}</td>
+              <td>{{ report.intent_score|default:'-' }}</td>
+              <td>${{ report.cpl|floatformat:2|default:'-' }}</td>
+              <td>{{ report.demographic|default:'-' }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="13" class="text-center">No reports found for this campaign.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <div class="mt-3">
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+      <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+{% endblock %} 

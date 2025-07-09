@@ -1,0 +1,232 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Login - Targetorate{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        Welcome to Targetorate
+                    </h4>
+                    <p class="mb-0 mt-2" style="font-size: 0.9rem;">AI-Powered Marketing Analytics</p>
+                </div>
+                <div class="card-body p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post" id="loginForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="fas fa-user me-2"></i>Username
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="username" 
+                                   name="username" 
+                                   placeholder="Enter your username"
+                                   autocomplete="username"
+                                   required>
+                            {% if form.username.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.username.errors %}
+                                        <small><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock me-2"></i>Password
+                            </label>
+                            <div class="input-group">
+                                <input type="password" 
+                                       class="form-control form-control-lg" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Enter your password"
+                                       autocomplete="current-password"
+                                       required>
+                                <button class="btn btn-outline-secondary" 
+                                        type="button" 
+                                        id="togglePassword"
+                                        title="Show/Hide Password">
+                                    <i class="fas fa-eye" id="eyeIcon"></i>
+                                </button>
+                            </div>
+                            {% if form.password.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.password.errors %}
+                                        <small><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Sign In
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    <div class="text-center">
+                        <p class="mb-2 text-muted">Don't have an account?</p>
+                        <a href="{% url 'register' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-plus me-2"></i>
+                            Create Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Demo Credentials Card -->
+            <div class="card mt-3 border-info">
+                <div class="card-header bg-info text-white text-center py-2">
+                    <small><i class="fas fa-info-circle me-1"></i>Demo Credentials</small>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row text-center mb-3">
+                        <div class="col-12">
+                            <small class="text-muted d-block mb-2">Admin User:</small>
+                            <div class="row">
+                                <div class="col-6">
+                                    <small class="text-muted">Username:</small><br>
+                                    <code>admin</code>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Password:</small><br>
+                                    <code>admin123</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="my-2">
+                    <div class="row text-center">
+                        <div class="col-12">
+                            <small class="text-muted d-block mb-2">Client User (Client Portal):</small>
+                            <div class="row">
+                                <div class="col-6">
+                                    <small class="text-muted">Username:</small><br>
+                                    <code>techflow_client</code>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Password:</small><br>
+                                    <code>client123</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Client Portal Info Card -->
+            <div class="card mt-3 border-success">
+                <div class="card-header bg-success text-white text-center py-2">
+                    <small><i class="fas fa-user-tie me-1"></i>Client Portal Access</small>
+                </div>
+                <div class="card-body p-3">
+                    <p class="mb-2 text-center" style="font-size: 0.9rem;">
+                        <strong>Client users</strong> will be automatically redirected to their personalized client portal after login.
+                    </p>
+                    <div class="text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-upload me-1"></i>Upload data • 
+                            <i class="fas fa-chart-bar me-1"></i>View reports • 
+                            <i class="fas fa-magic me-1"></i>AI insights
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border-radius: 15px;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.btn {
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.input-group .btn {
+    border-left: none;
+}
+
+.input-group .form-control {
+    border-right: none;
+}
+
+.input-group .form-control:focus + .btn {
+    border-color: #0d6efd;
+}
+
+.alert {
+    border-radius: 10px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Clear form fields on page load
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+    
+    // Toggle password visibility
+    const togglePassword = document.getElementById('togglePassword');
+    const password = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
+    
+    togglePassword.addEventListener('click', function() {
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        eyeIcon.classList.toggle('fa-eye');
+        eyeIcon.classList.toggle('fa-eye-slash');
+    });
+    
+    // Form validation
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', function(e) {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        
+        if (!username || !password) {
+            e.preventDefault();
+            alert('Please fill in all fields');
+            return false;
+        }
+    });
+    
+    // Auto-focus on username field
+    document.getElementById('username').focus();
+});
+</script>
+{% endblock %} 

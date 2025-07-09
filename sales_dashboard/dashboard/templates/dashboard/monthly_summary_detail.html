@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}Targetorate - {{ summary.month|date:"F Y" }} Summary - {{ client.company }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-1">{{ summary.month|date:"F Y" }} Marketing Summary</h2>
+                            <p class="mb-0">{{ client.company }} - Targetorate Analytics</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <a href="{% url 'client_portal' %}" class="btn btn-light">
+                                <i class="fas fa-arrow-left"></i> Back to Portal
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary KPIs -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Campaigns</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ summary.total_campaigns }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Spend</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ summary.total_spend|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Revenue</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ summary.total_revenue|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Overall ROAS</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ summary.overall_roas|floatformat:2 }}x</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Performance Metrics</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h4 class="text-primary">{{ summary.total_impressions|floatformat:0 }}</h4>
+                                <p class="text-muted">Total Impressions</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h4 class="text-success">{{ summary.total_clicks|floatformat:0 }}</h4>
+                                <p class="text-muted">Total Clicks</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h4 class="text-info">{{ summary.total_conversions|floatformat:0 }}</h4>
+                                <p class="text-muted">Total Conversions</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h4 class="text-warning">{{ summary.overall_ctr|floatformat:2 }}%</h4>
+                                <p class="text-muted">Overall CTR</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Cost Metrics</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h4 class="text-primary">${{ summary.avg_cpc|floatformat:2 }}</h4>
+                                <p class="text-muted">Average CPC</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h4 class="text-success">${{ summary.avg_cpm|floatformat:2 }}</h4>
+                                <p class="text-muted">Average CPM</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h4 class="text-info">{{ summary.overall_conversion_rate|floatformat:2 }}%</h4>
+                                <p class="text-muted">Conversion Rate</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h4 class="text-warning">{{ summary.month|date:"F Y" }}</h4>
+                                <p class="text-muted">Reporting Period</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Platform Breakdown -->
+    {% if summary.platform_data %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Platform Performance Breakdown</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Platform</th>
+                                    <th>Spend</th>
+                                    <th>Revenue</th>
+                                    <th>ROAS</th>
+                                    <th>CTR</th>
+                                    <th>Conversions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for platform, data in summary.platform_data.items %}
+                                <tr>
+                                    <td>{{ platform|title }}</td>
+                                    <td>${{ data.spend|floatformat:2 }}</td>
+                                    <td>${{ data.revenue|floatformat:2 }}</td>
+                                    <td>{{ data.roas|floatformat:2 }}x</td>
+                                    <td>{{ data.ctr|floatformat:2 }}%</td>
+                                    <td>{{ data.conversions|floatformat:0 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ML Insights -->
+    {% if summary.ml_insights %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">AI-Powered Insights</h6>
+                </div>
+                <div class="card-body">
+                    {% if summary.ml_insights.recommendations %}
+                    <h6>Recommendations:</h6>
+                    <ul class="list-group list-group-flush">
+                        {% for recommendation in summary.ml_insights.recommendations %}
+                        <li class="list-group-item">{{ recommendation }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    
+                    {% if summary.ml_insights.predictions %}
+                    <h6 class="mt-3">Predictions for Next Month:</h6>
+                    <div class="row">
+                        {% for prediction, value in summary.ml_insights.predictions.items %}
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h5 class="text-primary">{{ value }}</h5>
+                                <p class="text-muted">{{ prediction|title }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Download Report -->
+    {% if summary.report_file %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h5>Download Full Report</h5>
+                    <p class="text-muted">Get the complete {{ summary.month|date:"F Y" }} marketing analysis report</p>
+                    <a href="{{ summary.report_file.url }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-download"></i> Download Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

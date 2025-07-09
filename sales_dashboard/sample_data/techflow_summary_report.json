@@ -1,0 +1,50 @@
+{
+  "company": "TechFlow Solutions",
+  "report_period": "July 2025",
+  "data_sources": {
+    "google_ads": "techflow_google_ads.csv",
+    "linkedin_ads": "techflow_linkedin_ads.csv",
+    "mailchimp": "techflow_mailchimp.csv",
+    "demandbase": "techflow_demandbase.csv",
+    "zoho_crm": "techflow_zoho_crm.csv"
+  },
+  "total_metrics": {
+    "total_spend": "$125,000",
+    "total_revenue": "$450,000",
+    "total_leads": "2,500",
+    "total_conversions": "1,200",
+    "overall_roas": "3.6x"
+  },
+  "platform_performance": {
+    "google_ads": {
+      "spend": "$45,000",
+      "revenue": "$180,000",
+      "roas": "4.0x",
+      "conversions": "450"
+    },
+    "linkedin_ads": {
+      "spend": "$35,000",
+      "revenue": "$120,000",
+      "roas": "3.4x",
+      "leads": "800"
+    },
+    "mailchimp": {
+      "spend": "$15,000",
+      "revenue": "$75,000",
+      "roas": "5.0x",
+      "clicks": "1,500"
+    },
+    "demandbase": {
+      "spend": "$20,000",
+      "revenue": "$60,000",
+      "roas": "3.0x",
+      "engaged_accounts": "150"
+    },
+    "zoho_crm": {
+      "spend": "$10,000",
+      "revenue": "$15,000",
+      "roas": "1.5x",
+      "closed_deals": "25"
+    }
+  }
+}

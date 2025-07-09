@@ -1,0 +1,467 @@
+{% load dict_extras %}
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Targetorate - {{ client.company }} Client Portal{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-1">Welcome to Targetorate, {{ user.first_name }}!</h2>
+                            <p class="mb-0">{{ client.company }} - Digital Marketing Analytics Dashboard</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <span class="badge bg-light text-dark fs-6">{{ profile.role|title }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Platform Connections -->
+    <div class="row mb-4">
+        {% for platform in [
+            {'key': 'google_ads', 'name': 'Google Ads', 'icon': 'fab fa-google'},
+            {'key': 'linkedin_ads', 'name': 'LinkedIn Ads', 'icon': 'fab fa-linkedin'},
+            {'key': 'mailchimp', 'name': 'Mailchimp', 'icon': 'fab fa-mailchimp'},
+            {'key': 'zoho', 'name': 'Zoho', 'icon': 'fas fa-cloud'},
+            {'key': 'demandbase', 'name': 'Demandbase', 'icon': 'fas fa-database'}
+        ] %}
+        <div class="col-md-4 col-lg-2 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="{{ platform.icon }} fa-2x mb-2"></i>
+                    <h6 class="card-title">{{ platform.name }}</h6>
+                    {% if platform_connections|dict_key:platform.key %}
+                        <span class="badge bg-success mb-2">Connected</span>
+                    {% else %}
+                        <span class="badge bg-secondary mb-2">Not Connected</span>
+                    {% endif %}
+                    <div class="d-grid gap-2">
+                        {% if not platform_connections|dict_key:platform.key %}
+                            <a href="{% url 'connect_'|add:platform.key %}" class="btn btn-outline-primary btn-sm">Connect</a>
+                        {% endif %}
+                        <a href="{% url platform.key|add:'_analysis' %}" class="btn btn-primary btn-sm {% if not platform_connections|dict_key:platform.key %}disabled{% endif %}">View Analysis</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    {% if current_month_summary %}
+                        <a href="{% url 'monthly_summary_detail' current_month_summary.id %}" class="btn btn-success me-2">
+                            <i class="fas fa-chart-bar"></i> View Current Month Summary
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'report_list' %}" class="btn btn-info">
+                        <i class="fas fa-file-alt"></i> View All Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Campaigns</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ campaigns.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Spend</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ total_spend|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Revenue</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ total_revenue|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                ROAS</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ roas|floatformat:2 }}x</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Uploads and Monthly Summaries -->
+    <div class="row mb-4">
+        <!-- Unified Data -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-database me-2"></i>Unified Data & Predictions
+                    </h6>
+                    <a href="{% url 'unified_data_list' %}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if unified_data_list %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>File</th>
+                                        <th>Status</th>
+                                        <th>Uploaded</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for data in unified_data_list|slice:":3" %}
+                                    <tr>
+                                        <td>{{ data.file.name|slice:"13:"|truncatechars:20 }}</td>
+                                        <td>
+                                            {% if data.status == 'analyzed' %}
+                                                <span class="badge bg-success">Analyzed</span>
+                                            {% elif data.status == 'processing' %}
+                                                <span class="badge bg-warning">Processing</span>
+                                            {% elif data.status == 'failed' %}
+                                                <span class="badge bg-danger">Failed</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Uploaded</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ data.uploaded_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            {% if data.status == 'analyzed' %}
+                                                <a href="{% url 'generate_prediction' data.id %}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-magic"></i>
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        {# <p class="text-muted">No unified data uploaded yet. <a href="{% url 'unified_data_upload' %}">Upload your first unified file</a></p> #}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Data Uploads -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Platform Uploads</h6>
+                </div>
+                <div class="card-body">
+                    {% if uploads %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Tool</th>
+                                        <th>Status</th>
+                                        <th>Uploaded</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for upload in uploads|slice:":5" %}
+                                    <tr>
+                                        <td>{{ upload.get_tool_display }}</td>
+                                        <td>
+                                            {% if upload.status == 'completed' %}
+                                                <span class="badge bg-success">Completed</span>
+                                            {% elif upload.status == 'processing' %}
+                                                <span class="badge bg-warning">Processing</span>
+                                            {% elif upload.status == 'failed' %}
+                                                <span class="badge bg-danger">Failed</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ upload.uploaded_at|date:"M d, Y" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No data uploads yet. <a href="{% url 'client_data_upload' %}">Upload your first file</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Summaries -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Monthly Summaries</h6>
+                </div>
+                <div class="card-body">
+                    {% if monthly_summaries %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Month</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for summary in monthly_summaries|slice:":5" %}
+                                    <tr>
+                                        <td>{{ summary.month|date:"F Y" }}</td>
+                                        <td>
+                                            {% if summary.is_generated %}
+                                                <span class="badge bg-success">Generated</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if summary.is_generated %}
+                                                <a href="{% url 'monthly_summary_detail' summary.id %}" class="btn btn-sm btn-primary">View</a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No monthly summaries available yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Insights and ML Predictions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-robot"></i> AI Insights & Predictions
+                    </h6>
+                    <a href="{% url 'ml_predictions' %}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-chart-line"></i> View All Predictions
+                    </a>
+                </div>
+                <div class="card-body">
+                    <!-- AI Insights -->
+                    {% if ai_insights %}
+                        <h6 class="font-weight-bold mb-3">Latest AI Insights</h6>
+                        <div class="row mb-4">
+                            {% for insight in ai_insights|slice:":3" %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-left-{% if insight.priority == 'high' %}danger{% elif insight.priority == 'medium' %}warning{% else %}info{% endif %} shadow h-100">
+                                    <div class="card-body">
+                                        <div class="text-xs font-weight-bold text-{% if insight.priority == 'high' %}danger{% elif insight.priority == 'medium' %}warning{% else %}info{% endif %} text-uppercase mb-1">
+                                            {{ insight.type|title }}
+                                        </div>
+                                        <div class="h6 mb-0 font-weight-bold text-gray-800">{{ insight.title }}</div>
+                                        <div class="text-sm text-gray-600 mt-2">{{ insight.description }}</div>
+                                        <div class="text-sm text-primary mt-2">
+                                            <strong>Recommendation:</strong> {{ insight.recommendation }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Future Forecasts -->
+                    {% if future_forecasts %}
+                        <h6 class="font-weight-bold mb-3">Upcoming Forecasts</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Month</th>
+                                        <th>Predicted Revenue</th>
+                                        <th>Predicted ROI</th>
+                                        <th>Trend</th>
+                                        <th>Confidence</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for forecast in future_forecasts %}
+                                    <tr>
+                                        <td><strong>{{ forecast.forecast_date|date:"F Y" }}</strong></td>
+                                        <td>${{ forecast.predicted_revenue|floatformat:2 }}</td>
+                                        <td>{{ forecast.predicted_roi|floatformat:2 }}x</td>
+                                        <td>
+                                            {% if forecast.trend_direction == 'increasing' %}
+                                                <span class="badge badge-success">↗ Increasing</span>
+                                            {% elif forecast.trend_direction == 'decreasing' %}
+                                                <span class="badge badge-danger">↘ Decreasing</span>
+                                            {% else %}
+                                                <span class="badge badge-secondary">→ Stable</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ forecast.confidence_score|floatformat:0 }}%</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+
+                    {% if not ai_insights and not future_forecasts %}
+                        <p class="text-muted">No AI insights or predictions available yet. Upload more data to get personalized insights.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Campaigns Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Your Campaigns</h6>
+                </div>
+                <div class="card-body">
+                    {% if campaigns %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="campaignsTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Campaign Name</th>
+                                        <th>Platform</th>
+                                        <th>Status</th>
+                                        <th>Start Date</th>
+                                        <th>Budget</th>
+                                        <th>Revenue</th>
+                                        <th>ROAS</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for campaign in campaigns %}
+                                    <tr>
+                                        <td>{{ campaign.name }}</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ campaign.get_platform_display }}</span>
+                                        </td>
+                                        <td>
+                                            {% if campaign.status == 'active' %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% elif campaign.status == 'paused' %}
+                                                <span class="badge bg-warning">Paused</span>
+                                            {% elif campaign.status == 'completed' %}
+                                                <span class="badge bg-secondary">Completed</span>
+                                            {% else %}
+                                                <span class="badge bg-light text-dark">Draft</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ campaign.start_date }}</td>
+                                        <td>${{ campaign.budget|floatformat:2 }}</td>
+                                        <td>${{ campaign.revenue|floatformat:2 }}</td>
+                                        <td>{{ campaign.roi|floatformat:2 }}%</td>
+                                        <td>
+                                            <a href="{% url 'campaign_detail' campaign.id %}" 
+                                               class="btn btn-sm btn-primary">View</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No campaigns found. Upload your marketing data to see campaigns here.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connect Your Marketing Accounts -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Connect Your Marketing Accounts</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'connect_google_ads' %}" class="btn btn-outline-primary me-2 mb-2">
+                        <i class="fab fa-google me-1"></i> Connect Google Ads
+                    </a>
+                    <a href="{% url 'connect_linkedin_ads' %}" class="btn btn-outline-info me-2 mb-2">
+                        <i class="fab fa-linkedin me-1"></i> Connect LinkedIn Ads
+                    </a>
+                    <a href="{% url 'connect_mailchimp' %}" class="btn btn-outline-warning me-2 mb-2">
+                        <i class="fab fa-mailchimp me-1"></i> Connect Mailchimp
+                    </a>
+                    <a href="{% url 'connect_zoho' %}" class="btn btn-outline-success me-2 mb-2">
+                        <i class="fas fa-database me-1"></i> Connect Zoho
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,32 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Mailchimp Analytics{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Mailchimp Analytics</h2>
+  <div class="row mb-4">
+    <div class="col-md-6"><div class="card"><div class="card-body"><h6>Total Opens</h6><h4>{{ total_opens|floatformat:2 }}</h4></div></div></div>
+    <div class="col-md-6"><div class="card"><div class="card-body"><h6>Total Clicks</h6><h4>{{ total_clicks|floatformat:2 }}</h4></div></div></div>
+  </div>
+  <div class="card mb-4"><div class="card-body">
+    <h5>Campaigns</h5>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead><tr><th>Name</th><th>Date</th><th>Open Rate</th><th>Click Rate</th></tr></thead>
+        <tbody>
+          {% for c in campaigns %}
+          <tr>
+            <td>{{ c.campaign_name }}</td>
+            <td>{{ c.date }}</td>
+            <td>{{ c.open_rate|floatformat:2 }}</td>
+            <td>{{ c.click_rate|floatformat:2 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+</div>
+<script>
+setTimeout(function(){ window.location.reload(); }, 30000);
+</script>
+{% endblock %} 

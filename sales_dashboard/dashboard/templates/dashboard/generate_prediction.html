@@ -1,0 +1,272 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Generate Predictions - Targetorate{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-magic me-2"></i>
+                        Generate AI Predictions
+                    </h4>
+                    <p class="mb-0 mt-2" style="font-size: 0.9rem;">Create intelligent forecasts and insights from your data</p>
+                </div>
+                <div class="card-body p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Data Summary -->
+                    <div class="alert alert-info mb-4">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-database me-2"></i>
+                            Data Summary
+                        </h6>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <strong>File:</strong> {{ unified_data.file.name|slice:"13:" }}<br>
+                                <strong>Records:</strong> {{ unified_data.total_records|floatformat:0 }}<br>
+                                <strong>Date Range:</strong> {{ unified_data.date_range_start|date:"M d" }} - {{ unified_data.date_range_end|date:"M d, Y" }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Platforms:</strong> {{ unified_data.platforms_included|join:", " }}<br>
+                                <strong>Uploaded:</strong> {{ unified_data.uploaded_at|date:"M d, Y H:i" }}<br>
+                                <strong>Status:</strong> 
+                                <span class="badge bg-success">Analyzed</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prediction Types -->
+                    <form method="post" id="predictionForm">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-chart-line me-2"></i>Select Prediction Type
+                            </label>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100 border-primary prediction-card" data-type="monthly_forecast">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-calendar-alt fa-3x text-primary mb-3"></i>
+                                            <h6 class="card-title">Monthly Forecast</h6>
+                                            <p class="card-text small">Predict next month's performance metrics including revenue, spend, and conversions.</p>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="prediction_type" 
+                                                       id="monthly_forecast" value="monthly_forecast" checked>
+                                                <label class="form-check-label" for="monthly_forecast">
+                                                    Select this option
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100 border-info prediction-card" data-type="campaign_performance">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-bullseye fa-3x text-info mb-3"></i>
+                                            <h6 class="card-title">Campaign Performance</h6>
+                                            <p class="card-text small">Analyze campaign performance trends and identify top-performing campaigns.</p>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="prediction_type" 
+                                                       id="campaign_performance" value="campaign_performance">
+                                                <label class="form-check-label" for="campaign_performance">
+                                                    Select this option
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100 border-success prediction-card" data-type="revenue_prediction">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-dollar-sign fa-3x text-success mb-3"></i>
+                                            <h6 class="card-title">Revenue Prediction</h6>
+                                            <p class="card-text small">Forecast future revenue based on historical trends and growth patterns.</p>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="prediction_type" 
+                                                       id="revenue_prediction" value="revenue_prediction">
+                                                <label class="form-check-label" for="revenue_prediction">
+                                                    Select this option
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100 border-warning prediction-card" data-type="optimization">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-cogs fa-3x text-warning mb-3"></i>
+                                            <h6 class="card-title">Optimization Analysis</h6>
+                                            <p class="card-text small">Identify optimization opportunities and get actionable recommendations.</p>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="prediction_type" 
+                                                       id="optimization" value="optimization">
+                                                <label class="form-check-label" for="optimization">
+                                                    Select this option
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'unified_data_list' %}" class="btn btn-outline-secondary btn-lg me-md-2">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Back to Data
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-magic me-2"></i>
+                                Generate Prediction
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- What You'll Get -->
+            <div class="card mt-4 border-info">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        What You'll Get
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Prediction Results:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-chart-line text-success me-2"></i>Detailed metrics forecast</li>
+                                <li><i class="fas fa-percentage text-info me-2"></i>Confidence scores</li>
+                                <li><i class="fas fa-lightbulb text-warning me-2"></i>AI-generated insights</li>
+                                <li><i class="fas fa-list-check text-primary me-2"></i>Actionable recommendations</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Analysis Features:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-trending-up text-success me-2"></i>Trend analysis</li>
+                                <li><i class="fas fa-exclamation-triangle text-warning me-2"></i>Risk assessment</li>
+                                <li><i class="fas fa-target text-info me-2"></i>Performance optimization</li>
+                                <li><i class="fas fa-download text-primary me-2"></i>Exportable reports</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.prediction-card {
+    cursor: pointer;
+    border-width: 2px;
+}
+
+.prediction-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.prediction-card.selected {
+    border-color: #0d6efd !important;
+    background-color: #f8f9ff;
+}
+
+.btn {
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.alert {
+    border-radius: 10px;
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Card selection functionality
+    const predictionCards = document.querySelectorAll('.prediction-card');
+    const radioButtons = document.querySelectorAll('input[name="prediction_type"]');
+    
+    predictionCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Remove selected class from all cards
+            predictionCards.forEach(c => c.classList.remove('selected'));
+            
+            // Add selected class to clicked card
+            this.classList.add('selected');
+            
+            // Check the corresponding radio button
+            const type = this.dataset.type;
+            const radio = document.getElementById(type);
+            if (radio) {
+                radio.checked = true;
+            }
+        });
+    });
+    
+    // Handle radio button changes
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Remove selected class from all cards
+            predictionCards.forEach(c => c.classList.remove('selected'));
+            
+            // Add selected class to corresponding card
+            const card = document.querySelector(`[data-type="${this.value}"]`);
+            if (card) {
+                card.classList.add('selected');
+            }
+        });
+    });
+    
+    // Initialize with first card selected
+    predictionCards[0].classList.add('selected');
+    
+    // Form submission
+    const form = document.getElementById('predictionForm');
+    form.addEventListener('submit', function(e) {
+        const selectedType = document.querySelector('input[name="prediction_type"]:checked');
+        
+        if (!selectedType) {
+            e.preventDefault();
+            alert('Please select a prediction type.');
+            return false;
+        }
+        
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+        submitBtn.disabled = true;
+    });
+});
+</script>
+{% endblock %} 

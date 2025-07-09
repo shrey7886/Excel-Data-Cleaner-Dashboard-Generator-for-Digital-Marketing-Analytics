@@ -1,0 +1,15 @@
+import pandas as pd
+
+def fetch_demandbase_data():
+    """Simulate fetching Demandbase campaign data."""
+    data = [
+        {"campaign_name": "Spring Sale", "date": "2024-05-01", "intent_score": 62},
+        {"campaign_name": "Summer Blast", "date": "2024-05-31", "intent_score": 70},
+        {"campaign_name": "Autumn Promo", "date": "2024-06-30", "intent_score": 83},
+        {"campaign_name": "Winter Deals", "date": "2024-07-30", "intent_score": 90},
+        {"campaign_name": "Holiday Blast", "date": "2024-08-15", "intent_score": 75},
+        {"campaign_name": "Back to School", "date": "2024-09-01", "intent_score": 68},
+        {"campaign_name": "Black Friday", "date": "2024-11-29", "intent_score": 95},
+        {"campaign_name": "Cyber Monday", "date": "2024-12-02", "intent_score": 92},
+    ]
+    return pd.DataFrame(data) 

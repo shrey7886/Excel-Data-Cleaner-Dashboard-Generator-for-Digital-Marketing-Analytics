@@ -1,0 +1,119 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Unified Insights - Targetorate{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-layer-group me-2"></i>Unified Campaign Data & Insights</h2>
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="stats-card">
+                <h4>{{ total_campaigns }}</h4>
+                <p>Total Campaigns</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stats-card">
+                <h4>${{ total_spend|floatformat:0 }}</h4>
+                <p>Total Spend</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stats-card">
+                <h4>${{ total_revenue|floatformat:0 }}</h4>
+                <p>Total Revenue</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stats-card">
+                <h4>{{ roas|floatformat:2 }}x</h4>
+                <p>ROAS</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stats-card">
+                <h4>{{ ctr|floatformat:2 }}%</h4>
+                <p>CTR</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stats-card">
+                <h4>${{ cpa|floatformat:2 }}</h4>
+                <p>CPA</p>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Insights</h5>
+                </div>
+                <div class="card-body">
+                    {% if insights %}
+                        <ul>
+                            {% for insight in insights %}
+                                <li>{{ insight }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No major issues detected. Keep optimizing!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="mb-0"><i class="fas fa-table me-2"></i>All Campaign Data</h5>
+                <a href="#" class="btn btn-outline-success disabled"><i class="fas fa-file-excel me-1"></i>Download as Excel</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Campaign Name</th>
+                            <th>Platform</th>
+                            <th>Date</th>
+                            <th>Impressions</th>
+                            <th>Clicks</th>
+                            <th>Spend</th>
+                            <th>Revenue</th>
+                            <th>Conversions</th>
+                            <th>CTR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in unified_campaigns %}
+                        <tr>
+                            <td>{{ c.campaign_name|default:c.name|default:'-' }}</td>
+                            <td>{{ c.platform|default:'-' }}</td>
+                            <td>{{ c.date|default:'-' }}</td>
+                            <td>{{ c.impressions|default:'-' }}</td>
+                            <td>{{ c.clicks|default:'-' }}</td>
+                            <td>${{ c.spend|default:'-' }}</td>
+                            <td>${{ c.revenue|default:'-' }}</td>
+                            <td>{{ c.conversions|default:'-' }}</td>
+                            <td>{{ c.ctr|default:'-' }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="9" class="text-center">No campaign data available.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Charts (Coming Soon)</h5>
+                </div>
+                <div class="card-body">
+                    <p>Visualizations of unified campaign data will appear here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

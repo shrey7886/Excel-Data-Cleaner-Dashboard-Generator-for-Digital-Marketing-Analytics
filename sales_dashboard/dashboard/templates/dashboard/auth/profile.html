@@ -1,0 +1,346 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}My Profile - {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-1">
+                                <i class="fas fa-user me-2"></i>My Profile
+                            </h2>
+                            <p class="mb-0">Manage your account settings and preferences</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <a href="{% url 'dashboard' %}" class="btn btn-light">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Profile Information -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Edit Profile Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user me-1"></i>First Name
+                                </label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.first_name.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user me-1"></i>Last Name
+                                </label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.last_name.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">
+                                    <i class="fas fa-envelope me-1"></i>Email Address
+                                </label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.email.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                    <i class="fas fa-phone me-1"></i>Phone Number
+                                </label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.phone.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.company.id_for_label }}" class="form-label">
+                                    <i class="fas fa-building me-1"></i>Company
+                                </label>
+                                {{ form.company }}
+                                {% if form.company.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.company.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.job_title.id_for_label }}" class="form-label">
+                                    <i class="fas fa-briefcase me-1"></i>Job Title
+                                </label>
+                                {{ form.job_title }}
+                                {% if form.job_title.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.job_title.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.bio.id_for_label }}" class="form-label">
+                                <i class="fas fa-info-circle me-1"></i>Bio
+                            </label>
+                            {{ form.bio }}
+                            {% if form.bio.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.bio.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Tell us a bit about yourself and your role.</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.timezone.id_for_label }}" class="form-label">
+                                    <i class="fas fa-clock me-1"></i>Timezone
+                                </label>
+                                {{ form.timezone }}
+                                {% if form.timezone.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.timezone.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.language.id_for_label }}" class="form-label">
+                                    <i class="fas fa-language me-1"></i>Preferred Language
+                                </label>
+                                {{ form.language }}
+                                {% if form.language.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.language.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Summary -->
+        <div class="col-lg-4">
+            <!-- User Info Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-circle me-2"></i>Profile Summary
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <div class="avatar-placeholder bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2rem;">
+                            {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                        </div>
+                    </div>
+                    <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                    <p class="text-muted mb-2">{{ user.email }}</p>
+                    {% if profile.company %}
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-building me-1"></i>{{ profile.company }}
+                        </p>
+                    {% endif %}
+                    {% if profile.job_title %}
+                        <p class="text-muted mb-3">
+                            <i class="fas fa-briefcase me-1"></i>{{ profile.job_title }}
+                        </p>
+                    {% endif %}
+                    <div class="badge bg-success">
+                        <i class="fas fa-check-circle me-1"></i>Active Account
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Account Statistics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="border-end">
+                                <h4 class="text-primary mb-1">{{ user.date_joined|date:"M Y" }}</h4>
+                                <small class="text-muted">Member Since</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <h4 class="text-success mb-1">{{ user.last_login|date:"M d" }}</h4>
+                            <small class="text-muted">Last Login</small>
+                        </div>
+                    </div>
+                    {% if profile.client %}
+                        <hr>
+                        <div class="text-center">
+                            <h6 class="text-info mb-1">
+                                <i class="fas fa-users me-1"></i>Client Account
+                            </h6>
+                            <p class="text-muted mb-0">{{ profile.client.company }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if profile.client %}
+                            <a href="{% url 'client_portal' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-tachometer-alt me-2"></i>Client Portal
+                            </a>
+                            <a href="{% url 'client_reports' %}" class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-chart-bar me-2"></i>View Reports
+                            </a>
+                        {% else %}
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-control, .form-select {
+    border-radius: 0.375rem;
+    border: 1px solid #d1d3e2;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+.avatar-placeholder {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    font-weight: 600;
+}
+
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #224abe 0%, #1a3a8f 100%);
+}
+</style>
+
+<script>
+// Form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+
+// Auto-save indicator
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const saveBtn = document.querySelector('button[type="submit"]');
+    
+    form.addEventListener('change', function() {
+        saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>Save Changes*';
+        saveBtn.classList.add('btn-warning');
+    });
+    
+    form.addEventListener('submit', function() {
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+        saveBtn.disabled = true;
+    });
+});
+</script>
+{% endblock %} 
