@@ -35,9 +35,34 @@
                         </h3>
                         <p class="mb-0">Here's your marketing performance overview for <span id="company-name">{{ client.company }}</span></p>
                     </div>
+                    <div class="col-md-4 text-end">
+                        <button id="sync-all-btn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt me-2"></i>
+                            <span class="loading-spinner" id="sync-spinner" style="display:none;"></span>
+                            Sync All Data
+                        </button>
+                    </div>
                 </div>
             </div>
         {% endif %}
+
+        <!-- Connection Status Section -->
+        <div class="row mb-4" id="connection-status-section">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-plug me-2"></i>Platform Connections
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="connection-status-rows">
+                            <!-- Connection status will be loaded here via AJAX -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Key Performance Indicators (Unified) -->
         <div class="row mb-4">
@@ -172,7 +197,90 @@
         </div>
     </div>
 </div>
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+  <div id="dashboard-toast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="dashboard-toast-body">Processing...</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<style>
+.loading-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.connection-status-card {
+  transition: all 0.3s ease;
+}
+.connection-status-card.connected {
+  border-color: #28a745;
+  background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+}
+.connection-status-card.disconnected {
+  border-color: #dc3545;
+  background: linear-gradient(135deg, #fff8f8 0%, #ffe8e8 100%);
+}
+</style>
+
 <script>
+function updateConnectionStatus(connections) {
+    const platforms = [
+        { key: 'google_ads', name: 'Google Ads', icon: 'fab fa-google' },
+        { key: 'linkedin_ads', name: 'LinkedIn Ads', icon: 'fab fa-linkedin' },
+        { key: 'mailchimp', name: 'Mailchimp', icon: 'fab fa-mailchimp' },
+        { key: 'zoho', name: 'Zoho', icon: 'fas fa-cloud' },
+        { key: 'demandbase', name: 'Demandbase', icon: 'fas fa-database' }
+    ];
+    
+    const container = document.getElementById('connection-status-rows');
+    container.innerHTML = '';
+    
+    platforms.forEach(platform => {
+        const isConnected = connections[platform.key] || false;
+        const cardClass = isConnected ? 'connected' : 'disconnected';
+        const statusText = isConnected ? 'Connected' : 'Not Connected';
+        const statusColor = isConnected ? 'text-success' : 'text-danger';
+        
+        container.innerHTML += `
+            <div class="col-md-6 col-lg-2 mb-3">
+                <div class="card connection-status-card ${cardClass} h-100">
+                    <div class="card-body text-center">
+                        <i class="${platform.icon} fa-2x mb-2 ${isConnected ? 'text-success' : 'text-muted'}"></i>
+                        <h6 class="card-title">${platform.name}</h6>
+                        <p class="card-text ${statusColor} mb-0">${statusText}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function showToast(type, message) {
+    const toast = document.getElementById('dashboard-toast');
+    const toastBody = document.getElementById('dashboard-toast-body');
+    
+    // Set toast type and message
+    toast.className = `toast align-items-center text-bg-${type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'danger'} border-0`;
+    toastBody.textContent = message;
+    
+    // Show toast
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+}
+
 function updateDashboard(data) {
     document.getElementById('total-campaigns').textContent = data.total_campaigns;
     document.getElementById('total-spend').textContent = '$' + Math.round(data.total_spend);
@@ -182,6 +290,7 @@ function updateDashboard(data) {
     document.getElementById('conversion-rate').textContent = parseFloat(data.conversion_rate).toFixed(2) + '%';
     document.getElementById('total-impressions').textContent = Math.round(data.total_impressions);
     document.getElementById('cpa').textContent = '$' + parseFloat(data.cpa).toFixed(2);
+    
     // Platform breakdown
     var platformRows = document.getElementById('platform-breakdown-rows');
     if (platformRows && data.platform_data) {
@@ -211,29 +320,67 @@ function updateDashboard(data) {
         });
     }
 }
+
 function fetchDashboardData() {
     document.getElementById('dashboard-main').style.display = 'none';
     document.getElementById('dashboard-spinner').style.display = 'block';
-    fetch('/dashboard/dashboard/data/', {headers: {'Accept': 'application/json'}})
-        .then(response => response.json())
-        .then(data => {
-            updateDashboard(data);
-            document.getElementById('dashboard-main').style.display = '';
-            document.getElementById('dashboard-spinner').style.display = 'none';
-        })
-        .catch(err => {
-            document.getElementById('dashboard-error').innerHTML = '<div class="alert alert-danger">Failed to load dashboard data. Please refresh.</div>';
-            document.getElementById('dashboard-main').style.display = 'none';
-            document.getElementById('dashboard-spinner').style.display = 'none';
-        });
+    
+    // Fetch both dashboard data and connection status
+    Promise.all([
+        fetch('{% url "dashboard_data_api" %}', {headers: {'Accept': 'application/json'}}),
+        fetch('{% url "get_connection_status" %}', {headers: {'Accept': 'application/json'}})
+    ])
+    .then(responses => Promise.all(responses.map(r => r.json())))
+    .then(([dashboardData, connectionData]) => {
+        updateDashboard(dashboardData);
+        if (connectionData.status === 'success') {
+            updateConnectionStatus(connectionData.connections);
+        }
+        document.getElementById('dashboard-main').style.display = '';
+        document.getElementById('dashboard-spinner').style.display = 'none';
+    })
+    .catch(err => {
+        document.getElementById('dashboard-error').innerHTML = '<div class="alert alert-danger">Failed to load dashboard data. Please refresh.</div>';
+        document.getElementById('dashboard-main').style.display = 'none';
+        document.getElementById('dashboard-spinner').style.display = 'none';
+    });
 }
-// Refresh dashboard after sync-all completes
+
+// Initialize dashboard
 window.addEventListener('DOMContentLoaded', function() {
     fetchDashboardData();
+    
+    // Handle sync all button
     var syncBtn = document.getElementById('sync-all-btn');
     if (syncBtn) {
         syncBtn.addEventListener('click', function() {
-            setTimeout(fetchDashboardData, 3500); // Wait for sync to finish
+            const spinner = document.getElementById('sync-spinner');
+            syncBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            
+            fetch('{% url "sync_all_data" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Accept': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    showToast('success', 'All data synced successfully!');
+                    setTimeout(fetchDashboardData, 1000); // Refresh after sync
+                } else {
+                    showToast('error', 'Sync failed: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                showToast('error', 'Sync failed: ' + err.message);
+            })
+            .finally(() => {
+                spinner.style.display = 'none';
+                syncBtn.disabled = false;
+            });
         });
     }
 });

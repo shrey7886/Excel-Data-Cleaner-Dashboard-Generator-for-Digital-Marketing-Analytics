@@ -47,6 +47,15 @@ urlpatterns = [
     path('connect/tools/', views.connect_tools_portal, name='connect_tools_portal'),
     path('connect/demandbase/', views.connect_demandbase, name='connect_demandbase'),
     
+    # AJAX Connect/Disconnect endpoints
+    path('api/connect/google-ads/', views.connect_google_ads_ajax, name='connect_google_ads_ajax'),
+    path('api/connect/linkedin-ads/', views.connect_linkedin_ads_ajax, name='connect_linkedin_ads_ajax'),
+    path('api/connect/mailchimp/', views.connect_mailchimp_ajax, name='connect_mailchimp_ajax'),
+    path('api/connect/zoho/', views.connect_zoho_ajax, name='connect_zoho_ajax'),
+    path('api/connect/demandbase/', views.connect_demandbase_ajax, name='connect_demandbase_ajax'),
+    path('api/disconnect/', views.disconnect_platform_ajax, name='disconnect_platform_ajax'),
+    path('api/connection-status/', views.get_connection_status, name='get_connection_status'),
+    
     # Unified Insights
     path('unified-insights/', views.unified_insights_view, name='unified_insights'),
     

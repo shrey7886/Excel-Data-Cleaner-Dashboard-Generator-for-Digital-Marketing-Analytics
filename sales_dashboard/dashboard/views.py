@@ -1489,3 +1489,269 @@ def dashboard_data_api(request):
         elif hasattr(v, 'tolist'):
             context[k] = v.tolist()
     return JsonResponse(context)
+
+@login_required
+@require_POST
+def connect_google_ads_ajax(request):
+    """AJAX endpoint for connecting Google Ads with JSON response."""
+    try:
+        client = request.user.profile.client
+        form = GoogleAdsCredentialForm(request.POST)
+        if form.is_valid():
+            cred = form.save(commit=False)
+            cred.client = client
+            cred.save()
+            
+            # Import Google Ads data after connecting
+            try:
+                df = fetch_google_ads_data()
+                from .models import GoogleAdsData
+                GoogleAdsData.objects.create(client=client, data=df.to_dict(orient='records'))
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Google Ads account connected and data imported successfully!',
+                    'platform': 'google_ads'
+                })
+            except Exception as e:
+                return JsonResponse({
+                    'status': 'partial_success',
+                    'message': f'Google Ads connected but data import failed: {str(e)}',
+                    'platform': 'google_ads'
+                })
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid form data. Please check your credentials.',
+                'errors': form.errors
+            }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Connection failed: {str(e)}'
+        }, status=500)
+
+@login_required
+@require_POST
+def connect_linkedin_ads_ajax(request):
+    """AJAX endpoint for connecting LinkedIn Ads with JSON response."""
+    try:
+        client = request.user.profile.client
+        form = LinkedInAdsCredentialForm(request.POST)
+        if form.is_valid():
+            cred = form.save(commit=False)
+            cred.client = client
+            cred.save()
+            
+            # Import LinkedIn Ads data after connecting
+            try:
+                df = fetch_linkedin_ads_data()
+                from .models import LinkedInAdsData
+                LinkedInAdsData.objects.create(client=client, data=df.to_dict(orient='records'))
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'LinkedIn Ads account connected and data imported successfully!',
+                    'platform': 'linkedin_ads'
+                })
+            except Exception as e:
+                return JsonResponse({
+                    'status': 'partial_success',
+                    'message': f'LinkedIn Ads connected but data import failed: {str(e)}',
+                    'platform': 'linkedin_ads'
+                })
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid form data. Please check your credentials.',
+                'errors': form.errors
+            }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Connection failed: {str(e)}'
+        }, status=500)
+
+@login_required
+@require_POST
+def connect_mailchimp_ajax(request):
+    """AJAX endpoint for connecting Mailchimp with JSON response."""
+    try:
+        client = request.user.profile.client
+        form = MailchimpCredentialForm(request.POST)
+        if form.is_valid():
+            cred = form.save(commit=False)
+            cred.client = client
+            cred.save()
+            
+            # Import Mailchimp data after connecting
+            try:
+                df = fetch_mailchimp_data()
+                from .models import MailchimpData
+                MailchimpData.objects.create(client=client, data=df.to_dict(orient='records'))
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Mailchimp account connected and data imported successfully!',
+                    'platform': 'mailchimp'
+                })
+            except Exception as e:
+                return JsonResponse({
+                    'status': 'partial_success',
+                    'message': f'Mailchimp connected but data import failed: {str(e)}',
+                    'platform': 'mailchimp'
+                })
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid form data. Please check your credentials.',
+                'errors': form.errors
+            }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Connection failed: {str(e)}'
+        }, status=500)
+
+@login_required
+@require_POST
+def connect_zoho_ajax(request):
+    """AJAX endpoint for connecting Zoho with JSON response."""
+    try:
+        client = request.user.profile.client
+        form = ZohoCredentialForm(request.POST)
+        if form.is_valid():
+            cred = form.save(commit=False)
+            cred.client = client
+            cred.save()
+            
+            # Import Zoho data after connecting
+            try:
+                df = fetch_zoho_data()
+                from .models import ZohoData
+                ZohoData.objects.create(client=client, data=df.to_dict(orient='records'))
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Zoho account connected and data imported successfully!',
+                    'platform': 'zoho'
+                })
+            except Exception as e:
+                return JsonResponse({
+                    'status': 'partial_success',
+                    'message': f'Zoho connected but data import failed: {str(e)}',
+                    'platform': 'zoho'
+                })
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid form data. Please check your credentials.',
+                'errors': form.errors
+            }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Connection failed: {str(e)}'
+        }, status=500)
+
+@login_required
+@require_POST
+def connect_demandbase_ajax(request):
+    """AJAX endpoint for connecting Demandbase with JSON response."""
+    try:
+        client = request.user.profile.client
+        
+        # Import Demandbase data directly (no credentials needed)
+        try:
+            df = fetch_demandbase_data()
+            from .models import DemandbaseCredential, DemandbaseData
+            # Create a dummy credential if not exists
+            if not client.demandbase_credentials.exists():
+                DemandbaseCredential.objects.create(client=client, api_key='dummy')
+            # Save data
+            DemandbaseData.objects.create(client=client, data=df.to_dict(orient='records'))
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Demandbase connected and data imported successfully!',
+                'platform': 'demandbase'
+            })
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Demandbase connection failed: {str(e)}'
+            }, status=500)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Connection failed: {str(e)}'
+        }, status=500)
+
+@login_required
+@require_POST
+def disconnect_platform_ajax(request):
+    """AJAX endpoint for disconnecting a platform."""
+    try:
+        client = request.user.profile.client
+        platform = request.POST.get('platform')
+        
+        if platform == 'google_ads':
+            from .models import GoogleAdsCredential, GoogleAdsData
+            GoogleAdsCredential.objects.filter(client=client).delete()
+            GoogleAdsData.objects.filter(client=client).delete()
+        elif platform == 'linkedin_ads':
+            from .models import LinkedInAdsCredential, LinkedInAdsData
+            LinkedInAdsCredential.objects.filter(client=client).delete()
+            LinkedInAdsData.objects.filter(client=client).delete()
+        elif platform == 'mailchimp':
+            from .models import MailchimpCredential, MailchimpData
+            MailchimpCredential.objects.filter(client=client).delete()
+            MailchimpData.objects.filter(client=client).delete()
+        elif platform == 'zoho':
+            from .models import ZohoCredential, ZohoData
+            ZohoCredential.objects.filter(client=client).delete()
+            ZohoData.objects.filter(client=client).delete()
+        elif platform == 'demandbase':
+            from .models import DemandbaseCredential, DemandbaseData
+            DemandbaseCredential.objects.filter(client=client).delete()
+            DemandbaseData.objects.filter(client=client).delete()
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid platform specified.'
+            }, status=400)
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': f'{platform.replace("_", " ").title()} disconnected successfully!',
+            'platform': platform
+        })
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Disconnection failed: {str(e)}'
+        }, status=500)
+
+@login_required
+@require_GET
+def get_connection_status(request):
+    """Get connection status for all platforms."""
+    try:
+        client = request.user.profile.client
+        status = {}
+        
+        from .models import (
+            GoogleAdsCredential, LinkedInAdsCredential, MailchimpCredential, 
+            ZohoCredential, DemandbaseCredential
+        )
+        
+        status['google_ads'] = GoogleAdsCredential.objects.filter(client=client).exists()
+        status['linkedin_ads'] = LinkedInAdsCredential.objects.filter(client=client).exists()
+        status['mailchimp'] = MailchimpCredential.objects.filter(client=client).exists()
+        status['zoho'] = ZohoCredential.objects.filter(client=client).exists()
+        status['demandbase'] = DemandbaseCredential.objects.filter(client=client).exists()
+        
+        return JsonResponse({
+            'status': 'success',
+            'connections': status
+        })
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to get connection status: {str(e)}'
+        }, status=500)

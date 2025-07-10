@@ -15,6 +15,13 @@
     border-color: #0d6efd;
     transform: translateY(-2px) scale(1.02);
   }
+  .tool-card.connected {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+  }
+  .tool-card.connected .tool-icon {
+    color: #28a745;
+  }
   .tool-icon {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
@@ -47,11 +54,39 @@
     background: #e9ecef;
     margin: 0 4px;
   }
+  .connection-status {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+  .btn-connect {
+    background: #28a745;
+    border-color: #28a745;
+  }
+  .btn-disconnect {
+    background: #dc3545;
+    border-color: #dc3545;
+  }
+  .loading-spinner {
+    display: none;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 </style>
 <div class="container mt-5">
   <h2 class="mb-4 text-center">Connect Your Marketing Tools</h2>
   <div class="d-flex justify-content-center mb-3">
-    <button id="sync-all-btn" class="btn btn-primary">Sync All Data</button>
+    <button id="sync-all-btn" class="btn btn-primary">
+      <span class="loading-spinner" id="sync-spinner"></span>
+      Sync All Data
+    </button>
   </div>
   <div class="stepper mb-4">
     <div class="step active">1</div>
@@ -65,30 +100,85 @@
       <div class="tool-card text-center p-3" onclick="selectTool('google_ads')" id="card-google_ads">
         <div class="tool-icon"><i class="fab fa-google"></i></div>
         <div class="fw-bold">Google Ads</div>
+        <div class="connection-status" id="status-google_ads">Not Connected</div>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-connect" onclick="connectPlatform('google_ads', event)" id="btn-connect-google_ads">
+            <span class="loading-spinner" id="spinner-google_ads"></span>
+            Connect
+          </button>
+          <button class="btn btn-sm btn-disconnect" onclick="disconnectPlatform('google_ads', event)" id="btn-disconnect-google_ads" style="display:none;">
+            <span class="loading-spinner" id="spinner-disconnect-google_ads"></span>
+            Disconnect
+          </button>
+        </div>
       </div>
     </div>
     <div class="col-md-2 mb-3">
       <div class="tool-card text-center p-3" onclick="selectTool('linkedin_ads')" id="card-linkedin_ads">
         <div class="tool-icon"><i class="fab fa-linkedin"></i></div>
         <div class="fw-bold">LinkedIn Ads</div>
+        <div class="connection-status" id="status-linkedin_ads">Not Connected</div>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-connect" onclick="connectPlatform('linkedin_ads', event)" id="btn-connect-linkedin_ads">
+            <span class="loading-spinner" id="spinner-linkedin_ads"></span>
+            Connect
+          </button>
+          <button class="btn btn-sm btn-disconnect" onclick="disconnectPlatform('linkedin_ads', event)" id="btn-disconnect-linkedin_ads" style="display:none;">
+            <span class="loading-spinner" id="spinner-disconnect-linkedin_ads"></span>
+            Disconnect
+          </button>
+        </div>
       </div>
     </div>
     <div class="col-md-2 mb-3">
       <div class="tool-card text-center p-3" onclick="selectTool('mailchimp')" id="card-mailchimp">
         <div class="tool-icon"><i class="fab fa-mailchimp"></i></div>
         <div class="fw-bold">Mailchimp</div>
+        <div class="connection-status" id="status-mailchimp">Not Connected</div>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-connect" onclick="connectPlatform('mailchimp', event)" id="btn-connect-mailchimp">
+            <span class="loading-spinner" id="spinner-mailchimp"></span>
+            Connect
+          </button>
+          <button class="btn btn-sm btn-disconnect" onclick="disconnectPlatform('mailchimp', event)" id="btn-disconnect-mailchimp" style="display:none;">
+            <span class="loading-spinner" id="spinner-disconnect-mailchimp"></span>
+            Disconnect
+          </button>
+        </div>
       </div>
     </div>
     <div class="col-md-2 mb-3">
       <div class="tool-card text-center p-3" onclick="selectTool('zoho')" id="card-zoho">
         <div class="tool-icon"><i class="fas fa-cloud"></i></div>
         <div class="fw-bold">Zoho</div>
+        <div class="connection-status" id="status-zoho">Not Connected</div>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-connect" onclick="connectPlatform('zoho', event)" id="btn-connect-zoho">
+            <span class="loading-spinner" id="spinner-zoho"></span>
+            Connect
+          </button>
+          <button class="btn btn-sm btn-disconnect" onclick="disconnectPlatform('zoho', event)" id="btn-disconnect-zoho" style="display:none;">
+            <span class="loading-spinner" id="spinner-disconnect-zoho"></span>
+            Disconnect
+          </button>
+        </div>
       </div>
     </div>
     <div class="col-md-2 mb-3">
       <div class="tool-card text-center p-3" onclick="selectTool('demandbase')" id="card-demandbase">
         <div class="tool-icon"><i class="fas fa-database"></i></div>
         <div class="fw-bold">Demandbase</div>
+        <div class="connection-status" id="status-demandbase">Not Connected</div>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-connect" onclick="connectPlatform('demandbase', event)" id="btn-connect-demandbase">
+            <span class="loading-spinner" id="spinner-demandbase"></span>
+            Connect
+          </button>
+          <button class="btn btn-sm btn-disconnect" onclick="disconnectPlatform('demandbase', event)" id="btn-disconnect-demandbase" style="display:none;">
+            <span class="loading-spinner" id="spinner-disconnect-demandbase"></span>
+            Disconnect
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -96,62 +186,128 @@
     <div id="form-google_ads" class="tool-form col-md-6" style="display:none;">
       <div class="card shadow-sm p-4">
         <h4 class="mb-3"><i class="fab fa-google me-2"></i>Connect Google Ads</h4>
-        <form method="post" action="{% url 'connect_google_ads' %}">
+        <form id="form-google-ads-form">
           {% csrf_token %}
           {{ google_ads_form.as_p }}
-          <button type="submit" class="btn btn-success w-100">Connect</button>
+          <button type="submit" class="btn btn-success w-100">
+            <span class="loading-spinner" id="form-spinner-google_ads"></span>
+            Connect
+          </button>
         </form>
       </div>
     </div>
     <div id="form-linkedin_ads" class="tool-form col-md-6" style="display:none;">
       <div class="card shadow-sm p-4">
         <h4 class="mb-3"><i class="fab fa-linkedin me-2"></i>Connect LinkedIn Ads</h4>
-        <form method="post" action="{% url 'connect_linkedin_ads' %}">
+        <form id="form-linkedin-ads-form">
           {% csrf_token %}
           {{ linkedin_ads_form.as_p }}
-          <button type="submit" class="btn btn-success w-100">Connect</button>
+          <button type="submit" class="btn btn-success w-100">
+            <span class="loading-spinner" id="form-spinner-linkedin_ads"></span>
+            Connect
+          </button>
         </form>
       </div>
     </div>
     <div id="form-mailchimp" class="tool-form col-md-6" style="display:none;">
       <div class="card shadow-sm p-4">
         <h4 class="mb-3"><i class="fab fa-mailchimp me-2"></i>Connect Mailchimp</h4>
-        <form method="post" action="{% url 'connect_mailchimp' %}">
+        <form id="form-mailchimp-form">
           {% csrf_token %}
           {{ mailchimp_form.as_p }}
-          <button type="submit" class="btn btn-success w-100">Connect</button>
+          <button type="submit" class="btn btn-success w-100">
+            <span class="loading-spinner" id="form-spinner-mailchimp"></span>
+            Connect
+          </button>
         </form>
       </div>
     </div>
     <div id="form-zoho" class="tool-form col-md-6" style="display:none;">
       <div class="card shadow-sm p-4">
         <h4 class="mb-3"><i class="fas fa-cloud me-2"></i>Connect Zoho</h4>
-        <form method="post" action="{% url 'connect_zoho' %}">
+        <form id="form-zoho-form">
           {% csrf_token %}
           {{ zoho_form.as_p }}
-          <button type="submit" class="btn btn-success w-100">Connect</button>
+          <button type="submit" class="btn btn-success w-100">
+            <span class="loading-spinner" id="form-spinner-zoho"></span>
+            Connect
+          </button>
         </form>
       </div>
     </div>
     <div id="form-demandbase" class="tool-form col-md-6" style="display:none;">
       <div class="card shadow-sm p-4">
         <h4 class="mb-3"><i class="fas fa-database me-2"></i>Connect Demandbase</h4>
-        <form method="post" action="{% url 'connect_demandbase' %}">
+        <form id="form-demandbase-form">
           {% csrf_token %}
           <p>No credentials required. Click connect to import data.</p>
-          <button type="submit" class="btn btn-success w-100">Connect</button>
+          <button type="submit" class="btn btn-success w-100">
+            <span class="loading-spinner" id="form-spinner-demandbase"></span>
+            Connect
+          </button>
         </form>
       </div>
     </div>
   </div>
 </div>
-<div id="sync-toast" class="toast align-items-center text-bg-primary border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 9999; display:none;">
-  <div class="d-flex">
-    <div class="toast-body" id="sync-toast-body">Syncing...</div>
-    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+  <div id="connection-toast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="connection-toast-body">Connecting...</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
   </div>
 </div>
+
 <script>
+// Global variables
+let connectionStatus = {};
+
+// Initialize connection status on page load
+document.addEventListener('DOMContentLoaded', function() {
+  loadConnectionStatus();
+});
+
+function loadConnectionStatus() {
+  fetch('{% url "get_connection_status" %}')
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        connectionStatus = data.connections;
+        updateUI();
+      }
+    })
+    .catch(error => {
+      console.error('Error loading connection status:', error);
+    });
+}
+
+function updateUI() {
+  const platforms = ['google_ads', 'linkedin_ads', 'mailchimp', 'zoho', 'demandbase'];
+  platforms.forEach(platform => {
+    const card = document.getElementById(`card-${platform}`);
+    const status = document.getElementById(`status-${platform}`);
+    const connectBtn = document.getElementById(`btn-connect-${platform}`);
+    const disconnectBtn = document.getElementById(`btn-disconnect-${platform}`);
+    
+    if (connectionStatus[platform]) {
+      card.classList.add('connected');
+      status.textContent = 'Connected';
+      status.style.color = '#28a745';
+      connectBtn.style.display = 'none';
+      disconnectBtn.style.display = 'inline-block';
+    } else {
+      card.classList.remove('connected');
+      status.textContent = 'Not Connected';
+      status.style.color = '#6c757d';
+      connectBtn.style.display = 'inline-block';
+      disconnectBtn.style.display = 'none';
+    }
+  });
+}
+
 function selectTool(val) {
   var forms = document.getElementsByClassName('tool-form');
   for (var i = 0; i < forms.length; i++) {
@@ -168,17 +324,125 @@ function selectTool(val) {
     if (cardDiv) cardDiv.classList.add('selected');
   }
 }
+
+function connectPlatform(platform, event) {
+  event.stopPropagation();
+  
+  const spinner = document.getElementById(`spinner-${platform}`);
+  const connectBtn = document.getElementById(`btn-connect-${platform}`);
+  
+  // Show loading state
+  spinner.style.display = 'inline-block';
+  connectBtn.disabled = true;
+  
+  // Get form data if platform has a form
+  let formData = new FormData();
+  formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+  
+  if (platform !== 'demandbase') {
+    const form = document.getElementById(`form-${platform}-form`);
+    if (form) {
+      const formElements = form.elements;
+      for (let i = 0; i < formElements.length; i++) {
+        const element = formElements[i];
+        if (element.name && element.value) {
+          formData.append(element.name, element.value);
+        }
+      }
+    }
+  }
+  
+  // Make AJAX request
+  fetch(`/dashboard/api/connect/${platform}/`, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    showToast(data.status === 'success' ? 'success' : 'warning', data.message);
+    if (data.status === 'success' || data.status === 'partial_success') {
+      connectionStatus[platform] = true;
+      updateUI();
+    }
+  })
+  .catch(error => {
+    showToast('error', `Connection failed: ${error.message}`);
+  })
+  .finally(() => {
+    spinner.style.display = 'none';
+    connectBtn.disabled = false;
+  });
+}
+
+function disconnectPlatform(platform, event) {
+  event.stopPropagation();
+  
+  if (!confirm(`Are you sure you want to disconnect ${platform.replace('_', ' ')}?`)) {
+    return;
+  }
+  
+  const spinner = document.getElementById(`spinner-disconnect-${platform}`);
+  const disconnectBtn = document.getElementById(`btn-disconnect-${platform}`);
+  
+  // Show loading state
+  spinner.style.display = 'inline-block';
+  disconnectBtn.disabled = true;
+  
+  const formData = new FormData();
+  formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+  formData.append('platform', platform);
+  
+  fetch('{% url "disconnect_platform_ajax" %}', {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    showToast(data.status === 'success' ? 'success' : 'error', data.message);
+    if (data.status === 'success') {
+      connectionStatus[platform] = false;
+      updateUI();
+    }
+  })
+  .catch(error => {
+    showToast('error', `Disconnection failed: ${error.message}`);
+  })
+  .finally(() => {
+    spinner.style.display = 'none';
+    disconnectBtn.disabled = false;
+  });
+}
+
+function showToast(type, message) {
+  const toast = document.getElementById('connection-toast');
+  const toastBody = document.getElementById('connection-toast-body');
+  
+  // Set toast type and message
+  toast.className = `toast align-items-center text-bg-${type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'danger'} border-0`;
+  toastBody.textContent = message;
+  
+  // Show toast
+  const bsToast = new bootstrap.Toast(toast);
+  bsToast.show();
+}
+
 // Sync All Data AJAX logic
 window.addEventListener('DOMContentLoaded', function() {
   var syncBtn = document.getElementById('sync-all-btn');
-  var toast = document.getElementById('sync-toast');
-  var toastBody = document.getElementById('sync-toast-body');
+  var syncSpinner = document.getElementById('sync-spinner');
+  
   if (syncBtn) {
     syncBtn.addEventListener('click', function() {
       syncBtn.disabled = true;
-      toastBody.textContent = 'Syncing all data...';
-      toast.style.display = 'block';
-      fetch('/dashboard/sync-all/', {
+      syncSpinner.style.display = 'inline-block';
+      
+      fetch('{% url "sync_all_data" %}', {
         method: 'POST',
         headers: {
           'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
@@ -188,18 +452,33 @@ window.addEventListener('DOMContentLoaded', function() {
       .then(response => response.json())
       .then(data => {
         if (data.status === 'ok') {
-          toastBody.textContent = 'Sync complete!';
+          showToast('success', 'All data synced successfully!');
         } else {
-          toastBody.textContent = 'Sync failed: ' + (data.message || 'Unknown error');
+          showToast('error', 'Sync failed: ' + (data.message || 'Unknown error'));
         }
-        setTimeout(() => { toast.style.display = 'none'; syncBtn.disabled = false; }, 3000);
       })
       .catch(err => {
-        toastBody.textContent = 'Sync failed: ' + err;
-        setTimeout(() => { toast.style.display = 'none'; syncBtn.disabled = false; }, 3000);
+        showToast('error', 'Sync failed: ' + err.message);
+      })
+      .finally(() => {
+        syncSpinner.style.display = 'none';
+        syncBtn.disabled = false;
       });
     });
   }
+  
+  // Handle form submissions
+  const platforms = ['google_ads', 'linkedin_ads', 'mailchimp', 'zoho', 'demandbase'];
+  platforms.forEach(platform => {
+    const form = document.getElementById(`form-${platform}-form`);
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        connectPlatform(platform, e);
+      });
+    }
+  });
 });
 </script>
+{% endblock %} 
 {% endblock %} 
