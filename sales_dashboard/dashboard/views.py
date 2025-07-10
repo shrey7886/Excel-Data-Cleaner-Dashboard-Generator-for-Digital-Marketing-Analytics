@@ -23,6 +23,9 @@ from api_integrations.linkedin_ads import fetch_linkedin_ads_data
 from api_integrations.zoho import fetch_zoho_data
 from api_integrations.demandbase import fetch_demandbase_data
 from django.conf import settings
+import requests
+from urllib.parse import urlencode
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -1755,3 +1758,145 @@ def get_connection_status(request):
             'status': 'error',
             'message': f'Failed to get connection status: {str(e)}'
         }, status=500)
+
+@login_required
+def google_oauth_callback(request):
+    """Handle Google OAuth callback."""
+    try:
+        from django.conf import settings
+        
+        # Verify state parameter
+        state = request.GET.get('state')
+        stored_state = request.session.get('google_oauth_state')
+        
+        if not state or not stored_state or state != stored_state:
+            messages.error(request, 'Invalid OAuth state parameter')
+            return redirect('connect_tools_portal')
+        
+        # Get authorization code
+        code = request.GET.get('code')
+        if not code:
+            messages.error(request, 'No authorization code received')
+            return redirect('connect_tools_portal')
+        
+        # Exchange code for tokens
+        token_data = {
+            'client_id': settings.GOOGLE_OAUTH_CLIENT_ID,
+            'client_secret': settings.GOOGLE_OAUTH_CLIENT_SECRET,
+            'code': code,
+            'grant_type': 'authorization_code',
+            'redirect_uri': settings.GOOGLE_OAUTH_REDIRECT_URI
+        }
+        
+        response = requests.post('https://oauth2.googleapis.com/token', data=token_data)
+        token_response = response.json()
+        
+        if 'error' in token_response:
+            messages.error(request, f'Token exchange failed: {token_response.get("error_description", "Unknown error")}')
+            return redirect('connect_tools_portal')
+        
+        # Save credentials to database
+        client = request.user.profile.client
+        from .models import GoogleAdsCredential
+        
+        # Create or update credential
+        credential, created = GoogleAdsCredential.objects.get_or_create(
+            client=client,
+            defaults={
+                'access_token': token_response['access_token'],
+                'refresh_token': token_response.get('refresh_token'),
+                'token_expires_at': datetime.now() + timedelta(seconds=token_response.get('expires_in', 3600))
+            }
+        )
+        
+        if not created:
+            credential.access_token = token_response['access_token']
+            credential.refresh_token = token_response.get('refresh_token')
+            credential.token_expires_at = datetime.now() + timedelta(seconds=token_response.get('expires_in', 3600))
+            credential.save()
+        
+        # Import Google Ads data
+        try:
+            df = fetch_google_ads_data()
+            from .models import GoogleAdsData
+            GoogleAdsData.objects.create(client=client, data=df.to_dict(orient='records'))
+            
+            messages.success(request, 'Google Ads connected successfully via OAuth!')
+            return redirect('connect_tools_portal')
+        except Exception as e:
+            messages.warning(request, f'Google Ads connected but data import failed: {str(e)}')
+            return redirect('connect_tools_portal')
+            
+    except Exception as e:
+        messages.error(request, f'OAuth callback failed: {str(e)}')
+        return redirect('connect_tools_portal')
+
+@login_required
+def linkedin_oauth_callback(request):
+    """Handle LinkedIn OAuth callback."""
+    try:
+        from django.conf import settings
+        
+        # Verify state parameter
+        state = request.GET.get('state')
+        stored_state = request.session.get('linkedin_oauth_state')
+        
+        if not state or not stored_state or state != stored_state:
+            messages.error(request, 'Invalid OAuth state parameter')
+            return redirect('connect_tools_portal')
+        
+        # Get authorization code
+        code = request.GET.get('code')
+        if not code:
+            messages.error(request, 'No authorization code received')
+            return redirect('connect_tools_portal')
+        
+        # Exchange code for tokens
+        token_data = {
+            'grant_type': 'authorization_code',
+            'code': code,
+            'redirect_uri': settings.LINKEDIN_OAUTH_REDIRECT_URI,
+            'client_id': settings.LINKEDIN_OAUTH_CLIENT_ID,
+            'client_secret': settings.LINKEDIN_OAUTH_CLIENT_SECRET
+        }
+        
+        response = requests.post('https://www.linkedin.com/oauth/v2/accessToken', data=token_data)
+        token_response = response.json()
+        
+        if 'error' in token_response:
+            messages.error(request, f'Token exchange failed: {token_response.get("error_description", "Unknown error")}')
+            return redirect('connect_tools_portal')
+        
+        # Save credentials to database
+        client = request.user.profile.client
+        from .models import LinkedInAdsCredential
+        
+        # Create or update credential
+        credential, created = LinkedInAdsCredential.objects.get_or_create(
+            client=client,
+            defaults={
+                'access_token': token_response['access_token'],
+                'token_expires_at': datetime.now() + timedelta(seconds=token_response.get('expires_in', 3600))
+            }
+        )
+        
+        if not created:
+            credential.access_token = token_response['access_token']
+            credential.token_expires_at = datetime.now() + timedelta(seconds=token_response.get('expires_in', 3600))
+            credential.save()
+        
+        # Import LinkedIn Ads data
+        try:
+            df = fetch_linkedin_ads_data()
+            from .models import LinkedInAdsData
+            LinkedInAdsData.objects.create(client=client, data=df.to_dict(orient='records'))
+            
+            messages.success(request, 'LinkedIn Ads connected successfully via OAuth!')
+            return redirect('connect_tools_portal')
+        except Exception as e:
+            messages.warning(request, f'LinkedIn Ads connected but data import failed: {str(e)}')
+            return redirect('connect_tools_portal')
+            
+    except Exception as e:
+        messages.error(request, f'OAuth callback failed: {str(e)}')
+        return redirect('connect_tools_portal')

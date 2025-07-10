@@ -47,6 +47,12 @@ urlpatterns = [
     path('connect/tools/', views.connect_tools_portal, name='connect_tools_portal'),
     path('connect/demandbase/', views.connect_demandbase, name='connect_demandbase'),
     
+    # OAuth endpoints
+    path('oauth/google/initiate/', views.google_oauth_initiate, name='google_oauth_initiate'),
+    path('oauth/google/callback/', views.google_oauth_callback, name='google_oauth_callback'),
+    path('oauth/linkedin/initiate/', views.linkedin_oauth_initiate, name='linkedin_oauth_initiate'),
+    path('oauth/linkedin/callback/', views.linkedin_oauth_callback, name='linkedin_oauth_callback'),
+    
     # AJAX Connect/Disconnect endpoints
     path('api/connect/google-ads/', views.connect_google_ads_ajax, name='connect_google_ads_ajax'),
     path('api/connect/linkedin-ads/', views.connect_linkedin_ads_ajax, name='connect_linkedin_ads_ajax'),

@@ -66,6 +66,10 @@
     background: #dc3545;
     border-color: #dc3545;
   }
+  .btn-oauth {
+    background: #0d6efd;
+    border-color: #0d6efd;
+  }
   .loading-spinner {
     display: none;
     width: 1rem;
@@ -78,6 +82,11 @@
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+  .oauth-info {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
   }
 </style>
 <div class="container mt-5">
@@ -101,10 +110,11 @@
         <div class="tool-icon"><i class="fab fa-google"></i></div>
         <div class="fw-bold">Google Ads</div>
         <div class="connection-status" id="status-google_ads">Not Connected</div>
+        <div class="oauth-info">Secure OAuth connection</div>
         <div class="mt-2">
-          <button class="btn btn-sm btn-connect" onclick="connectPlatform('google_ads', event)" id="btn-connect-google_ads">
+          <button class="btn btn-sm btn-oauth" onclick="initiateOAuth('google_ads', event)" id="btn-connect-google_ads">
             <span class="loading-spinner" id="spinner-google_ads"></span>
-            Connect
+            Connect with OAuth
           </button>
           <button class="btn btn-sm btn-disconnect" onclick="disconnectPlatform('google_ads', event)" id="btn-disconnect-google_ads" style="display:none;">
             <span class="loading-spinner" id="spinner-disconnect-google_ads"></span>
@@ -118,10 +128,11 @@
         <div class="tool-icon"><i class="fab fa-linkedin"></i></div>
         <div class="fw-bold">LinkedIn Ads</div>
         <div class="connection-status" id="status-linkedin_ads">Not Connected</div>
+        <div class="oauth-info">Secure OAuth connection</div>
         <div class="mt-2">
-          <button class="btn btn-sm btn-connect" onclick="connectPlatform('linkedin_ads', event)" id="btn-connect-linkedin_ads">
+          <button class="btn btn-sm btn-oauth" onclick="initiateOAuth('linkedin_ads', event)" id="btn-connect-linkedin_ads">
             <span class="loading-spinner" id="spinner-linkedin_ads"></span>
-            Connect
+            Connect with OAuth
           </button>
           <button class="btn btn-sm btn-disconnect" onclick="disconnectPlatform('linkedin_ads', event)" id="btn-disconnect-linkedin_ads" style="display:none;">
             <span class="loading-spinner" id="spinner-disconnect-linkedin_ads"></span>
@@ -183,32 +194,6 @@
     </div>
   </div>
   <div id="connect-forms" class="row justify-content-center">
-    <div id="form-google_ads" class="tool-form col-md-6" style="display:none;">
-      <div class="card shadow-sm p-4">
-        <h4 class="mb-3"><i class="fab fa-google me-2"></i>Connect Google Ads</h4>
-        <form id="form-google-ads-form">
-          {% csrf_token %}
-          {{ google_ads_form.as_p }}
-          <button type="submit" class="btn btn-success w-100">
-            <span class="loading-spinner" id="form-spinner-google_ads"></span>
-            Connect
-          </button>
-        </form>
-      </div>
-    </div>
-    <div id="form-linkedin_ads" class="tool-form col-md-6" style="display:none;">
-      <div class="card shadow-sm p-4">
-        <h4 class="mb-3"><i class="fab fa-linkedin me-2"></i>Connect LinkedIn Ads</h4>
-        <form id="form-linkedin-ads-form">
-          {% csrf_token %}
-          {{ linkedin_ads_form.as_p }}
-          <button type="submit" class="btn btn-success w-100">
-            <span class="loading-spinner" id="form-spinner-linkedin_ads"></span>
-            Connect
-          </button>
-        </form>
-      </div>
-    </div>
     <div id="form-mailchimp" class="tool-form col-md-6" style="display:none;">
       <div class="card shadow-sm p-4">
         <h4 class="mb-3"><i class="fab fa-mailchimp me-2"></i>Connect Mailchimp</h4>
@@ -323,6 +308,43 @@ function selectTool(val) {
     if (formDiv) formDiv.style.display = 'block';
     if (cardDiv) cardDiv.classList.add('selected');
   }
+}
+
+function initiateOAuth(platform, event) {
+  event.stopPropagation();
+  
+  const spinner = document.getElementById(`spinner-${platform}`);
+  const connectBtn = document.getElementById(`btn-connect-${platform}`);
+  
+  // Show loading state
+  spinner.style.display = 'inline-block';
+  connectBtn.disabled = true;
+  
+  // Determine OAuth endpoint
+  const oauthEndpoint = platform === 'google_ads' ? '{% url "google_oauth_initiate" %}' : '{% url "linkedin_oauth_initiate" %}';
+  
+  fetch(oauthEndpoint, {
+    method: 'GET',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'success') {
+      // Redirect to OAuth URL
+      window.location.href = data.oauth_url;
+    } else {
+      showToast('error', data.message || 'OAuth initiation failed');
+      spinner.style.display = 'none';
+      connectBtn.disabled = false;
+    }
+  })
+  .catch(error => {
+    showToast('error', `OAuth initiation failed: ${error.message}`);
+    spinner.style.display = 'none';
+    connectBtn.disabled = false;
+  });
 }
 
 function connectPlatform(platform, event) {
@@ -468,7 +490,7 @@ window.addEventListener('DOMContentLoaded', function() {
   }
   
   // Handle form submissions
-  const platforms = ['google_ads', 'linkedin_ads', 'mailchimp', 'zoho', 'demandbase'];
+  const platforms = ['mailchimp', 'zoho', 'demandbase'];
   platforms.forEach(platform => {
     const form = document.getElementById(`form-${platform}-form`);
     if (form) {
@@ -478,6 +500,18 @@ window.addEventListener('DOMContentLoaded', function() {
       });
     }
   });
+  
+  // Check for OAuth callback parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const oauthSuccess = urlParams.get('oauth_success');
+  const oauthMessage = urlParams.get('oauth_message');
+  
+  if (oauthSuccess === 'true') {
+    showToast('success', oauthMessage || 'OAuth connection successful!');
+    loadConnectionStatus(); // Refresh connection status
+  } else if (oauthSuccess === 'false') {
+    showToast('error', oauthMessage || 'OAuth connection failed!');
+  }
 });
 </script>
 {% endblock %} 
