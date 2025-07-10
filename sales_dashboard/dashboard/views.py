@@ -1900,3 +1900,59 @@ def linkedin_oauth_callback(request):
     except Exception as e:
         messages.error(request, f'OAuth callback failed: {str(e)}')
         return redirect('connect_tools_portal')
+
+def refresh_google_token(credential):
+    """Refresh Google OAuth token."""
+    try:
+        from django.conf import settings
+        
+        refresh_data = {
+            'client_id': settings.GOOGLE_OAUTH_CLIENT_ID,
+            'client_secret': settings.GOOGLE_OAUTH_CLIENT_SECRET,
+            'refresh_token': credential.refresh_token,
+            'grant_type': 'refresh_token'
+        }
+        
+        response = requests.post('https://oauth2.googleapis.com/token', data=refresh_data)
+        token_response = response.json()
+        
+        if 'error' in token_response:
+            raise Exception(f"Token refresh failed: {token_response.get('error_description', 'Unknown error')}")
+        
+        # Update credential with new token
+        credential.access_token = token_response['access_token']
+        credential.token_expires_at = datetime.now() + timedelta(seconds=token_response.get('expires_in', 3600))
+        credential.save()
+        
+        return True
+    except Exception as e:
+        logger.error(f"Failed to refresh Google token: {str(e)}")
+        raise
+
+def refresh_linkedin_token(credential):
+    """Refresh LinkedIn OAuth token."""
+    try:
+        from django.conf import settings
+        
+        refresh_data = {
+            'grant_type': 'refresh_token',
+            'refresh_token': credential.refresh_token,
+            'client_id': settings.LINKEDIN_OAUTH_CLIENT_ID,
+            'client_secret': settings.LINKEDIN_OAUTH_CLIENT_SECRET
+        }
+        
+        response = requests.post('https://www.linkedin.com/oauth/v2/accessToken', data=refresh_data)
+        token_response = response.json()
+        
+        if 'error' in token_response:
+            raise Exception(f"Token refresh failed: {token_response.get('error_description', 'Unknown error')}")
+        
+        # Update credential with new token
+        credential.access_token = token_response['access_token']
+        credential.token_expires_at = datetime.now() + timedelta(seconds=token_response.get('expires_in', 3600))
+        credential.save()
+        
+        return True
+    except Exception as e:
+        logger.error(f"Failed to refresh LinkedIn token: {str(e)}")
+        raise
