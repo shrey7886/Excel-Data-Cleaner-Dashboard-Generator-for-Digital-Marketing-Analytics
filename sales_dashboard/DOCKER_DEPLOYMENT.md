@@ -1,44 +1,38 @@
-# 🐳 Docker Deployment Guide
+# Docker Deployment Guide for Targetorate
 
-## Quick Start
+This guide covers multiple Docker deployment options for the Targetorate marketing analytics dashboard.
 
-### 1. **Prerequisites**
-- Docker installed
-- Docker Compose installed
-- Git (to clone the repository)
+## 🐳 Quick Start (Local Development)
 
-### 2. **Deploy with One Command**
-```bash
-# Make the deployment script executable
-chmod +x docker-deploy.sh
+### Prerequisites
+- Docker and Docker Compose installed
+- Git
 
-# Deploy the application
-./docker-deploy.sh deploy production
-```
-
-### 3. **Access Your Application**
-- **Dashboard**: http://localhost:8000
-- **Admin**: http://localhost:8000/admin/
-- **Health Check**: http://localhost:8000/health/
-
-## 🚀 Complete Deployment Steps
-
-### Step 1: Clone and Navigate
+### 1. Clone and Setup
 ```bash
 git clone <your-repo-url>
 cd sales_dashboard
 ```
 
-### Step 2: Deploy with Docker
+### 2. Create Environment File
 ```bash
-# Deploy all services
-./docker-deploy.sh deploy production
-
-# Or manually:
-docker-compose up -d
+cp env.example .env
+# Edit .env with your production settings
 ```
 
-### Step 3: Initialize Database
+### 3. Build and Run
+```bash
+# Build all services
+docker-compose build
+
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+```
+
+### 4. Setup Database
 ```bash
 # Run migrations
 docker-compose exec web python manage.py migrate
@@ -46,259 +40,267 @@ docker-compose exec web python manage.py migrate
 # Create superuser
 docker-compose exec web python manage.py createsuperuser
 
-# Collect static files
-docker-compose exec web python manage.py collectstatic --noinput
+# Create sample data
+docker-compose exec web python manage.py create_sample_auth_data
 ```
 
-## 📊 Service Architecture
+### 5. Access Application
+- Main site: http://localhost:8000
+- Admin panel: http://localhost:8000/admin/
+- Health check: http://localhost:8000/health/
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Nginx (80)    │    │  Django Web     │    │   PostgreSQL    │
-│   (Optional)    │◄──►│   (8000)        │◄──►│   Database      │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                              │
-                              ▼
-                       ┌─────────────────┐
-                       │     Redis       │
-                       │   (Cache/Queue) │
-                       └─────────────────┘
-                              │
-                              ▼
-                       ┌─────────────────┐
-                       │   Celery        │
-                       │   (Background)  │
-                       └─────────────────┘
-```
+## 🚀 Production Deployment Options
 
-## 🔧 Configuration
+### Option 1: Docker Compose on VPS/Server
 
-### Environment Variables
-Create a `.env` file:
-```bash
-# Production Environment Variables
-SECRET_KEY=your-super-secret-key-here
-DEBUG=False
-ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+#### Prerequisites
+- Ubuntu 20.04+ or CentOS 8+
+- Docker and Docker Compose
+- Domain name (optional)
 
-# Database (auto-configured by Docker)
-DATABASE_URL=postgresql://postgres:postgres@db:5432/sales_dashboard
+#### Deployment Steps
 
-# Redis (auto-configured by Docker)
-REDIS_URL=redis://redis:6379/0
-CELERY_BROKER_URL=redis://redis:6379/0
-CELERY_RESULT_BACKEND=redis://redis:6379/0
-
-# Email Settings
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-app-password
-
-# API Keys (optional)
-GOOGLE_ADS_API_KEY=your-google-ads-api-key
-LINKEDIN_ADS_API_KEY=your-linkedin-ads-api-key
-MAILCHIMP_API_KEY=your-mailchimp-api-key
-ZOHO_API_KEY=your-zoho-api-key
-DEMANDBASE_API_KEY=your-demandbase-api-key
-```
-
-## 🛠️ Management Commands
-
-### View Status
-```bash
-./docker-deploy.sh status
-# or
-docker-compose ps
-```
-
-### View Logs
-```bash
-# All services
-docker-compose logs -f
-
-# Specific service
-./docker-deploy.sh logs web
-./docker-deploy.sh logs db
-./docker-deploy.sh logs redis
-```
-
-### Stop Services
-```bash
-./docker-deploy.sh stop
-# or
-docker-compose down
-```
-
-### Clean Up Everything
-```bash
-./docker-deploy.sh cleanup
-# or
-docker-compose down -v --rmi all
-docker system prune -f
-```
-
-## 🌐 Production Deployment
-
-### 1. **Cloud Deployment (AWS, GCP, Azure)**
-
-#### AWS ECS/Fargate
-```bash
-# Build and push to ECR
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account>.dkr.ecr.us-east-1.amazonaws.com
-docker build -t marketing-dashboard .
-docker tag marketing-dashboard:latest <account>.dkr.ecr.us-east-1.amazonaws.com/marketing-dashboard:latest
-docker push <account>.dkr.ecr.us-east-1.amazonaws.com/marketing-dashboard:latest
-```
-
-#### Google Cloud Run
-```bash
-# Deploy to Cloud Run
-gcloud run deploy marketing-dashboard \
-  --image gcr.io/<project>/marketing-dashboard \
-  --platform managed \
-  --region us-central1 \
-  --allow-unauthenticated
-```
-
-### 2. **VPS Deployment**
-
-#### DigitalOcean Droplet
-```bash
-# SSH into your droplet
-ssh root@your-droplet-ip
-
-# Install Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-
-# Clone your repository
-git clone <your-repo-url>
-cd sales_dashboard
-
-# Deploy
-./docker-deploy.sh deploy production
-```
-
-#### Linode/Akamai
-```bash
-# Similar to DigitalOcean
-# Install Docker and deploy
-```
-
-### 3. **Self-Hosted Server**
-
-#### Ubuntu Server
+1. **Server Setup**
 ```bash
 # Update system
 sudo apt update && sudo apt upgrade -y
 
 # Install Docker
-sudo apt install docker.io docker-compose -y
-sudo systemctl enable docker
-sudo systemctl start docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Install Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
 
 # Add user to docker group
 sudo usermod -aG docker $USER
-
-# Deploy application
-./docker-deploy.sh deploy production
 ```
 
-## 🔒 Security Configuration
-
-### 1. **SSL/HTTPS Setup**
-
-#### Let's Encrypt with Nginx
+2. **Application Setup**
 ```bash
-# Install certbot
+# Clone repository
+git clone <your-repo-url>
+cd sales_dashboard
+
+# Create production environment
+cp env.example .env
+nano .env  # Edit with production values
+```
+
+3. **Production Environment Variables**
+```bash
+# .env file
+SECRET_KEY=your-super-secret-key-here
+DEBUG=False
+ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com,localhost
+DATABASE_URL=postgresql://postgres:postgres@db:5432/sales_dashboard
+REDIS_URL=redis://redis:6379/0
+CELERY_BROKER_URL=redis://redis:6379/0
+CELERY_RESULT_BACKEND=redis://redis:6379/0
+```
+
+4. **Deploy**
+```bash
+# Build and start
+docker-compose -f docker-compose.yml up -d --build
+
+# Run migrations
+docker-compose exec web python manage.py migrate
+
+# Create admin user
+docker-compose exec web python manage.py createsuperuser
+
+# Create sample data
+docker-compose exec web python manage.py create_sample_auth_data
+```
+
+5. **SSL Setup (Optional)**
+```bash
+# Install Certbot
 sudo apt install certbot python3-certbot-nginx
 
 # Get SSL certificate
 sudo certbot --nginx -d yourdomain.com
-
-# Update nginx.conf for HTTPS
 ```
 
-#### Self-Signed Certificate (Development)
+### Option 2: Docker Swarm (Multi-Node)
+
+#### Setup Docker Swarm
 ```bash
-# Generate self-signed certificate
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout nginx/ssl/nginx-selfsigned.key \
-  -out nginx/ssl/nginx-selfsigned.crt
+# Initialize swarm
+docker swarm init
+
+# Add worker nodes (on other servers)
+docker swarm join --token <token> <manager-ip>:2377
 ```
 
-### 2. **Firewall Configuration**
+#### Deploy Stack
 ```bash
-# UFW (Ubuntu)
-sudo ufw allow 22/tcp
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw enable
+# Deploy the stack
+docker stack deploy -c docker-compose.yml targetorate
 
-# iptables (CentOS/RHEL)
-sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
-sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+# Check services
+docker service ls
 ```
 
-## 📈 Monitoring & Maintenance
+### Option 3: Kubernetes Deployment
 
-### 1. **Health Checks**
+#### Prerequisites
+- Kubernetes cluster (minikube, GKE, EKS, etc.)
+- kubectl
+
+#### Deploy to Kubernetes
+```bash
+# Apply configurations
+kubectl apply -f k8s/
+
+# Check pods
+kubectl get pods
+
+# Access application
+kubectl port-forward svc/targetorate-web 8000:8000
+```
+
+## 🔧 Configuration Files
+
+### Docker Compose Production
+```yaml
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=False
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=sales_dashboard
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  celery:
+    build: .
+    command: celery -A sales_dashboard worker --loglevel=info
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=False
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+```
+
+### Nginx Configuration
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    location / {
+        proxy_pass http://web:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    location /static/ {
+        alias /app/staticfiles/;
+    }
+
+    location /media/ {
+        alias /app/media/;
+    }
+}
+```
+
+## 📊 Monitoring and Maintenance
+
+### Health Checks
 ```bash
 # Check application health
 curl http://localhost:8000/health/
 
-# Check all services
+# Check container status
 docker-compose ps
+
+# View logs
+docker-compose logs -f web
 ```
 
-### 2. **Backup Strategy**
+### Backup Database
 ```bash
-# Database backup
+# Create backup
 docker-compose exec db pg_dump -U postgres sales_dashboard > backup.sql
 
-# Media files backup
-tar -czf media_backup.tar.gz media/
-
-# Full backup script
-#!/bin/bash
-DATE=$(date +%Y%m%d_%H%M%S)
-docker-compose exec db pg_dump -U postgres sales_dashboard > "backup_${DATE}.sql"
-tar -czf "media_backup_${DATE}.tar.gz" media/
+# Restore backup
+docker-compose exec -T db psql -U postgres sales_dashboard < backup.sql
 ```
 
-### 3. **Log Rotation**
+### Update Application
 ```bash
-# Configure logrotate
-sudo nano /etc/logrotate.d/marketing-dashboard
+# Pull latest changes
+git pull
 
-# Add configuration
-/path/to/your/app/logs/*.log {
-    daily
-    missingok
-    rotate 52
-    compress
-    delaycompress
-    notifempty
-    create 644 www-data www-data
-}
+# Rebuild and restart
+docker-compose down
+docker-compose up -d --build
+
+# Run migrations
+docker-compose exec web python manage.py migrate
 ```
+
+## 🔒 Security Considerations
+
+### Environment Variables
+- Never commit `.env` files
+- Use strong SECRET_KEY
+- Set DEBUG=False in production
+- Use HTTPS in production
+
+### Database Security
+- Change default PostgreSQL password
+- Use strong database passwords
+- Restrict database access
+
+### Container Security
+- Run containers as non-root user
+- Keep base images updated
+- Scan for vulnerabilities
 
 ## 🚨 Troubleshooting
 
 ### Common Issues
 
-#### 1. **Port Already in Use**
+1. **Port Already in Use**
 ```bash
 # Check what's using the port
 sudo netstat -tulpn | grep :8000
 
-# Kill the process
-sudo kill -9 <PID>
+# Kill process or change port
+docker-compose down
 ```
 
-#### 2. **Database Connection Issues**
+2. **Database Connection Issues**
 ```bash
 # Check database logs
 docker-compose logs db
@@ -307,136 +309,87 @@ docker-compose logs db
 docker-compose restart db
 ```
 
-#### 3. **Static Files Not Loading**
+3. **Static Files Not Loading**
 ```bash
 # Recollect static files
 docker-compose exec web python manage.py collectstatic --noinput
-
-# Check nginx configuration
-docker-compose logs nginx
 ```
 
-#### 4. **Memory Issues**
+4. **Celery Worker Issues**
 ```bash
-# Check memory usage
-docker stats
+# Check celery logs
+docker-compose logs celery
 
-# Increase memory limits in docker-compose.yml
-services:
-  web:
-    deploy:
-      resources:
-        limits:
-          memory: 1G
+# Restart celery
+docker-compose restart celery
 ```
 
 ### Performance Optimization
 
-#### 1. **Database Optimization**
-```sql
--- Add indexes
-CREATE INDEX idx_client_data_created ON client_data(created_at);
-CREATE INDEX idx_ml_predictions_date ON ml_predictions(prediction_date);
-```
-
-#### 2. **Caching Configuration**
+1. **Enable Caching**
 ```python
 # settings_production.py
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': 'redis://redis:6379/1',
-        'TIMEOUT': 300,
     }
 }
 ```
 
-#### 3. **Gunicorn Optimization**
-```python
-# gunicorn.conf.py
-workers = 3
-worker_class = 'gevent'
-worker_connections = 1000
-max_requests = 1000
-max_requests_jitter = 100
+2. **Database Optimization**
+```bash
+# Add database indexes
+docker-compose exec web python manage.py dbshell
 ```
 
-## 🔄 Updates & Maintenance
-
-### 1. **Application Updates**
+3. **Static File Optimization**
 ```bash
-# Pull latest code
-git pull origin main
-
-# Rebuild and restart
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
-
-# Run migrations
-docker-compose exec web python manage.py migrate
+# Compress static files
+docker-compose exec web python manage.py compress
 ```
 
-### 2. **Database Migrations**
+## 📈 Scaling
+
+### Horizontal Scaling
 ```bash
-# Create migration
-docker-compose exec web python manage.py makemigrations
-
-# Apply migration
-docker-compose exec web python manage.py migrate
-```
-
-### 3. **Security Updates**
-```bash
-# Update base images
-docker-compose pull
-
-# Rebuild with security updates
-docker-compose build --no-cache
-docker-compose up -d
-```
-
-## 📊 Scaling
-
-### 1. **Horizontal Scaling**
-```bash
-# Scale web services
+# Scale web service
 docker-compose up -d --scale web=3
 
-# Use load balancer
-# Configure nginx as load balancer
+# Scale celery workers
+docker-compose up -d --scale celery=2
 ```
 
-### 2. **Vertical Scaling**
-```bash
-# Increase resources in docker-compose.yml
-services:
-  web:
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-          cpus: '2.0'
+### Load Balancer
+```yaml
+# Add to docker-compose.yml
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - web
 ```
 
-## 🎯 Production Checklist
+## 🎯 Next Steps
 
-- [ ] SSL certificate configured
-- [ ] Environment variables set
-- [ ] Database backups configured
-- [ ] Monitoring setup
-- [ ] Log rotation configured
-- [ ] Firewall rules set
-- [ ] Health checks working
-- [ ] Performance optimized
-- [ ] Security headers configured
-- [ ] Error pages configured
+1. **Set up monitoring** (Prometheus, Grafana)
+2. **Configure backups** (automated database backups)
+3. **Set up CI/CD** (GitHub Actions, GitLab CI)
+4. **Add SSL certificates** (Let's Encrypt)
+5. **Configure email** (SMTP settings)
+6. **Set up logging** (ELK stack)
 
 ## 📞 Support
 
-For issues with Docker deployment:
-1. Check logs: `./docker-deploy.sh logs`
-2. Verify configuration: `./docker-deploy.sh status`
-3. Restart services: `./docker-deploy.sh stop && ./docker-deploy.sh deploy`
+For issues and questions:
+- Check logs: `docker-compose logs`
+- Review this documentation
+- Create GitHub issue
+- Contact support team
 
-Your marketing analytics dashboard is now ready for production deployment! 🚀 
+---
+
+**Happy Deploying! 🚀** 
