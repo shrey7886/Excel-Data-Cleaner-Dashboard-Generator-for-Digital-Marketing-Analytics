@@ -3,7 +3,10 @@ Production settings for sales_dashboard project.
 """
 
 import os
-from .settings import *
+from pathlib import Path
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Try to import decouple, fall back to os.environ if not available
 try:
@@ -15,7 +18,37 @@ except ImportError:
             return cast(value)
         return value
 
-import dj_database_url
+# Import base settings
+try:
+    from .settings import *
+except ImportError:
+    # Fallback if base settings can't be imported
+    INSTALLED_APPS = [
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+        'django.contrib.sites',
+        'rest_framework',
+        'corsheaders',
+        'crispy_forms',
+        'crispy_bootstrap5',
+        'dashboard',
+    ]
+    
+    MIDDLEWARE = [
+        'django.middleware.security.SecurityMiddleware',
+        'whitenoise.middleware.WhiteNoiseMiddleware',
+        'corsheaders.middleware.CorsMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    ]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -33,26 +66,40 @@ ALLOWED_HOSTS = [
     '.pythonanywhere.com',
     '.vercel.app',
     '.netlify.app',
-    config('ALLOWED_HOSTS', default='*').split(',')
 ]
 
+# Add custom hosts from environment
+custom_hosts = config('ALLOWED_HOSTS', default='')
+if custom_hosts:
+    ALLOWED_HOSTS.extend(custom_hosts.split(','))
+
 # Database configuration for production
-DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL', default='sqlite:///db.sqlite3')
-    )
-}
+try:
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=config('DATABASE_URL', default='sqlite:///db.sqlite3')
+        )
+    }
+except ImportError:
+    # Fallback to SQLite if dj-database-url is not available
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Static files configuration
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    BASE_DIR / 'static',
 ]
 
 # Media files configuration
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Security settings for production
 SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
@@ -86,28 +133,66 @@ CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND', default=REDIS_URL)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'django.log',
+            'formatter': 'verbose',
         },
     },
     'root': {
-        'handlers': ['console'],
+        'handlers': ['console', 'file'],
         'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
 }
 
 # Cache configuration
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': REDIS_URL,
+try:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': REDIS_URL,
+        }
     }
-}
+except ImportError:
+    # Fallback to database cache if Redis is not available
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+            'LOCATION': 'cache_table',
+        }
+    }
 
 # Static files serving with WhiteNoise
-MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+if 'whitenoise.middleware.WhiteNoiseMiddleware' not in MIDDLEWARE:
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
+try:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+except ImportError:
+    # Fallback if whitenoise is not available
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Disable Django Debug Toolbar in production
 if 'debug_toolbar' in INSTALLED_APPS:
@@ -118,4 +203,11 @@ GOOGLE_ADS_API_KEY = config('GOOGLE_ADS_API_KEY', default='')
 LINKEDIN_ADS_API_KEY = config('LINKEDIN_ADS_API_KEY', default='')
 MAILCHIMP_API_KEY = config('MAILCHIMP_API_KEY', default='')
 ZOHO_API_KEY = config('ZOHO_API_KEY', default='')
-DEMANDBASE_API_KEY = config('DEMANDBASE_API_KEY', default='') 
+DEMANDBASE_API_KEY = config('DEMANDBASE_API_KEY', default='')
+
+# WSGI Application
+WSGI_APPLICATION = 'sales_dashboard.wsgi.application'
+
+# Ensure logs directory exists
+LOGS_DIR = BASE_DIR / 'logs'
+LOGS_DIR.mkdir(exist_ok=True) 

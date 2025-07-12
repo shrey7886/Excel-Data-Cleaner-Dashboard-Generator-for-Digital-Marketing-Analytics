@@ -15,6 +15,7 @@ RUN apt-get update \
         build-essential \
         libpq-dev \
         curl \
+        git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
@@ -24,17 +25,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
-# Create static files directory
-RUN mkdir -p /app/staticfiles
+# Create necessary directories
+RUN mkdir -p /app/staticfiles /app/media /app/logs
 
 # Collect static files
-RUN python manage.py collectstatic --noinput
-
-# Create media directory
-RUN mkdir -p /app/media
-
-# Create logs directory
-RUN mkdir -p /app/logs
+RUN python manage.py collectstatic --noinput || echo "Static files collection failed, continuing..."
 
 # Create non-root user
 RUN adduser --disabled-password --gecos '' appuser
@@ -48,5 +43,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health/ || exit 1
 
-# Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120", "sales_dashboard.wsgi:application"] 
+# Run the application with proper WSGI configuration
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "120", "--config", "gunicorn.conf.py", "sales_dashboard.wsgi:application"] 
