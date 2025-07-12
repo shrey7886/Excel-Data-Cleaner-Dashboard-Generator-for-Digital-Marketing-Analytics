@@ -9,11 +9,11 @@ import os
 bind = "0.0.0.0:8000"
 backlog = 2048
 
-# Worker processes
-workers = multiprocessing.cpu_count() * 2 + 1
+# Worker processes - reduced for Render free tier
+workers = 2  # Reduced from multiprocessing.cpu_count() * 2 + 1
 worker_class = "sync"
 worker_connections = 1000
-timeout = 30
+timeout = 120  # Increased from 30 to 120 seconds
 keepalive = 2
 
 # Restart workers after this many requests, to help prevent memory leaks

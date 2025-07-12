@@ -18,21 +18,33 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserRegistrationForm, LoginForm, ClientForm, UserProfileForm, CampaignFilterForm, UserEditForm
 from .models import Client, Campaign, CampaignReport, UserProfile, MLPrediction, MonthlySummary, ClientPrediction
 import json
-import pandas as pd
-import numpy as np
 from datetime import datetime, timedelta
 import os
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import io
-from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill, Alignment
-from openpyxl.utils.dataframe import dataframe_to_rows
-import matplotlib.pyplot as plt
-import seaborn as sns
-from io import BytesIO
 import base64
+
+# Lazy imports for heavy libraries - only import when needed
+def get_pandas():
+    import pandas as pd
+    return pd
+
+def get_numpy():
+    import numpy as np
+    return np
+
+def get_openpyxl():
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill, Alignment
+    from openpyxl.utils.dataframe import dataframe_to_rows
+    return Workbook, Font, PatternFill, Alignment, dataframe_to_rows
+
+def get_matplotlib():
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    return plt, sns
 
 # --- STUB for advanced_analytics ---
 class AdvancedAnalyticsStub:
