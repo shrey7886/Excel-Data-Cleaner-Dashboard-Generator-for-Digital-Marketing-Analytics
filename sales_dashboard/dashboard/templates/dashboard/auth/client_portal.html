@@ -26,101 +26,114 @@
 
     <!-- Platform Connections -->
     <div class="row mb-4">
-        <div class="col-md-4 col-lg-2 mb-3">
-            <div class="card h-100 text-center">
-                <div class="card-body">
-                    <i class="fab fa-google fa-2x mb-2"></i>
-                    <h6 class="card-title">Google Ads</h6>
-                    {% if platform_connections.google_ads %}
-                        <span class="badge bg-success mb-2">Connected</span>
-                    {% else %}
-                        <span class="badge bg-secondary mb-2">Not Connected</span>
-                    {% endif %}
-                    <div class="d-grid gap-2">
-                        {% if not platform_connections.google_ads %}
-                            <a href="{% url 'connect_google_ads' %}" class="btn btn-outline-primary btn-sm">Connect</a>
-                        {% endif %}
-                        <a href="{% url 'google_ads_analysis' %}" class="btn btn-primary btn-sm {% if not platform_connections.google_ads %}disabled{% endif %}">View Analysis</a>
-                    </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-plug me-2"></i>Platform Connections
+                    </h5>
                 </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4 col-lg-2 mb-3">
-            <div class="card h-100 text-center">
                 <div class="card-body">
-                    <i class="fab fa-linkedin fa-2x mb-2"></i>
-                    <h6 class="card-title">LinkedIn Ads</h6>
-                    {% if platform_connections.linkedin_ads %}
-                        <span class="badge bg-success mb-2">Connected</span>
-                    {% else %}
-                        <span class="badge bg-secondary mb-2">Not Connected</span>
-                    {% endif %}
-                    <div class="d-grid gap-2">
-                        {% if not platform_connections.linkedin_ads %}
-                            <a href="{% url 'connect_linkedin_ads' %}" class="btn btn-outline-primary btn-sm">Connect</a>
-                        {% endif %}
-                        <a href="{% url 'linkedin_ads_analysis' %}" class="btn btn-primary btn-sm {% if not platform_connections.linkedin_ads %}disabled{% endif %}">View Analysis</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4 col-lg-2 mb-3">
-            <div class="card h-100 text-center">
-                <div class="card-body">
-                    <i class="fab fa-mailchimp fa-2x mb-2"></i>
-                    <h6 class="card-title">Mailchimp</h6>
-                    {% if platform_connections.mailchimp %}
-                        <span class="badge bg-success mb-2">Connected</span>
-                    {% else %}
-                        <span class="badge bg-secondary mb-2">Not Connected</span>
-                    {% endif %}
-                    <div class="d-grid gap-2">
-                        {% if not platform_connections.mailchimp %}
-                            <a href="{% url 'connect_mailchimp' %}" class="btn btn-outline-primary btn-sm">Connect</a>
-                        {% endif %}
-                        <a href="{% url 'mailchimp_analysis' %}" class="btn btn-primary btn-sm {% if not platform_connections.mailchimp %}disabled{% endif %}">View Analysis</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4 col-lg-2 mb-3">
-            <div class="card h-100 text-center">
-                <div class="card-body">
-                    <i class="fas fa-cloud fa-2x mb-2"></i>
-                    <h6 class="card-title">Zoho</h6>
-                    {% if platform_connections.zoho %}
-                        <span class="badge bg-success mb-2">Connected</span>
-                    {% else %}
-                        <span class="badge bg-secondary mb-2">Not Connected</span>
-                    {% endif %}
-                    <div class="d-grid gap-2">
-                        {% if not platform_connections.zoho %}
-                            <a href="{% url 'connect_zoho' %}" class="btn btn-outline-primary btn-sm">Connect</a>
-                        {% endif %}
-                        <a href="{% url 'zoho_analysis' %}" class="btn btn-primary btn-sm {% if not platform_connections.zoho %}disabled{% endif %}">View Analysis</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4 col-lg-2 mb-3">
-            <div class="card h-100 text-center">
-                <div class="card-body">
-                    <i class="fas fa-database fa-2x mb-2"></i>
-                    <h6 class="card-title">Demandbase</h6>
-                    {% if platform_connections.demandbase %}
-                        <span class="badge bg-success mb-2">Connected</span>
-                    {% else %}
-                        <span class="badge bg-secondary mb-2">Not Connected</span>
-                    {% endif %}
-                    <div class="d-grid gap-2">
-                        {% if not platform_connections.demandbase %}
-                            <a href="{% url 'connect_demandbase' %}" class="btn btn-outline-primary btn-sm">Connect</a>
-                        {% endif %}
-                        <a href="{% url 'demandbase_analysis' %}" class="btn btn-primary btn-sm {% if not platform_connections.demandbase %}disabled{% endif %}">View Analysis</a>
+                    <div class="row">
+                        <div class="col-md-4 col-lg-2 mb-3">
+                            <div class="card h-100 text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-ad fa-2x mb-2"></i>
+                                    <h6 class="card-title">Google Ads</h6>
+                                    {% if platform_connections.google_ads %}
+                                        <span class="badge bg-success mb-2">Connected</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary mb-2">Not Connected</span>
+                                    {% endif %}
+                                    <div class="d-grid gap-2">
+                                        {% if not platform_connections.google_ads %}
+                                            <a href="{% url 'connect_google_ads' %}" class="btn btn-outline-primary btn-sm">Connect</a>
+                                        {% endif %}
+                                        <a href="{% url 'google_ads_analysis' %}" class="btn btn-primary btn-sm {% if not platform_connections.google_ads %}disabled{% endif %}">View Analysis</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 col-lg-2 mb-3">
+                            <div class="card h-100 text-center">
+                                <div class="card-body">
+                                    <i class="fab fa-linkedin fa-2x mb-2"></i>
+                                    <h6 class="card-title">LinkedIn Ads</h6>
+                                    {% if platform_connections.linkedin_ads %}
+                                        <span class="badge bg-success mb-2">Connected</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary mb-2">Not Connected</span>
+                                    {% endif %}
+                                    <div class="d-grid gap-2">
+                                        {% if not platform_connections.linkedin_ads %}
+                                            <a href="{% url 'connect_linkedin_ads' %}" class="btn btn-outline-primary btn-sm">Connect</a>
+                                        {% endif %}
+                                        <a href="{% url 'linkedin_ads_analysis' %}" class="btn btn-primary btn-sm {% if not platform_connections.linkedin_ads %}disabled{% endif %}">View Analysis</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 col-lg-2 mb-3">
+                            <div class="card h-100 text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-envelope fa-2x mb-2"></i>
+                                    <h6 class="card-title">Mailchimp</h6>
+                                    {% if platform_connections.mailchimp %}
+                                        <span class="badge bg-success mb-2">Connected</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary mb-2">Not Connected</span>
+                                    {% endif %}
+                                    <div class="d-grid gap-2">
+                                        {% if not platform_connections.mailchimp %}
+                                            <a href="{% url 'connect_mailchimp' %}" class="btn btn-outline-primary btn-sm">Connect</a>
+                                        {% endif %}
+                                        <a href="{% url 'mailchimp_analysis' %}" class="btn btn-primary btn-sm {% if not platform_connections.mailchimp %}disabled{% endif %}">View Analysis</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 col-lg-2 mb-3">
+                            <div class="card h-100 text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-crm fa-2x mb-2"></i>
+                                    <h6 class="card-title">Zoho CRM</h6>
+                                    {% if platform_connections.zoho %}
+                                        <span class="badge bg-success mb-2">Connected</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary mb-2">Not Connected</span>
+                                    {% endif %}
+                                    <div class="d-grid gap-2">
+                                        {% if not platform_connections.zoho %}
+                                            <a href="{% url 'connect_zoho' %}" class="btn btn-outline-primary btn-sm">Connect</a>
+                                        {% endif %}
+                                        <a href="{% url 'zoho_analysis' %}" class="btn btn-primary btn-sm {% if not platform_connections.zoho %}disabled{% endif %}">View Analysis</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 col-lg-2 mb-3">
+                            <div class="card h-100 text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-database fa-2x mb-2"></i>
+                                    <h6 class="card-title">Demandbase</h6>
+                                    {% if platform_connections.demandbase %}
+                                        <span class="badge bg-success mb-2">Connected</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary mb-2">Not Connected</span>
+                                    {% endif %}
+                                    <div class="d-grid gap-2">
+                                        {% if not platform_connections.demandbase %}
+                                            <a href="{% url 'connect_demandbase' %}" class="btn btn-outline-primary btn-sm">Connect</a>
+                                        {% endif %}
+                                        <a href="{% url 'demandbase_analysis' %}" class="btn btn-primary btn-sm {% if not platform_connections.demandbase %}disabled{% endif %}">View Analysis</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -384,7 +397,7 @@
                     <!-- AI Insights -->
                     {% if ai_insights %}
                         <h6 class="font-weight-bold mb-3">Latest AI Insights</h6>
-                        <div class="row mb-4">
+                        <div class="row">
                             {% for insight in ai_insights|slice:":3" %}
                             <div class="col-md-4 mb-3">
                                 <div class="card border-left-{% if insight.priority == 'high' %}danger{% elif insight.priority == 'medium' %}warning{% else %}info{% endif %} shadow h-100">
@@ -402,48 +415,27 @@
                             </div>
                             {% endfor %}
                         </div>
-                    {% endif %}
-
-                    <!-- Future Forecasts -->
-                    {% if future_forecasts %}
-                        <h6 class="font-weight-bold mb-3">Upcoming Forecasts</h6>
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Month</th>
-                                        <th>Predicted Revenue</th>
-                                        <th>Predicted ROI</th>
-                                        <th>Trend</th>
-                                        <th>Confidence</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for forecast in future_forecasts %}
-                                    <tr>
-                                        <td><strong>{{ forecast.forecast_date|date:"F Y" }}</strong></td>
-                                        <td>${{ forecast.predicted_revenue|floatformat:2 }}</td>
-                                        <td>{{ forecast.predicted_roi|floatformat:2 }}x</td>
-                                        <td>
-                                            {% if forecast.trend_direction == 'increasing' %}
-                                                <span class="badge badge-success">↗ Increasing</span>
-                                            {% elif forecast.trend_direction == 'decreasing' %}
-                                                <span class="badge badge-danger">↘ Decreasing</span>
-                                            {% else %}
-                                                <span class="badge badge-secondary">→ Stable</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ forecast.confidence_score|floatformat:0 }}%</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-robot fa-2x text-muted mb-3"></i>
+                            <h6 class="text-muted">No AI Insights Yet</h6>
+                            <p class="text-muted">AI insights will appear here as we analyze your campaign data.</p>
                         </div>
                     {% endif %}
-
-                    {% if not ai_insights and not future_forecasts %}
-                        <p class="text-muted">No AI insights or predictions available yet. Upload more data to get personalized insights.</p>
-                    {% endif %}
+                    
+                    <!-- Quick Actions -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <a href="{% url 'unified_data_list' %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-database me-2"></i>Upload Data
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'advanced_analytics' %}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-chart-bar me-2"></i>Advanced Analytics
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

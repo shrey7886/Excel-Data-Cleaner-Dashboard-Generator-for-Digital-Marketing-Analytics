@@ -19,8 +19,9 @@
       </div>
     </div>
     
-    <!-- ML Predictions -->
-    {% if ml_predictions.ml_available %}
+    <!-- AI Predictions -->
+  {% if ml_predictions %}
+  <div class="row mb-4">
     <div class="col-md-6">
       <div class="card">
         <div class="card-header">
@@ -56,8 +57,24 @@
         </div>
       </div>
     </div>
-    {% endif %}
   </div>
+  {% else %}
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">🤖 AI Predictions</h5>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            AI predictions will be available once we have more campaign data.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 
   <!-- Reports Table -->
   <div class="card">
