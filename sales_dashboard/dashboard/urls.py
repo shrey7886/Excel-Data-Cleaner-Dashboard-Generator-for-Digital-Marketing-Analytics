@@ -3,7 +3,6 @@ from django.http import HttpResponse
 from . import views
 
 from . import auth_views
-from .views import llama_chat
 
 urlpatterns = [
     # Public landing page
@@ -93,7 +92,7 @@ urlpatterns = [
     path('advanced-analytics/', views.advanced_analytics_view, name='advanced_analytics'),
     # Advanced Analytics API
     path('api/advanced-analytics/', views.advanced_analytics_api, name='advanced_analytics_api'),
-] 
-urlpatterns += [
-    path('llama-chat/', llama_chat, name='llama_chat'),
+    
+    # Chat functionality
+    path('llama-chat/', views.llama_chat, name='llama_chat'),
 ] 
