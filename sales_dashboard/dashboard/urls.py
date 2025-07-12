@@ -2,15 +2,10 @@ from django.urls import path
 from django.http import HttpResponse
 from . import views
 
-def health_check(request):
-    return HttpResponse("OK")
 from . import auth_views
 from .views import llama_chat
 
 urlpatterns = [
-    # Health check
-    path('health/', views.health_check, name='health_check'),
-    
     # Main views
     path('', views.client_portal, name='client_portal'),
     # path('dashboard/', views.dashboard, name='dashboard'),  # dashboard removed

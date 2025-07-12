@@ -181,19 +181,19 @@ SITE_ID = 1
 SESSION_COOKIE_AGE = 3600  # 1 hour
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-# Django-Q configuration
-Q_CLUSTER = {
-    'name': 'targetorate',
-    'workers': 4,
-    'recycle': 500,
-    'timeout': 60,
-    'compress': True,
-    'save_limit': 250,
-    'queue_limit': 500,
-    'label': 'Django Q',
-    'redis': {
-        'host': 'localhost',
-        'port': 6379,
-        'db': 0,
-    }
-}
+# Django-Q configuration (commented out - not installed)
+# Q_CLUSTER = {
+#     'name': 'targetorate',
+#     'workers': 4,
+#     'recycle': 500,
+#     'timeout': 60,
+#     'compress': True,
+#     'save_limit': 250,
+#     'queue_limit': 500,
+#     'label': 'Django Q',
+#     'redis': {
+#         'host': 'localhost',
+#         'port': 6379,
+#         'db': 0,
+#     }
+# }
