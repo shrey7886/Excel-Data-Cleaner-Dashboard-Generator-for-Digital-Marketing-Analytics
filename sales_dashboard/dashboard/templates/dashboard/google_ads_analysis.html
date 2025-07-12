@@ -6,8 +6,8 @@
   <div class="row mb-4">
     <div class="col-md-3"><div class="card"><div class="card-body"><h6>Total Impressions</h6><h4>{{ total_impressions }}</h4></div></div></div>
     <div class="col-md-3"><div class="card"><div class="card-body"><h6>Total Clicks</h6><h4>{{ total_clicks }}</h4></div></div></div>
-    <div class="col-md-3"><div class="card"><div class="card-body"><h6>Total Spend</h6><h4>${{ total_spend|floatformat:2 }}</h4></div></div></div>
-    <div class="col-md-3"><div class="card"><div class="card-body"><h6>CTR</h6><h4>{{ ctr|floatformat:2 }}%</h4></div></div></div>
+    <div class="col-md-3"><div class="card"><div class="card-body"><h6>Total Spend</h6><h4>${{ total_spend }}</h4></div></div></div>
+    <div class="col-md-3"><div class="card"><div class="card-body"><h6>Avg CTR</h6><h4>{{ avg_ctr }}%</h4></div></div></div>
   </div>
   <div class="card mb-4"><div class="card-body">
     <h5>Campaigns</h5>
@@ -21,8 +21,8 @@
             <td>{{ c.date }}</td>
             <td>{{ c.impressions }}</td>
             <td>{{ c.clicks }}</td>
-            <td>${{ c.spend|floatformat:2 }}</td>
-            <td>{{ c.ctr|floatformat:4 }}</td>
+            <td>${{ c.spend }}</td>
+            <td>{{ c.ctr }}%</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -30,7 +30,4 @@
     </div>
   </div></div>
 </div>
-<script>
-setTimeout(function(){ window.location.reload(); }, 30000);
-</script>
 {% endblock %} 

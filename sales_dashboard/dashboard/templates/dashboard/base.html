@@ -579,13 +579,23 @@
                 });
             });
             
-            // Show loading spinner for navigation links
+            // Show loading spinner only for specific navigation links that need it
             const navLinks = document.querySelectorAll('a[href^="/"]');
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
-                    // Don't show spinner for dropdown toggles or modal triggers
-                    if (!this.getAttribute('data-bs-toggle') && !this.getAttribute('data-bs-target')) {
-                        document.getElementById('loadingSpinner').style.display = 'flex';
+                    // Don't show spinner for dropdown toggles, modal triggers, or back buttons
+                    if (!this.getAttribute('data-bs-toggle') && 
+                        !this.getAttribute('data-bs-target') && 
+                        !this.classList.contains('back-btn') &&
+                        !this.classList.contains('dropdown-toggle')) {
+                        // Only show spinner for specific actions that might take time
+                        const href = this.getAttribute('href');
+                        if (href && (href.includes('upload') || 
+                                   href.includes('generate') || 
+                                   href.includes('sync') || 
+                                   href.includes('train'))) {
+                            document.getElementById('loadingSpinner').style.display = 'flex';
+                        }
                     }
                 });
             });
@@ -609,18 +619,11 @@
                 });
             }
             
-            // Close sidebar when clicking outside on mobile
-            document.addEventListener('click', function(e) {
-                if (window.innerWidth <= 768) {
-                    if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
-                        sidebar.classList.remove('show');
-                    }
-                }
-            });
-
-            var syncBtn = document.getElementById('sync-all-btn');
-            var toast = document.getElementById('sync-toast');
-            var toastBody = document.getElementById('sync-toast-body');
+            // Sync button functionality
+            const syncBtn = document.querySelector('.sync-all-btn');
+            const toast = document.getElementById('sync-toast');
+            const toastBody = document.getElementById('sync-toast-body');
+            
             if (syncBtn) {
                 syncBtn.addEventListener('click', function() {
                     syncBtn.disabled = true;

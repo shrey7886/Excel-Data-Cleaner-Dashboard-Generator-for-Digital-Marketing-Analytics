@@ -4,19 +4,23 @@
 <div class="container mt-4">
   <h2>Demandbase Analytics</h2>
   <div class="row mb-4">
-    <div class="col-md-12"><div class="card"><div class="card-body"><h6>Average Intent Score</h6><h4>{{ avg_intent_score|floatformat:2 }}</h4></div></div></div>
+    <div class="col-md-4"><div class="card"><div class="card-body"><h6>Total Accounts</h6><h4>{{ total_accounts }}</h4></div></div></div>
+    <div class="col-md-4"><div class="card"><div class="card-body"><h6>Total Contacts</h6><h4>{{ total_contacts }}</h4></div></div></div>
+    <div class="col-md-4"><div class="card"><div class="card-body"><h6>Avg Engagement</h6><h4>{{ avg_engagement }}%</h4></div></div></div>
   </div>
   <div class="card mb-4"><div class="card-body">
-    <h5>Campaigns</h5>
+    <h5>Accounts</h5>
     <div class="table-responsive">
       <table class="table table-bordered">
-        <thead><tr><th>Name</th><th>Date</th><th>Intent Score</th></tr></thead>
+        <thead><tr><th>Company</th><th>Industry</th><th>Size</th><th>Engagement</th><th>Score</th></tr></thead>
         <tbody>
-          {% for c in campaigns %}
+          {% for a in accounts %}
           <tr>
-            <td>{{ c.campaign_name }}</td>
-            <td>{{ c.date }}</td>
-            <td>{{ c.intent_score }}</td>
+            <td>{{ a.company_name }}</td>
+            <td>{{ a.industry }}</td>
+            <td>{{ a.company_size }}</td>
+            <td>{{ a.engagement }}%</td>
+            <td>{{ a.score }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -24,7 +28,4 @@
     </div>
   </div></div>
 </div>
-<script>
-setTimeout(function(){ window.location.reload(); }, 30000);
-</script>
 {% endblock %} 
