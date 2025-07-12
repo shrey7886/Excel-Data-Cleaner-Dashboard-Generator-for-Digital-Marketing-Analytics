@@ -14,6 +14,7 @@ import json
 from datetime import datetime, timedelta
 from django.conf import settings
 import requests  # For AI chat view
+from .forms import CampaignFilterForm
 
 # Lazy imports for heavy libraries - only import when needed
 def get_pandas():
