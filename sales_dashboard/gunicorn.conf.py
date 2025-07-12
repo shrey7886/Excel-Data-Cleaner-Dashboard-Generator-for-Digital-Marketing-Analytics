@@ -71,10 +71,6 @@ def pre_exec(server):
     """Called just before a new master process is forked."""
     server.log.info("Forked child, re-executing.")
 
-def on_starting(server):
-    """Called just before the master process is initialized."""
-    server.log.info("Starting gunicorn %s", server.version)
-
 def on_reload(server):
     """Called to recycle workers during reload via SIGHUP."""
     server.log.info("Reloading workers")
