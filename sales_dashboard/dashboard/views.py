@@ -119,19 +119,20 @@ def client_portal(request):
         profile = request.user.profile
         client = profile.client
     except UserProfile.DoesNotExist:
-        # If user doesn't have a profile, redirect to login or show a message
-        messages.error(request, 'User profile not found. Please contact administrator.')
-        return render(request, 'dashboard/auth/client_portal.html', {
-            'error': 'User profile not found. Please contact administrator.',
-            'user': request.user
-        })
+        # Create a profile for the user if it doesn't exist
+        profile = UserProfile.objects.create(user=request.user)
+        client = None
+        messages.info(request, 'Profile created. Please contact administrator to associate with a client.')
     
     if not client:
-        messages.error(request, 'No client associated with your account.')
-        return render(request, 'dashboard/auth/client_portal.html', {
-            'error': 'No client found.',
-            'user': request.user
-        })
+        # Show a simple dashboard for users without clients
+        context = {
+            'user': request.user,
+            'profile': profile,
+            'no_client': True,
+            'message': 'Welcome! Please contact administrator to set up your client account.'
+        }
+        return render(request, 'dashboard/simple_dashboard.html', context)
     
     campaigns = Campaign.objects.filter(client=client)
     filter_form = CampaignFilterForm(request.GET)

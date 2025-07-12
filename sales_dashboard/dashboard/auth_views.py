@@ -24,9 +24,9 @@ def register_view(request):
                 if profile.client:
                     return redirect('client_portal')
                 else:
-                    return redirect('dashboard')
+                    return redirect('client_portal')  # Changed from 'dashboard' to 'client_portal'
             except UserProfile.DoesNotExist:
-                return redirect('dashboard')
+                return redirect('client_portal')  # Changed from 'dashboard' to 'client_portal'
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
@@ -43,9 +43,9 @@ def login_view(request):
             if profile.client:
                 return redirect('client_portal')
             else:
-                return redirect('dashboard')
+                return redirect('client_portal')  # Changed from 'dashboard' to 'client_portal'
         except UserProfile.DoesNotExist:
-            return redirect('dashboard')
+            return redirect('client_portal')  # Changed from 'dashboard' to 'client_portal'
     
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
@@ -63,9 +63,9 @@ def login_view(request):
                     if profile.client:
                         return redirect('client_portal')
                     else:
-                        return redirect('dashboard')
+                        return redirect('client_portal')  # Changed from 'dashboard' to 'client_portal'
                 except UserProfile.DoesNotExist:
-                    return redirect('dashboard')
+                    return redirect('client_portal')  # Changed from 'dashboard' to 'client_portal'
         else:
             messages.error(request, 'Invalid username or password.')
     else:

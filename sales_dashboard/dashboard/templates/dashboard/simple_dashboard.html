@@ -1,0 +1,184 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Welcome - Targetorate{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-1">Welcome to Targetorate, {{ user.first_name }}!</h2>
+                            <p class="mb-0">Digital Marketing Analytics Dashboard</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <span class="badge bg-light text-dark fs-6">{{ profile.role|title|default:"User" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup Message -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Account Setup Required
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6 class="text-muted">Your account is ready, but needs to be associated with a client.</h6>
+                            <p class="mb-3">To access the full dashboard features, please contact your administrator to:</p>
+                            <ul class="mb-3">
+                                <li>Create a client account for your organization</li>
+                                <li>Associate your user account with the client</li>
+                                <li>Set up platform integrations (Google Ads, LinkedIn, etc.)</li>
+                                <li>Configure data sources and analytics</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="alert alert-info">
+                                <i class="fas fa-user-cog fa-2x mb-2"></i>
+                                <p class="mb-0"><strong>Status:</strong> Awaiting Setup</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Platform Overview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="mb-3">Available Platform Integrations</h4>
+        </div>
+        
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fab fa-google fa-2x text-primary mb-2"></i>
+                    <h6>Google Ads</h6>
+                    <small class="text-muted">Campaign Analytics</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fab fa-linkedin fa-2x text-info mb-2"></i>
+                    <h6>LinkedIn Ads</h6>
+                    <small class="text-muted">B2B Marketing</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-envelope fa-2x text-warning mb-2"></i>
+                    <h6>Mailchimp</h6>
+                    <small class="text-muted">Email Marketing</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-building fa-2x text-success mb-2"></i>
+                    <h6>Zoho CRM</h6>
+                    <small class="text-muted">Customer Data</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-database fa-2x text-secondary mb-2"></i>
+                    <h6>Demandbase</h6>
+                    <small class="text-muted">Account Intelligence</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-upload fa-2x text-dark mb-2"></i>
+                    <h6>Excel Upload</h6>
+                    <small class="text-muted">Data Import</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Preview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="mb-3">Platform Features</h4>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                    <h5>Advanced Analytics</h5>
+                    <p class="text-muted">Comprehensive analytics across all your marketing channels with real-time insights and performance tracking.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-robot fa-3x text-success mb-3"></i>
+                    <h5>AI Predictions</h5>
+                    <p class="text-muted">Machine learning-powered predictions for campaign performance, revenue forecasting, and optimization recommendations.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-file-excel fa-3x text-info mb-3"></i>
+                    <h5>Excel Dashboards</h5>
+                    <p class="text-muted">Automatically generate comprehensive Excel dashboards with charts, KPIs, and actionable insights.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5 class="mb-3">Need Help Setting Up?</h5>
+                    <p class="mb-3">Contact your system administrator to get your account fully configured and start using all the features.</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'profile' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-user me-2"></i>View Profile
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
