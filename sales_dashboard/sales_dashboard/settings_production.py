@@ -66,6 +66,7 @@ ALLOWED_HOSTS = [
     '.pythonanywhere.com',
     '.vercel.app',
     '.netlify.app',
+    'dashflow-bc90.onrender.com',  # Added Render domain
 ]
 
 # Add custom hosts from environment
