@@ -1,33 +1,101 @@
 /* Custom CSS for Sales Dashboard */
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fc;
+  background-color: #181a1b !important;
+  color: #f1f1f1 !important;
 }
 
-.navbar-brand {
-    font-weight: bold;
+.navbar, .top-navbar, .sidebar, .card, .modal-content, .dropdown-menu, .toast, .main-content, .chatbot-widget {
+  background-color: #23272b !important;
+  color: #f1f1f1 !important;
 }
 
-.card {
-    border: none;
-    border-radius: 1rem;
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-    transition: all 0.3s ease;
+.card-header, .card-footer, .modal-header, .modal-footer {
+  background-color: #23272b !important;
+  color: #f1f1f1 !important;
 }
 
-.card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2);
+.table, .table-bordered, .table-hover, .table-light, .table-responsive {
+  background-color: #23272b !important;
+  color: #f1f1f1 !important;
 }
 
-.btn {
-    border-radius: 0.5rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
+input, select, textarea, .form-control, .form-select {
+  background-color: #181a1b !important;
+  color: #f1f1f1 !important;
+  border-color: #444 !important;
 }
 
-.btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+input::placeholder, textarea::placeholder {
+  color: #aaa !important;
+}
+
+.btn, .btn-primary, .btn-success, .btn-info, .btn-warning, .btn-danger, .btn-outline-primary, .btn-outline-success, .btn-outline-info, .btn-outline-warning, .btn-outline-danger {
+  color: #f1f1f1 !important;
+  background-color: #23272b !important;
+  border-color: #444 !important;
+}
+
+.btn-primary {
+  background-color: #375a7f !important;
+  border-color: #375a7f !important;
+}
+
+.btn-success {
+  background-color: #00bc8c !important;
+  border-color: #00bc8c !important;
+}
+
+.btn-info {
+  background-color: #3498db !important;
+  border-color: #3498db !important;
+}
+
+.btn-warning {
+  background-color: #f39c12 !important;
+  border-color: #f39c12 !important;
+}
+
+.btn-danger {
+  background-color: #e74c3c !important;
+  border-color: #e74c3c !important;
+}
+
+a, .nav-link, .navbar-brand, .dropdown-item {
+  color: #f1f1f1 !important;
+}
+
+a:hover, .nav-link:hover, .navbar-brand:hover, .dropdown-item:hover {
+  color: #00bc8c !important;
+}
+
+hr {
+  border-color: #444 !important;
+}
+
+.alert {
+  background-color: #23272b !important;
+  color: #f1f1f1 !important;
+  border-color: #444 !important;
+}
+
+::-webkit-scrollbar {
+  background: #23272b;
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+
+/* Chatbot dark mode */
+#chatbot-widget, .chatbot-header, .chatbot-input, .chatbot-messages {
+  background-color: #23272b !important;
+  color: #f1f1f1 !important;
+}
+
+/* Toast dark mode */
+#sync-toast {
+  background-color: #23272b !important;
+  color: #f1f1f1 !important;
 } 
