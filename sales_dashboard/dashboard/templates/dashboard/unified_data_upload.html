@@ -1,0 +1,184 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Upload Unified Data - Targetorate{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-1">Upload Unified Marketing Data</h2>
+                            <p class="mb-0">{{ client.company }} - Upload your consolidated marketing data for AI analysis</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <a href="{% url 'unified_data_list' %}" class="btn btn-light">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Data List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Form -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-upload me-2"></i>
+                        Upload Your Data File
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <form method="post" enctype="multipart/form-data" id="upload-form">
+                                {% csrf_token %}
+                                
+                                <div class="mb-4">
+                                    <label for="data_file" class="form-label">
+                                        <strong>Select Data File</strong>
+                                    </label>
+                                    <input type="file" 
+                                           class="form-control" 
+                                           id="data_file" 
+                                           name="data_file" 
+                                           accept=".csv,.xlsx,.xls"
+                                           required>
+                                    <div class="form-text">
+                                        Supported formats: CSV, Excel (.xlsx, .xls). Maximum file size: 50MB
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">
+                                        <strong>Data Type</strong>
+                                    </label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="data_type" id="type_unified" value="unified" checked>
+                                        <label class="form-check-label" for="type_unified">
+                                            Unified Marketing Data (all platforms combined)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="data_type" id="type_google_ads" value="google_ads">
+                                        <label class="form-check-label" for="type_google_ads">
+                                            Google Ads Data
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="data_type" id="type_linkedin_ads" value="linkedin_ads">
+                                        <label class="form-check-label" for="type_linkedin_ads">
+                                            LinkedIn Ads Data
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="data_type" id="type_mailchimp" value="mailchimp">
+                                        <label class="form-check-label" for="type_mailchimp">
+                                            Mailchimp Data
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="description" class="form-label">
+                                        <strong>Description (Optional)</strong>
+                                    </label>
+                                    <textarea class="form-control" 
+                                              id="description" 
+                                              name="description" 
+                                              rows="3" 
+                                              placeholder="Brief description of this data upload..."></textarea>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="submit" class="btn btn-primary btn-lg" id="upload-btn">
+                                        <i class="fas fa-upload me-2"></i>Upload Data
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Upload Guidelines
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <h6 class="text-primary">Required Columns:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>Date</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Platform</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Campaign</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Impressions</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Clicks</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Spend</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Revenue (optional)</li>
+                                    </ul>
+                                    
+                                    <hr>
+                                    
+                                    <h6 class="text-primary">Tips:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-lightbulb text-warning me-2"></i>Use consistent date formats</li>
+                                        <li><i class="fas fa-lightbulb text-warning me-2"></i>Include all platforms in one file</li>
+                                        <li><i class="fas fa-lightbulb text-warning me-2"></i>Remove any empty rows</li>
+                                        <li><i class="fas fa-lightbulb text-warning me-2"></i>Ensure column headers are clear</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('upload-form').addEventListener('submit', function(e) {
+    const fileInput = document.getElementById('data_file');
+    const uploadBtn = document.getElementById('upload-btn');
+    const originalText = uploadBtn.innerHTML;
+    
+    if (!fileInput.files[0]) {
+        e.preventDefault();
+        alert('Please select a file to upload.');
+        return;
+    }
+    
+    // Show loading state
+    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+    uploadBtn.disabled = true;
+    
+    // Form will submit normally, but we can add additional validation here if needed
+});
+
+// File size validation
+document.getElementById('data_file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    
+    if (file && file.size > maxSize) {
+        alert('File size must be less than 50MB.');
+        this.value = '';
+    }
+});
+</script>
+
+<style>
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+</style>
+{% endblock %} 

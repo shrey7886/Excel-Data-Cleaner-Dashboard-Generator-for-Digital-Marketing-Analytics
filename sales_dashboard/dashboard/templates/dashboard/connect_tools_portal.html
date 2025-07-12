@@ -1,0 +1,415 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Connect Tools - Targetorate{% endblock %}
+{% block content %}
+<style>
+  .tool-card {
+    transition: box-shadow 0.2s, transform 0.2s;
+    cursor: pointer;
+    border-radius: 1rem;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background: #fff;
+  }
+  .tool-card.selected, .tool-card:hover {
+    box-shadow: 0 4px 24px rgba(0,123,255,0.15);
+    border-color: #0d6efd;
+    transform: translateY(-2px) scale(1.02);
+  }
+  .tool-card.connected {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+  }
+  .tool-card.connected .tool-icon {
+    color: #28a745;
+  }
+  .tool-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: #0d6efd;
+  }
+  .stepper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    justify-content: center;
+  }
+  .step {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 0 8px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .step.active {
+    background: #0d6efd;
+    color: #fff;
+  }
+  .step-line {
+    flex: 1;
+    height: 2px;
+    background: #e9ecef;
+    margin: 0 4px;
+  }
+  .connection-status {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+  .btn-connect {
+    background: #28a745;
+    border-color: #28a745;
+  }
+  .btn-disconnect {
+    background: #dc3545;
+    border-color: #dc3545;
+  }
+  .btn-oauth {
+    background: #0d6efd;
+    border-color: #0d6efd;
+  }
+  .loading-spinner {
+    display: none;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .oauth-info {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+  }
+</style>
+
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Connect Your Marketing Tools</h2>
+  
+  <!-- OAuth Notice -->
+  <div class="alert alert-info text-center mb-4" role="alert">
+    <i class="fas fa-info-circle"></i>
+    <strong>OAuth Integration Coming Soon!</strong> For now, please use the manual connection forms for each platform. 
+    Click on any platform card to access the detailed connection form.
+  </div>
+  
+  <div class="d-flex justify-content-center mb-3">
+    <button id="sync-all-btn" class="btn btn-primary">
+      <span class="loading-spinner" id="sync-spinner"></span>
+      Sync All Data
+    </button>
+  </div>
+  <div class="stepper mb-4">
+    <div class="step active">1</div>
+    <div class="step-line"></div>
+    <div class="step">2</div>
+    <div class="step-line"></div>
+    <div class="step">3</div>
+  </div>
+  <div class="row justify-content-center mb-5">
+    <div class="col-md-2 mb-3">
+      <div class="tool-card text-center p-3" onclick="selectTool('google_ads')" id="card-google_ads">
+        <div class="tool-icon"><i class="fab fa-google"></i></div>
+        <div class="fw-bold">Google Ads</div>
+        <div class="connection-status" id="status-google_ads">Not Connected</div>
+        <div class="oauth-info">Secure OAuth connection</div>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-oauth" onclick="initiateOAuth('google_ads', event)" id="btn-connect-google_ads">
+            <span class="loading-spinner" id="spinner-google_ads"></span>
+            Connect with OAuth
+          </button>
+          <button class="btn btn-sm btn-disconnect" onclick="disconnectPlatform('google_ads', event)" id="btn-disconnect-google_ads" style="display:none;">
+            <span class="loading-spinner" id="spinner-disconnect-google_ads"></span>
+            Disconnect
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 mb-3">
+      <div class="tool-card text-center p-3" onclick="selectTool('linkedin_ads')" id="card-linkedin_ads">
+        <div class="tool-icon"><i class="fab fa-linkedin"></i></div>
+        <div class="fw-bold">LinkedIn Ads</div>
+        <div class="connection-status" id="status-linkedin_ads">Not Connected</div>
+        <div class="oauth-info">Secure OAuth connection</div>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-oauth" onclick="initiateOAuth('linkedin_ads', event)" id="btn-connect-linkedin_ads">
+            <span class="loading-spinner" id="spinner-linkedin_ads"></span>
+            Connect with OAuth
+          </button>
+          <button class="btn btn-sm btn-disconnect" onclick="disconnectPlatform('linkedin_ads', event)" id="btn-disconnect-linkedin_ads" style="display:none;">
+            <span class="loading-spinner" id="spinner-disconnect-linkedin_ads"></span>
+            Disconnect
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 mb-3">
+      <div class="tool-card text-center p-3" onclick="selectTool('mailchimp')" id="card-mailchimp">
+        <div class="tool-icon"><i class="fab fa-mailchimp"></i></div>
+        <div class="fw-bold">Mailchimp</div>
+        <div class="connection-status" id="status-mailchimp">Not Connected</div>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-connect" onclick="connectPlatform('mailchimp', event)" id="btn-connect-mailchimp">
+            <span class="loading-spinner" id="spinner-mailchimp"></span>
+            Connect
+          </button>
+          <button class="btn btn-sm btn-disconnect" onclick="disconnectPlatform('mailchimp', event)" id="btn-disconnect-mailchimp" style="display:none;">
+            <span class="loading-spinner" id="spinner-disconnect-mailchimp"></span>
+            Disconnect
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 mb-3">
+      <div class="tool-card text-center p-3" onclick="selectTool('zoho')" id="card-zoho">
+        <div class="tool-icon"><i class="fas fa-cloud"></i></div>
+        <div class="fw-bold">Zoho</div>
+        <div class="connection-status" id="status-zoho">Not Connected</div>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-connect" onclick="connectPlatform('zoho', event)" id="btn-connect-zoho">
+            <span class="loading-spinner" id="spinner-zoho"></span>
+            Connect
+          </button>
+          <button class="btn btn-sm btn-disconnect" onclick="disconnectPlatform('zoho', event)" id="btn-disconnect-zoho" style="display:none;">
+            <span class="loading-spinner" id="spinner-disconnect-zoho"></span>
+            Disconnect
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 mb-3">
+      <div class="tool-card text-center p-3" onclick="selectTool('demandbase')" id="card-demandbase">
+        <div class="tool-icon"><i class="fas fa-database"></i></div>
+        <div class="fw-bold">Demandbase</div>
+        <div class="connection-status" id="status-demandbase">Not Connected</div>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-connect" onclick="connectPlatform('demandbase', event)" id="btn-connect-demandbase">
+            <span class="loading-spinner" id="spinner-demandbase"></span>
+            Connect
+          </button>
+          <button class="btn btn-sm btn-disconnect" onclick="disconnectPlatform('demandbase', event)" id="btn-disconnect-demandbase" style="display:none;">
+            <span class="loading-spinner" id="spinner-disconnect-demandbase"></span>
+            Disconnect
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="text-center mt-4">
+    <a href="{% url 'client_portal' %}" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+</div>
+
+<script>
+function selectTool(tool) {
+  // Remove selected class from all cards
+  document.querySelectorAll('.tool-card').forEach(card => {
+    card.classList.remove('selected');
+  });
+  
+  // Add selected class to clicked card
+  document.getElementById(`card-${tool}`).classList.add('selected');
+  
+  // Navigate to the specific connect page
+  const connectUrls = {
+    'google_ads': '/connect/google-ads/',
+    'linkedin_ads': '/connect/linkedin-ads/',
+    'mailchimp': '/connect/mailchimp/',
+    'zoho': '/connect/zoho/',
+    'demandbase': '/connect/demandbase/'
+  };
+  
+  const url = connectUrls[tool];
+  if (url) {
+    window.location.href = url;
+  }
+}
+
+function initiateOAuth(platform, event) {
+  event.stopPropagation();
+  const spinner = document.getElementById(`spinner-${platform}`);
+  const button = event.target;
+  
+  spinner.style.display = 'inline-block';
+  button.disabled = true;
+  
+  // Map platform names to correct OAuth endpoints
+  const oauthEndpoints = {
+    'google_ads': '/oauth/google/initiate/',
+    'linkedin_ads': '/oauth/linkedin/initiate/'
+  };
+  
+  const endpoint = oauthEndpoints[platform];
+  if (endpoint) {
+    window.location.href = endpoint;
+  } else {
+    alert(`OAuth not available for ${platform}`);
+    spinner.style.display = 'none';
+    button.disabled = false;
+  }
+}
+
+function connectPlatform(platform, event) {
+  event.stopPropagation();
+  const spinner = document.getElementById(`spinner-${platform}`);
+  const button = event.target;
+  
+  spinner.style.display = 'inline-block';
+  button.disabled = true;
+  
+  // Make AJAX call to connect platform
+  fetch(`/api/connect/${platform}/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    spinner.style.display = 'none';
+    button.disabled = false;
+    
+    if (data.status === 'success') {
+      document.getElementById(`status-${platform}`).textContent = 'Connected';
+      document.getElementById(`card-${platform}`).classList.add('connected');
+      button.style.display = 'none';
+      document.getElementById(`btn-disconnect-${platform}`).style.display = 'inline-block';
+      alert(`${platform} connected successfully!`);
+    } else {
+      alert(`Failed to connect ${platform}: ${data.message}`);
+    }
+  })
+  .catch(error => {
+    spinner.style.display = 'none';
+    button.disabled = false;
+    console.error('Connection error:', error);
+    alert(`Failed to connect ${platform}. Please try again.`);
+  });
+}
+
+function disconnectPlatform(platform, event) {
+  event.stopPropagation();
+  const spinner = document.getElementById(`spinner-disconnect-${platform}`);
+  const button = event.target;
+  
+  spinner.style.display = 'inline-block';
+  button.disabled = true;
+  
+  // Make AJAX call to disconnect platform
+  fetch('/api/disconnect/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({ platform: platform })
+  })
+  .then(response => response.json())
+  .then(data => {
+    spinner.style.display = 'none';
+    button.disabled = false;
+    
+    if (data.status === 'success') {
+      document.getElementById(`status-${platform}`).textContent = 'Not Connected';
+      document.getElementById(`card-${platform}`).classList.remove('connected');
+      button.style.display = 'none';
+      document.getElementById(`btn-connect-${platform}`).style.display = 'inline-block';
+      alert(`${platform} disconnected successfully!`);
+    } else {
+      alert(`Failed to disconnect ${platform}: ${data.message}`);
+    }
+  })
+  .catch(error => {
+    spinner.style.display = 'none';
+    button.disabled = false;
+    console.error('Disconnection error:', error);
+    alert(`Failed to disconnect ${platform}. Please try again.`);
+  });
+}
+
+function syncAllData() {
+  const syncBtn = document.getElementById('sync-all-btn');
+  const syncSpinner = document.getElementById('sync-spinner');
+  
+  syncSpinner.style.display = 'inline-block';
+  syncBtn.disabled = true;
+  
+  // Make AJAX call to sync all data
+  fetch('/sync-all/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    syncSpinner.style.display = 'none';
+    syncBtn.disabled = false;
+    
+    if (data.status === 'success') {
+      alert('All data synced successfully!');
+    } else {
+      alert(`Sync failed: ${data.message}`);
+    }
+  })
+  .catch(error => {
+    syncSpinner.style.display = 'none';
+    syncBtn.disabled = false;
+    console.error('Sync error:', error);
+    alert('Failed to sync data. Please try again.');
+  });
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+// Initialize connection status on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Add event listener for sync button
+  document.getElementById('sync-all-btn').addEventListener('click', syncAllData);
+  
+  // Check connection status for each platform
+  fetch('/api/connection-status/')
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        Object.keys(data.connections).forEach(platform => {
+          if (data.connections[platform].connected) {
+            document.getElementById(`status-${platform}`).textContent = 'Connected';
+            document.getElementById(`card-${platform}`).classList.add('connected');
+            document.getElementById(`btn-connect-${platform}`).style.display = 'none';
+            document.getElementById(`btn-disconnect-${platform}`).style.display = 'inline-block';
+          }
+        });
+      }
+    })
+    .catch(error => {
+      console.log('Connection status check failed:', error);
+    });
+});
+</script>
+{% endblock %} 

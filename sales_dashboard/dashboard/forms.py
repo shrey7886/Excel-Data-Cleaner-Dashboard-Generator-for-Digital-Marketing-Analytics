@@ -60,6 +60,14 @@ class UserRegistrationForm(UserCreationForm):
             'placeholder': 'Department (optional)'
         })
     )
+    role = forms.CharField(
+        max_length=50,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Role (optional)'
+        })
+    )
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -123,17 +131,29 @@ class UserRegistrationForm(UserCreationForm):
                 }
             )
             
+            # Use provided role or default to 'viewer'
+            role = self.cleaned_data.get('role') or 'viewer'
             # Create user profile
             UserProfile.objects.create(
                 user=user,
                 client=client,
-                role='viewer',
+                role=role,
                 phone=self.cleaned_data.get('phone', ''),
                 department=self.cleaned_data.get('department', ''),
                 is_client_user=True
             )
         
         return user
+
+class UserEditForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'}),
+        }
 
 class ClientForm(forms.ModelForm):
     """Form for creating and editing clients"""

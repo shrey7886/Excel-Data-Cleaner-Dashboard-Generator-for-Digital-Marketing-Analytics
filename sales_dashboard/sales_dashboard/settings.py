@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-v)aomdy%k_2zyuz%qa0)=p(qj$zd*ul_zf=(#-6*_o$8i$9&no
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+print(f"[Django settings] DEBUG={DEBUG}, ALLOWED_HOSTS={ALLOWED_HOSTS}")
 
 
 # Application definition
@@ -65,7 +67,7 @@ ROOT_URLCONF = 'sales_dashboard.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'dashboard' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

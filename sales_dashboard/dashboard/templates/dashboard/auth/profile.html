@@ -17,7 +17,7 @@
                             <p class="mb-0">Manage your account settings and preferences</p>
                         </div>
                         <div class="col-md-4 text-md-end">
-                            <a href="{% url 'dashboard' %}" class="btn btn-light">
+                            <a href="{% url 'client_portal' %}" class="btn btn-light">
                                 <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
                             </a>
                         </div>
@@ -39,46 +39,42 @@
                 <div class="card-body">
                     <form method="post" class="needs-validation" novalidate>
                         {% csrf_token %}
-                        
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                                <label for="{{ user_form.first_name.id_for_label }}" class="form-label">
                                     <i class="fas fa-user me-1"></i>First Name
                                 </label>
-                                {{ form.first_name }}
-                                {% if form.first_name.errors %}
+                                {{ user_form.first_name }}
+                                {% if user_form.first_name.errors %}
                                     <div class="invalid-feedback d-block">
-                                        {{ form.first_name.errors.0 }}
+                                        {{ user_form.first_name.errors.0 }}
                                     </div>
                                 {% endif %}
                             </div>
-                            
                             <div class="col-md-6 mb-3">
-                                <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                                <label for="{{ user_form.last_name.id_for_label }}" class="form-label">
                                     <i class="fas fa-user me-1"></i>Last Name
                                 </label>
-                                {{ form.last_name }}
-                                {% if form.last_name.errors %}
+                                {{ user_form.last_name }}
+                                {% if user_form.last_name.errors %}
                                     <div class="invalid-feedback d-block">
-                                        {{ form.last_name.errors.0 }}
+                                        {{ user_form.last_name.errors.0 }}
                                     </div>
                                 {% endif %}
                             </div>
                         </div>
-
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="{{ form.email.id_for_label }}" class="form-label">
+                                <label for="{{ user_form.email.id_for_label }}" class="form-label">
                                     <i class="fas fa-envelope me-1"></i>Email Address
                                 </label>
-                                {{ form.email }}
-                                {% if form.email.errors %}
+                                {{ user_form.email }}
+                                {% if user_form.email.errors %}
                                     <div class="invalid-feedback d-block">
-                                        {{ form.email.errors.0 }}
+                                        {{ user_form.email.errors.0 }}
                                     </div>
                                 {% endif %}
                             </div>
-                            
                             <div class="col-md-6 mb-3">
                                 <label for="{{ form.phone.id_for_label }}" class="form-label">
                                     <i class="fas fa-phone me-1"></i>Phone Number
@@ -91,77 +87,35 @@
                                 {% endif %}
                             </div>
                         </div>
-
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="{{ form.company.id_for_label }}" class="form-label">
-                                    <i class="fas fa-building me-1"></i>Company
+                                <label for="{{ form.department.id_for_label }}" class="form-label">
+                                    <i class="fas fa-building me-1"></i>Department
                                 </label>
-                                {{ form.company }}
-                                {% if form.company.errors %}
+                                {{ form.department }}
+                                {% if form.department.errors %}
                                     <div class="invalid-feedback d-block">
-                                        {{ form.company.errors.0 }}
+                                        {{ form.department.errors.0 }}
                                     </div>
                                 {% endif %}
                             </div>
-                            
                             <div class="col-md-6 mb-3">
-                                <label for="{{ form.job_title.id_for_label }}" class="form-label">
-                                    <i class="fas fa-briefcase me-1"></i>Job Title
+                                <label for="{{ form.role.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user-tag me-1"></i>Role
                                 </label>
-                                {{ form.job_title }}
-                                {% if form.job_title.errors %}
+                                {{ form.role }}
+                                {% if form.role.errors %}
                                     <div class="invalid-feedback d-block">
-                                        {{ form.job_title.errors.0 }}
+                                        {{ form.role.errors.0 }}
                                     </div>
                                 {% endif %}
                             </div>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="{{ form.bio.id_for_label }}" class="form-label">
-                                <i class="fas fa-info-circle me-1"></i>Bio
-                            </label>
-                            {{ form.bio }}
-                            {% if form.bio.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ form.bio.errors.0 }}
-                                </div>
-                            {% endif %}
-                            <div class="form-text">Tell us a bit about yourself and your role.</div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.timezone.id_for_label }}" class="form-label">
-                                    <i class="fas fa-clock me-1"></i>Timezone
-                                </label>
-                                {{ form.timezone }}
-                                {% if form.timezone.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.timezone.errors.0 }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.language.id_for_label }}" class="form-label">
-                                    <i class="fas fa-language me-1"></i>Preferred Language
-                                </label>
-                                {{ form.language }}
-                                {% if form.language.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.language.errors.0 }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
                         <div class="d-flex justify-content-between">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save me-2"></i>Save Changes
                             </button>
-                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                            <a href="{% url 'client_portal' %}" class="btn btn-outline-secondary">
                                 <i class="fas fa-times me-2"></i>Cancel
                             </a>
                         </div>
@@ -252,7 +206,7 @@
                                 <i class="fas fa-chart-bar me-2"></i>View Reports
                             </a>
                         {% else %}
-                            <a href="{% url 'dashboard' %}" class="btn btn-outline-primary btn-sm">
+                            <a href="{% url 'client_portal' %}" class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
                             </a>
                         {% endif %}

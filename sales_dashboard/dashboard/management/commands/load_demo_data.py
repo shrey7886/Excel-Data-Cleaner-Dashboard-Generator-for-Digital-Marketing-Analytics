@@ -11,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         client, _ = Client.objects.get_or_create(
             name='Demo Client',
-            defaults={'email': 'demo@example.com', 'organization': 'Demo Org'}
+            defaults={'email': 'demo@example.com', 'company': 'Demo Org'}
         )
         project_root = os.path.dirname(settings.BASE_DIR)
         csv_path = os.path.abspath(os.path.join(project_root, 'output', 'unified_campaign_data.csv'))

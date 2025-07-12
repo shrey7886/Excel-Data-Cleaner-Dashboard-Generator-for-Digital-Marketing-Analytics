@@ -177,10 +177,10 @@
                         
                         <div class="mb-3">
                             <label for="role" class="form-label">
-                                <i class="fas fa-briefcase me-2"></i>Role
+                                <i class="fas fa-briefcase me-2"></i>Role (Optional)
                             </label>
-                            <select class="form-select" id="role" name="role" required>
-                                <option value="">Select your role</option>
+                            <select class="form-select" id="role" name="role">
+                                <option value="">Select your role (optional)</option>
                                 <option value="marketing_manager">Marketing Manager</option>
                                 <option value="digital_marketer">Digital Marketer</option>
                                 <option value="analyst">Analyst</option>
@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form validation
     const form = document.getElementById('registerForm');
     form.addEventListener('submit', function(e) {
-        const requiredFields = ['first_name', 'last_name', 'username', 'email', 'company', 'role', 'password1', 'password2'];
+        const requiredFields = ['first_name', 'last_name', 'username', 'email', 'company', 'password1', 'password2'];
         let isValid = true;
         
         requiredFields.forEach(fieldId => {

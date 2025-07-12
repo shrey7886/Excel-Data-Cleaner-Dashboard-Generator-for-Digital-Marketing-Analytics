@@ -1,13 +1,19 @@
 from django.urls import path
+from django.http import HttpResponse
 from . import views
+
+def health_check(request):
+    return HttpResponse("OK")
 from . import auth_views
+from .views import llama_chat
 
 urlpatterns = [
     # Health check
     path('health/', views.health_check, name='health_check'),
     
     # Main views
-    path('', views.dashboard, name='dashboard'),
+    path('', views.client_portal, name='client_portal'),
+    # path('dashboard/', views.dashboard, name='dashboard'),  # dashboard removed
     path('campaign/<int:campaign_id>/', views.campaign_detail, name='campaign_detail'),
     path('reports/', views.report_list, name='report_list'),
     
@@ -26,6 +32,7 @@ urlpatterns = [
     
     # Unified Data Upload and Predictions
     path('unified-data/', views.unified_data_list, name='unified_data_list'),
+    # path('unified-data/upload/', views.unified_data_upload, name='unified_data_upload'),
     path('generate-prediction/<int:data_id>/', views.generate_prediction, name='generate_prediction'),
     path('client-prediction/<int:prediction_id>/', views.prediction_detail, name='prediction_detail'),
     path('download-excel/<int:data_id>/', views.download_excel_dashboard, name='download_excel_dashboard'),
@@ -84,4 +91,12 @@ urlpatterns = [
     
     # Added URL pattern
     path('dashboard/data/', views.dashboard_data_api, name='dashboard_data_api'),
+
+    # Advanced Analytics
+    path('advanced-analytics/', views.advanced_analytics_view, name='advanced_analytics'),
+    # Advanced Analytics API
+    path('api/advanced-analytics/', views.advanced_analytics_api, name='advanced_analytics_api'),
+] 
+urlpatterns += [
+    path('llama-chat/', llama_chat, name='llama_chat'),
 ] 

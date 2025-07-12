@@ -5,29 +5,384 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Intelligence Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Chatbot Widget Styles */
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+        }
+        
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chat-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        .chat-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        
+        .message.user {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message.bot {
+            background: white;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #e9ecef;
+            background: white;
+        }
+        
+        .chat-input form {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+        
+        .chat-input button {
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        
+        .chat-input button:hover {
+            background: #0056b3;
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 10px 15px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .chat-widget.minimized .chat-window {
+            display: none;
+        }
+        
+        .chat-widget.open .chat-window {
+            display: flex;
+        }
+    </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'dashboard' %}">Sales Dashboard</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'report_list' %}">Reports</a>
-            </li>
-          </ul>
+<body class="bg-dark text-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="/">
+      <i class="fas fa-chart-bar me-2"></i> Targetorate
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link text-light" href="{% url 'client_portal' %}">Client Portal</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="{% url 'unified_analytics' %}">Unified Analytics</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="{% url 'advanced_analytics' %}">Advanced Analytics</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="{% url 'profile' %}">Profile</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="{% url 'logout' %}">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container py-4 bg-dark text-light">
+  {% block content %}{% endblock %}
+</div>
+<footer class="footer mt-auto py-3 bg-dark border-top border-secondary">
+  <div class="container text-center">
+    <span class="text-muted">&copy; {{ year|default:2024 }} Targetorate. All rights reserved.</span>
+  </div>
+</footer>
+<style>
+body, .bg-dark {
+  background-color: #181a1b !important;
+  color: #f8f9fa !important;
+}
+.navbar, .footer {
+  background-color: #181a1b !important;
+}
+.card, .modal-content {
+  background-color: #23272b !important;
+  color: #f8f9fa !important;
+  border: 1px solid #343a40 !important;
+}
+.text-muted {
+  color: #adb5bd !important;
+}
+hr, .border-top, .border-secondary {
+  border-color: #343a40 !important;
+}
+</style>
+
+    <!-- Chatbot Widget -->
+    <div class="chat-widget" id="chatWidget" style="display: none;">
+        <div class="chat-window">
+            <div class="chat-header">
+                <span>🤖 AI Assistant</span>
+                <button class="chat-close" onclick="toggleChat()">×</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">
+                    👋 Hi! I'm your AI assistant. How can I help you with the dashboard today?
+                </div>
+            </div>
+            <div class="typing-indicator" id="typingIndicator">
+                AI is typing...
+            </div>
+            <div class="chat-input">
+                <form id="chatForm" onsubmit="sendMessage(event)">
+                    <input type="text" id="messageInput" placeholder="Ask me anything..." autocomplete="off">
+                    <button type="submit">Send</button>
+                </form>
+            </div>
         </div>
-      </div>
-    </nav>
-    <main>
-      {% block content %}{% endblock %}
-    </main>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Debug logging
+        console.log('Chatbot script loaded');
+        console.log('Chat widget element:', document.getElementById('chatWidget'));
+        
+        // Chatbot functionality
+        function toggleChat() {
+            console.log('toggleChat called');
+            const widget = document.getElementById('chatWidget');
+            console.log('Widget element:', widget);
+            widget.classList.toggle('open');
+            widget.classList.toggle('minimized');
+            
+            if (widget.classList.contains('open')) {
+                document.getElementById('messageInput').focus();
+            }
+        }
+        
+        function addMessage(content, isUser = false) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            messageDiv.textContent = content;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function showTyping() {
+            document.getElementById('typingIndicator').style.display = 'block';
+        }
+        
+        function hideTyping() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+        
+        async function sendMessage(event) {
+            event.preventDefault();
+            
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addMessage(message, true);
+            input.value = '';
+            
+            // Show typing indicator
+            showTyping();
+            
+            try {
+                const response = await fetch('{% url "llama_chat" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: `message=${encodeURIComponent(message)}`
+                });
+                
+                const data = await response.json();
+                
+                hideTyping();
+                
+                if (data.reply) {
+                    addMessage(data.reply, false);
+                } else {
+                    addMessage('Sorry, I encountered an error. Please try again.', false);
+                }
+            } catch (error) {
+                hideTyping();
+                addMessage('Sorry, I\'m having trouble connecting. Please check if Ollama is running.', false);
+            }
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Help function
+        function openHelp() {
+            console.log('Help button clicked');
+            const widget = document.getElementById('chatWidget');
+            
+            // Show the chat widget
+            widget.style.display = 'block';
+            widget.style.visibility = 'visible';
+            widget.style.zIndex = '9999';
+            
+            // Open the chat
+            widget.classList.add('open');
+            widget.classList.remove('minimized');
+            
+            // Focus on input
+            setTimeout(() => {
+                const input = document.getElementById('messageInput');
+                if (input) {
+                    input.focus();
+                }
+            }, 100);
+        }
+        
+        // Test function
+        function testChatbot() {
+            console.log('Test button clicked');
+            const widget = document.getElementById('chatWidget');
+            const statusDiv = document.getElementById('chatbotStatus');
+            
+            if (widget) {
+                widget.style.display = 'block';
+                widget.style.visibility = 'visible';
+                widget.style.zIndex = '9999';
+                widget.style.position = 'fixed';
+                widget.style.top = '50px';
+                widget.style.right = '20px';
+                widget.style.width = '400px';
+                widget.style.height = '500px';
+                widget.style.backgroundColor = 'white';
+                widget.style.border = '3px solid red';
+                
+                statusDiv.innerHTML = 'Status: ✅ Chatbot forced visible!';
+                console.log('✅ Chatbot forced visible');
+            } else {
+                statusDiv.innerHTML = 'Status: ❌ Chatbot element not found!';
+                console.log('❌ Chatbot element not found');
+            }
+        }
+        
+        // Auto-focus input when chat opens
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('messageInput');
+            const statusDiv = document.getElementById('chatbotStatus');
+            
+            // Check if elements exist
+            const widget = document.getElementById('chatWidget');
+            const messages = document.getElementById('chatMessages');
+            
+            if (widget && messages && input) {
+                statusDiv.innerHTML = 'Status: ✅ All elements found!';
+                console.log('✅ All chatbot elements found');
+            } else {
+                statusDiv.innerHTML = 'Status: ❌ Missing elements!';
+                console.log('❌ Some chatbot elements missing');
+            }
+            
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage(e);
+                }
+            });
+        });
+    </script>
 </body>
 </html> 

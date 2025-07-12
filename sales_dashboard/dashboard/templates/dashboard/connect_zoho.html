@@ -1,12 +1,171 @@
 {% extends 'dashboard/base.html' %}
 {% block title %}Connect Zoho - Targetorate{% endblock %}
 {% block content %}
+<style>
+  .connect-form {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+  }
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  .form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+  .form-control {
+    border-radius: 0.5rem;
+    border: 2px solid #e3e6f0;
+    padding: 0.75rem;
+    transition: border-color 0.2s;
+  }
+  .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
+  .btn-connect {
+    background: #2c5aa0;
+    border-color: #2c5aa0;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+  }
+  .btn-connect:hover {
+    background: #1e4a8a;
+    border-color: #1a3f75;
+  }
+  .api-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #2c5aa0;
+  }
+  .step-indicator {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+  .step {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin: 0 0.5rem;
+  }
+  .step.active {
+    background: #2c5aa0;
+    color: #fff;
+  }
+</style>
+
 <div class="container mt-5">
-  <h2>Connect Zoho</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Connect</button>
-  </form>
+  <div class="connect-form">
+    <div class="step-indicator">
+      <div class="step active">1</div>
+      <div class="step">2</div>
+      <div class="step">3</div>
+    </div>
+    
+    <h2 class="text-center mb-4">
+      <i class="fas fa-cloud text-primary"></i> Connect Zoho
+    </h2>
+    
+    <div class="api-info">
+      <h5><i class="fas fa-key"></i> API Token Connection</h5>
+      <p class="mb-0">Connect your Zoho account using your API token. You can generate this in your Zoho account settings.</p>
+    </div>
+    
+    <form method="post" id="zoho-form">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label class="form-label">Zoho API Token</label>
+        <input type="password" name="api_token" class="form-control" placeholder="Your Zoho API token" required>
+        <small class="text-muted">Found in Zoho: Setup > Developer Space > Self-Client</small>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Zoho Domain</label>
+        <input type="text" name="domain" class="form-control" placeholder="yourdomain.zoho.com" required>
+        <small class="text-muted">Your Zoho CRM domain</small>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Client ID</label>
+        <input type="text" name="client_id" class="form-control" placeholder="Your Zoho client ID" required>
+        <small class="text-muted">From Zoho Developer Console</small>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Client Secret</label>
+        <input type="password" name="client_secret" class="form-control" placeholder="Your Zoho client secret" required>
+        <small class="text-muted">From Zoho Developer Console</small>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Refresh Token</label>
+        <input type="text" name="refresh_token" class="form-control" placeholder="Your refresh token" required>
+        <small class="text-muted">Obtained through OAuth flow</small>
+      </div>
+      
+      <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-connect">
+          <i class="fas fa-link"></i> Connect Zoho Account
+        </button>
+        <a href="{% url 'connect_tools_portal' %}" class="btn btn-outline-secondary">
+          <i class="fas fa-arrow-left"></i> Back to Tools
+        </a>
+      </div>
+    </form>
+  </div>
 </div>
+
+<script>
+document.getElementById('zoho-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const formData = new FormData(this);
+  const submitBtn = this.querySelector('button[type="submit"]');
+  const originalText = submitBtn.innerHTML;
+  
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+  submitBtn.disabled = true;
+  
+  fetch('{% url "connect_zoho" %}', {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'success') {
+      alert('Zoho connected successfully!');
+      window.location.href = '{% url "connect_tools_portal" %}';
+    } else {
+      alert('Failed to connect: ' + data.message);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while connecting. Please try again.');
+  })
+  .finally(() => {
+    submitBtn.innerHTML = originalText;
+    submitBtn.disabled = false;
+  });
+});
+</script>
 {% endblock %} 

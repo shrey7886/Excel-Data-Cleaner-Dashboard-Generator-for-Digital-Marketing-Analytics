@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q, Sum, Avg
 from django.http import JsonResponse
 from django.core.paginator import Paginator
-from .forms import UserRegistrationForm, LoginForm, ClientForm, UserProfileForm, CampaignFilterForm
+from .forms import UserRegistrationForm, LoginForm, ClientForm, UserProfileForm, CampaignFilterForm, UserEditForm
 from .models import Client, Campaign, CampaignReport, UserProfile
 
 def register_view(request):
@@ -89,17 +89,21 @@ def profile_view(request):
         profile = UserProfile.objects.create(user=request.user)
     
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, instance=profile)
-        if form.is_valid():
-            form.save()
+        user_form = UserEditForm(request.POST, instance=request.user)
+        profile_form = UserProfileForm(request.POST, instance=profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
             messages.success(request, 'Profile updated successfully!')
             return redirect('profile')
     else:
-        form = UserProfileForm(instance=profile)
+        user_form = UserEditForm(instance=request.user)
+        profile_form = UserProfileForm(instance=profile)
     
     context = {
         'profile': profile,
-        'form': form,
+        'user_form': user_form,
+        'form': profile_form,
         'user': request.user,
     }
     return render(request, 'dashboard/auth/profile.html', context)

@@ -1,0 +1,238 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Advanced Analytics - Targetorate{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Advanced Analytics Dashboard</h2>
+  <ul class="nav nav-tabs mb-4 bg-dark border-bottom border-secondary" id="analyticsTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active text-light bg-dark border-secondary" id="timeseries-tab" data-bs-toggle="tab" data-bs-target="#timeseries" type="button" role="tab" title="Trends, seasonality, and forecasts">
+        <i class="fas fa-chart-line me-1"></i> Time Series
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link text-light bg-dark border-secondary" id="segmentation-tab" data-bs-toggle="tab" data-bs-target="#segmentation" type="button" role="tab" title="Cluster campaigns/clients by performance">
+        <i class="fas fa-object-group me-1"></i> Segmentation
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link text-light bg-dark border-secondary" id="attribution-tab" data-bs-toggle="tab" data-bs-target="#attribution" type="button" role="tab" title="Multi-touch attribution modeling">
+        <i class="fas fa-random me-1"></i> Attribution
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link text-light bg-dark border-secondary" id="anomaly-tab" data-bs-toggle="tab" data-bs-target="#anomaly" type="button" role="tab" title="Detect unusual spikes/drops">
+        <i class="fas fa-exclamation-triangle me-1"></i> Anomaly Detection
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link text-light bg-dark border-secondary" id="cohort-tab" data-bs-toggle="tab" data-bs-target="#cohort" type="button" role="tab" title="Track user groups over time">
+        <i class="fas fa-users me-1"></i> Cohort Analysis
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link text-light bg-dark border-secondary" id="funnel-tab" data-bs-toggle="tab" data-bs-target="#funnel" type="button" role="tab" title="Visualize conversion steps and drop-offs">
+        <i class="fas fa-filter me-1"></i> Funnel Analysis
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link text-light bg-dark border-secondary" id="kpi-tab" data-bs-toggle="tab" data-bs-target="#kpi" type="button" role="tab" title="Custom KPIs: ROI, LTV, CAC, engagement">
+        <i class="fas fa-bullseye me-1"></i> Custom KPIs
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link text-light bg-dark border-secondary" id="comparative-tab" data-bs-toggle="tab" data-bs-target="#comparative" type="button" role="tab" title="Compare periods, campaigns, or channels">
+        <i class="fas fa-balance-scale me-1"></i> Comparative
+      </button>
+    </li>
+  </ul>
+  <div class="tab-content" id="analyticsTabsContent">
+    <div class="tab-pane fade show active" id="timeseries" role="tabpanel">
+      <div class="card mb-4 shadow-sm border-0 bg-dark text-light">
+        <div class="card-header bg-secondary text-white"><strong>Time Series Analysis</strong></div>
+        <div class="card-body">
+          <p>Visualize trends, seasonality, and forecasts for your marketing KPIs over time.</p>
+          <div id="timeseries-chart" class="analytics-chart-placeholder">[Time Series Chart]</div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="segmentation" role="tabpanel">
+      <div class="card mb-4">
+        <div class="card-header"><strong>Segmentation</strong></div>
+        <div class="card-body">
+          <p>Cluster your campaigns or clients by performance and discover actionable segments.</p>
+          <div id="segmentation-chart" class="analytics-chart-placeholder">[Segmentation Chart]</div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="attribution" role="tabpanel">
+      <div class="card mb-4">
+        <div class="card-header"><strong>Attribution Modeling</strong></div>
+        <div class="card-body">
+          <p>Analyze multi-touch attribution to understand which channels drive conversions.</p>
+          <div id="attribution-chart" class="analytics-chart-placeholder">[Attribution Chart]</div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="anomaly" role="tabpanel">
+      <div class="card mb-4">
+        <div class="card-header"><strong>Anomaly Detection</strong></div>
+        <div class="card-body">
+          <p>Detect unusual spikes or drops in your marketing data automatically.</p>
+          <div id="anomaly-chart" class="analytics-chart-placeholder">[Anomaly Detection Chart]</div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="cohort" role="tabpanel">
+      <div class="card mb-4">
+        <div class="card-header"><strong>Cohort Analysis</strong></div>
+        <div class="card-body">
+          <p>Track user or lead groups over time to measure retention and engagement.</p>
+          <div id="cohort-chart" class="analytics-chart-placeholder">[Cohort Analysis Chart]</div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="funnel" role="tabpanel">
+      <div class="card mb-4">
+        <div class="card-header"><strong>Funnel Analysis</strong></div>
+        <div class="card-body">
+          <p>Visualize conversion steps and drop-offs in your marketing funnel.</p>
+          <div id="funnel-chart" class="analytics-chart-placeholder">[Funnel Analysis Chart]</div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="kpi" role="tabpanel">
+      <div class="card mb-4">
+        <div class="card-header"><strong>Custom KPIs</strong></div>
+        <div class="card-body">
+          <p>Calculate and monitor custom KPIs like ROI, LTV, CAC, and engagement rates.</p>
+          <div id="kpi-chart" class="analytics-chart-placeholder">[Custom KPIs]</div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="comparative" role="tabpanel">
+      <div class="card mb-4">
+        <div class="card-header"><strong>Comparative Analytics</strong></div>
+        <div class="card-body">
+          <p>Compare periods, campaigns, or channels to identify what works best.</p>
+          <div id="comparative-chart" class="analytics-chart-placeholder">[Comparative Analytics Chart]</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+.analytics-chart-placeholder {
+  min-height: 250px;
+  background: #23272b;
+  border: 1px dashed #495057;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #adb5bd;
+  font-size: 1.2rem;
+  position: relative;
+}
+.analytics-loading-spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2rem;
+  height: 2rem;
+  border: 4px solid #343a40;
+  border-top: 4px solid #0d6efd;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: none;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.card-header.bg-secondary {
+  background: linear-gradient(90deg, #343a40 60%, #2e86ab 100%) !important;
+}
+</style>
+<script>
+function showLoading(chartId) {
+  let chart = document.getElementById(chartId);
+  if (!chart) return;
+  let spinner = chart.querySelector('.analytics-loading-spinner');
+  if (!spinner) {
+    spinner = document.createElement('div');
+    spinner.className = 'analytics-loading-spinner';
+    chart.appendChild(spinner);
+  }
+  spinner.style.display = 'block';
+}
+function hideLoading(chartId) {
+  let chart = document.getElementById(chartId);
+  if (!chart) return;
+  let spinner = chart.querySelector('.analytics-loading-spinner');
+  if (spinner) spinner.style.display = 'none';
+}
+function loadAnalytics(analyticType, chartId) {
+  showLoading(chartId);
+  fetch('/api/advanced-analytics/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken'),
+    },
+    body: JSON.stringify({ analytic_type: analyticType })
+  })
+  .then(response => response.json())
+  .then(data => {
+    hideLoading(chartId);
+    if (data.status === 'ok') {
+      document.getElementById(chartId).innerHTML = '<pre>' + JSON.stringify(data.data, null, 2) + '</pre>';
+    } else {
+      document.getElementById(chartId).innerHTML = '<span class="text-danger">' + (data.message || 'Error loading analytics') + '</span>';
+    }
+  })
+  .catch(err => {
+    hideLoading(chartId);
+    document.getElementById(chartId).innerHTML = '<span class="text-danger">Error: ' + err.message + '</span>';
+  });
+}
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+document.addEventListener('DOMContentLoaded', function() {
+  // Load the first tab by default
+  loadAnalytics('timeseries', 'timeseries-chart');
+  // Add event listeners for tab changes
+  const tabMap = {
+    'timeseries-tab': ['timeseries', 'timeseries-chart'],
+    'segmentation-tab': ['segmentation', 'segmentation-chart'],
+    'attribution-tab': ['attribution', 'attribution-chart'],
+    'anomaly-tab': ['anomaly', 'anomaly-chart'],
+    'cohort-tab': ['cohort', 'cohort-chart'],
+    'funnel-tab': ['funnel', 'funnel-chart'],
+    'kpi-tab': ['kpi', 'kpi-chart'],
+    'comparative-tab': ['comparative', 'comparative-chart'],
+  };
+  Object.keys(tabMap).forEach(tabId => {
+    const tabBtn = document.getElementById(tabId);
+    if (tabBtn) {
+      tabBtn.addEventListener('shown.bs.tab', function() {
+        const [analyticType, chartId] = tabMap[tabId];
+        loadAnalytics(analyticType, chartId);
+      });
+    }
+  });
+});
+</script>
+{% endblock %} 

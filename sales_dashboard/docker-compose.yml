@@ -1,20 +1,46 @@
 version: '3.8'
 
 services:
+  # Django Web Application
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
+      - DEBUG=False
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/sales_dashboard
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./media:/app/media
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   # PostgreSQL Database
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: sales_dashboard
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      - POSTGRES_DB=sales_dashboard
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     restart: unless-stopped
 
-  # Redis for caching and Celery
+  # Redis for Caching and Celery
   redis:
     image: redis:7-alpine
     ports:
@@ -23,78 +49,45 @@ services:
       - redis_data:/data
     restart: unless-stopped
 
-  # Django Web Application
-  web:
-    build: .
-    command: gunicorn sales_dashboard.wsgi:application --config gunicorn.conf.py
-    environment:
-      - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=${DEBUG:-False}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}
-      - DB_NAME=${DB_NAME:-sales_dashboard}
-      - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
-      - DB_HOST=db
-      - DB_PORT=5432
-      - REDIS_URL=redis://redis:6379/1
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    volumes:
-      - .:/app
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-      - redis
-    restart: unless-stopped
-
   # Celery Worker
   celery:
     build: .
-    command: celery -A sales_dashboard worker -l info
+    command: celery -A sales_dashboard worker --loglevel=info
     environment:
-      - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=${DEBUG:-False}
-      - DB_NAME=${DB_NAME:-sales_dashboard}
-      - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
-      - DB_HOST=db
-      - DB_PORT=5432
-      - REDIS_URL=redis://redis:6379/1
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
+      - DEBUG=False
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/sales_dashboard
+      - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    volumes:
-      - .:/app
     depends_on:
       - db
       - redis
+    volumes:
+      - ./media:/app/media
+      - ./logs:/app/logs
     restart: unless-stopped
 
   # Celery Beat (Scheduler)
   celery-beat:
     build: .
-    command: celery -A sales_dashboard beat -l info
+    command: celery -A sales_dashboard beat --loglevel=info
     environment:
-      - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=${DEBUG:-False}
-      - DB_NAME=${DB_NAME:-sales_dashboard}
-      - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
-      - DB_HOST=db
-      - DB_PORT=5432
-      - REDIS_URL=redis://redis:6379/1
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
+      - DEBUG=False
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/sales_dashboard
+      - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    volumes:
-      - .:/app
     depends_on:
       - db
       - redis
+    volumes:
+      - ./media:/app/media
+      - ./logs:/app/logs
     restart: unless-stopped
 
-  # Nginx Reverse Proxy
+  # Nginx Reverse Proxy (Optional)
   nginx:
     image: nginx:alpine
     ports:
@@ -102,15 +95,12 @@ services:
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
-      - ./ssl:/etc/nginx/ssl
+      - ./staticfiles:/app/staticfiles
+      - ./media:/app/media
     depends_on:
       - web
     restart: unless-stopped
 
 volumes:
   postgres_data:
-  redis_data:
-  static_volume:
-  media_volume: 
+  redis_data: 
