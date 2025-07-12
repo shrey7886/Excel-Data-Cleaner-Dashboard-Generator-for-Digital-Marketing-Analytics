@@ -352,3 +352,24 @@ class DemandbaseData(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='demandbase_data')
     data = models.JSONField()
     fetched_at = models.DateTimeField(auto_now_add=True)
+
+class UnifiedClientData(models.Model):
+    """Aggregated unified data summary for each client"""
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='unified_data')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=[('synced', 'Synced'), ('processing', 'Processing'), ('failed', 'Failed')], default='synced')
+    total_records = models.IntegerField(default=0)
+    date_range_start = models.DateField(blank=True, null=True)
+    date_range_end = models.DateField(blank=True, null=True)
+    platforms_included = models.JSONField(default=list)
+    data_summary = models.JSONField(default=dict)  # KPIs, totals, etc.
+    error_message = models.TextField(blank=True)
+    processing_started_at = models.DateTimeField(blank=True, null=True)
+    processing_completed_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['-uploaded_at']
+        unique_together = ['client', 'date_range_start', 'date_range_end']
+
+    def __str__(self):
+        return f"Unified Data for {self.client.company} ({self.date_range_start} to {self.date_range_end})"

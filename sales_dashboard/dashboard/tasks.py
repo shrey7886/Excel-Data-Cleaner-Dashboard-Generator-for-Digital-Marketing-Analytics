@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from .models import (
     Client, GoogleAdsCredential, LinkedInAdsCredential, MailchimpCredential,
     ZohoCredential, DemandbaseCredential, GoogleAdsData, LinkedInAdsData,
-    MailchimpData, ZohoData, DemandbaseData
+    MailchimpData, ZohoData, DemandbaseData, UnifiedClientData
 )
 from api_integrations.google_ads import fetch_google_ads_data
 from api_integrations.linkedin_ads import fetch_linkedin_ads_data
@@ -18,6 +18,59 @@ from api_integrations.zoho import fetch_zoho_data
 from api_integrations.demandbase import fetch_demandbase_data
 
 logger = logging.getLogger(__name__)
+
+def aggregate_unified_data_for_client(client):
+    """Aggregate latest data from all tools and update UnifiedClientData summary for the client."""
+    from django.utils import timezone
+    import datetime
+    # Fetch latest data from each tool
+    tool_models = [GoogleAdsData, LinkedInAdsData, MailchimpData, ZohoData, DemandbaseData]
+    all_data = []
+    platforms = []
+    date_start, date_end = None, None
+    total_records = 0
+    for model in tool_models:
+        tool_data = model.objects.filter(client=client).order_by('-fetched_at')
+        if tool_data.exists():
+            platforms.append(model.__name__.replace('Data', ''))
+            for entry in tool_data:
+                if isinstance(entry.data, list):
+                    all_data.extend(entry.data)
+                else:
+                    all_data.append(entry.data)
+                # Try to get date range from data
+                for record in (entry.data if isinstance(entry.data, list) else [entry.data]):
+                    date_val = record.get('date') or record.get('Date')
+                    if date_val:
+                        try:
+                            d = datetime.datetime.strptime(str(date_val), '%Y-%m-%d').date()
+                            if not date_start or d < date_start:
+                                date_start = d
+                            if not date_end or d > date_end:
+                                date_end = d
+                        except Exception:
+                            continue
+    total_records = len(all_data)
+    # Calculate summary KPIs (example: impressions, clicks, spend, revenue)
+    kpis = {'impressions': 0, 'clicks': 0, 'spend': 0, 'revenue': 0}
+    for record in all_data:
+        for k in kpis:
+            try:
+                kpis[k] += float(record.get(k, 0) or 0)
+            except Exception:
+                continue
+    # Save or update UnifiedClientData
+    UnifiedClientData.objects.create(
+        client=client,
+        status='synced',
+        total_records=total_records,
+        date_range_start=date_start,
+        date_range_end=date_end,
+        platforms_included=platforms,
+        data_summary=kpis,
+        processing_started_at=timezone.now(),
+        processing_completed_at=timezone.now(),
+    )
 
 @shared_task
 def sync_google_ads_data():
@@ -39,6 +92,8 @@ def sync_google_ads_data():
                     data=df.to_dict(orient='records'),
                     fetched_at=timezone.now()
                 )
+                # AGGREGATE unified data
+                aggregate_unified_data_for_client(client)
                 
                 logger.info(f"Successfully synced Google Ads data for client: {client.company}")
                 
@@ -72,6 +127,7 @@ def sync_linkedin_ads_data():
                     data=df.to_dict(orient='records'),
                     fetched_at=timezone.now()
                 )
+                aggregate_unified_data_for_client(client)
                 
                 logger.info(f"Successfully synced LinkedIn Ads data for client: {client.company}")
                 
@@ -105,6 +161,7 @@ def sync_mailchimp_data():
                     data=df.to_dict(orient='records'),
                     fetched_at=timezone.now()
                 )
+                aggregate_unified_data_for_client(client)
                 
                 logger.info(f"Successfully synced Mailchimp data for client: {client.company}")
                 
@@ -138,6 +195,7 @@ def sync_zoho_data():
                     data=df.to_dict(orient='records'),
                     fetched_at=timezone.now()
                 )
+                aggregate_unified_data_for_client(client)
                 
                 logger.info(f"Successfully synced Zoho data for client: {client.company}")
                 
@@ -171,6 +229,7 @@ def sync_demandbase_data():
                     data=df.to_dict(orient='records'),
                     fetched_at=timezone.now()
                 )
+                aggregate_unified_data_for_client(client)
                 
                 logger.info(f"Successfully synced Demandbase data for client: {client.company}")
                 

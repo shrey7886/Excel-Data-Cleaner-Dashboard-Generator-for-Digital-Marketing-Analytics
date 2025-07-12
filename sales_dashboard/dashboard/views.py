@@ -1,30 +1,19 @@
 import sys
 import os
-# Add project root to sys.path for src import
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.db.models import Q, Sum, Avg
-from django.http import JsonResponse, HttpResponse
+from django.db.models import Sum, Avg
+from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.contrib.auth.forms import AuthenticationForm
-from .forms import UserRegistrationForm, LoginForm, ClientForm, UserProfileForm, CampaignFilterForm, UserEditForm
 from .models import Client, Campaign, CampaignReport, UserProfile, MLPrediction, MonthlySummary, ClientPrediction
 import json
 from datetime import datetime, timedelta
-import os
 from django.conf import settings
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-import io
-import base64
+import requests  # For AI chat view
 
 # Lazy imports for heavy libraries - only import when needed
 def get_pandas():
@@ -36,15 +25,12 @@ def get_numpy():
     return np
 
 def get_openpyxl():
-    from openpyxl import Workbook
-    from openpyxl.styles import Font, PatternFill, Alignment
-    from openpyxl.utils.dataframe import dataframe_to_rows
-    return Workbook, Font, PatternFill, Alignment, dataframe_to_rows
+    import openpyxl
+    return openpyxl
 
 def get_matplotlib():
     import matplotlib.pyplot as plt
-    import seaborn as sns
-    return plt, sns
+    return plt
 
 # --- STUB for advanced_analytics ---
 class AdvancedAnalyticsStub:
@@ -408,13 +394,18 @@ def unified_data_list(request):
         messages.error(request, 'No client associated with your account.')
         return redirect('client_portal')
     
-    # For now, return empty list with proper context
+    # Fetch unified data summaries for this client
+    from .models import UnifiedClientData
+    unified_data_qs = UnifiedClientData.objects.filter(client=client).order_by('-uploaded_at')
+    total_files = unified_data_qs.count()
+    total_records = sum([ud.total_records for ud in unified_data_qs])
+    
     context = {
         'client': client,
         'profile': profile,
-        'unified_data_list': [],  # Empty for now
-        'total_files': 0,
-        'total_records': 0,
+        'unified_data_list': unified_data_qs,
+        'total_files': total_files,
+        'total_records': total_records,
     }
     return render(request, 'dashboard/unified_data_list.html', context)
 
