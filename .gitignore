@@ -138,7 +138,7 @@ db.sqlite3-journal
 media/
 
 # Static files
-static/
+staticfiles/
 
 # Environment variables
 .env
@@ -157,86 +157,4 @@ Thumbs.db
 
 # Temporary files
 *.tmp
-*.temp
-temp_*.xlsx
-
-# ML models (large files)
-*.pkl
-*.joblib
-
-# Output files
-output/
-*.xlsx
-*.csv
-
-# Input files (sample data)
-input/
-
-# Logs
-*.log
-logs/
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# API keys and secrets
-secrets.json
-credentials.json
-*.key
-*.pem
-
-# Node modules (if any frontend)
-node_modules/
-npm-debug.log*
-
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.so
-
-# Virtual environment
-venv/
-env/
-ENV/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Temporary files
-temp_*.xlsx
-*.tmp
-*.temp
-
-# Large files
-*.pkl
-*.joblib
-*.h5
-*.hdf5
-
-# Output and input directories
-output/
-input/
-
-# Logs
-*.log
-app.log
-
-# Database
-*.db
-*.sqlite3
-
-# Environment variables
-.env
-.env.local 
+*.temp 

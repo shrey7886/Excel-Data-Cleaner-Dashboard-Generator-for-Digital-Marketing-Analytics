@@ -1,1 +1,1 @@
-web: gunicorn sales_dashboard.wsgi:application --bind 0.0.0.0:$PORT 
+web: cd sales_dashboard && python manage.py migrate && gunicorn sales_dashboard.wsgi:application 
