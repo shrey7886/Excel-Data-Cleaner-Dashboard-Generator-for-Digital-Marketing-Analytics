@@ -1,10 +1,10 @@
 Django==5.2.4
 django-crispy-forms==2.1
 crispy-bootstrap5==0.7
-Pillow==10.0.1
+Pillow
 requests==2.31.0
-pandas==2.1.4
-numpy==2.1.4
+pandas
+numpy
 djangorestframework==3.14.0
 django-cors-headers==4.3.1
 gunicorn==21.2.0
