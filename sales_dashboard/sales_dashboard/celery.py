@@ -7,7 +7,7 @@ from celery import Celery
 from celery.schedules import crontab
 
 # Set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sales_dashboard.settings_production')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sales_dashboard.settings')
 
 app = Celery('sales_dashboard')
 
@@ -63,4 +63,5 @@ app.conf.beat_schedule = {
 
 @app.task(bind=True)
 def debug_task(self):
-    print(f'Request: {self.request!r}') 
+    """Debug task for testing Celery."""
+    pass 

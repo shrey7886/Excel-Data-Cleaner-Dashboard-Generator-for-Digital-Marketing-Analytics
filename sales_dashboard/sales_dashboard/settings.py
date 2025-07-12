@@ -28,8 +28,6 @@ DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com', '.railway.app', '.herokuapp.com']
 
-print(f"[Django settings] DEBUG={DEBUG}, ALLOWED_HOSTS={ALLOWED_HOSTS}")
-
 
 # Application definition
 

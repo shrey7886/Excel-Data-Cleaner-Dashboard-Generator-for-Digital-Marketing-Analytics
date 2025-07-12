@@ -11,4 +11,8 @@ gunicorn==21.2.0
 whitenoise==6.6.0
 openpyxl
 matplotlib
-seaborn 
+seaborn
+python-decouple
+dj-database-url
+celery
+redis 

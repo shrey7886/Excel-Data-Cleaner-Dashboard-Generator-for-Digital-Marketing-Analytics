@@ -4,7 +4,17 @@ Production settings for sales_dashboard project.
 
 import os
 from .settings import *
-from decouple import config
+
+# Try to import decouple, fall back to os.environ if not available
+try:
+    from decouple import config
+except ImportError:
+    def config(key, default=None, cast=None):
+        value = os.environ.get(key, default)
+        if cast and value is not None:
+            return cast(value)
+        return value
+
 import dj_database_url
 
 # SECURITY WARNING: don't run with debug turned on in production!
