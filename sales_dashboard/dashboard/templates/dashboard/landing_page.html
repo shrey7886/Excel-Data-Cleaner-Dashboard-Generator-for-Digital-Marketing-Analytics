@@ -1,0 +1,175 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Targetorate - Digital Marketing Analytics Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card bg-gradient-primary text-white">
+                <div class="card-body text-center py-5">
+                    <h1 class="display-4 mb-3">Welcome to Targetorate</h1>
+                    <p class="lead mb-4">Advanced Digital Marketing Analytics & Data Cleaning Dashboard</p>
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <p class="mb-4">Transform your marketing data into actionable insights with our AI-powered analytics platform. Clean, analyze, and predict campaign performance across all your marketing channels.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'login' %}" class="btn btn-light btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Platform Features</h2>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Advanced Analytics</h5>
+                    <p class="card-text">Comprehensive analytics across Google Ads, LinkedIn, Mailchimp, Zoho, and Demandbase with real-time insights.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-robot fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">AI Predictions</h5>
+                    <p class="card-text">Machine learning-powered predictions for campaign performance, revenue forecasting, and optimization recommendations.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-file-excel fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Excel Dashboard Generator</h5>
+                    <p class="card-text">Automatically generate comprehensive Excel dashboards with charts, KPIs, and actionable insights.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-broom fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Data Cleaning</h5>
+                    <p class="card-text">Advanced data cleaning and preprocessing tools to ensure your marketing data is accurate and reliable.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-sync-alt fa-3x text-secondary mb-3"></i>
+                    <h5 class="card-title">Platform Integration</h5>
+                    <p class="card-text">Seamless integration with major marketing platforms for automated data collection and analysis.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-chart-bar fa-3x text-danger mb-3"></i>
+                    <h5 class="card-title">Custom Reports</h5>
+                    <p class="card-text">Generate custom reports and visualizations tailored to your specific marketing needs and KPIs.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Platform Integration Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Supported Platforms</h2>
+        </div>
+        
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fab fa-google fa-2x text-primary mb-2"></i>
+                    <h6>Google Ads</h6>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fab fa-linkedin fa-2x text-info mb-2"></i>
+                    <h6>LinkedIn Ads</h6>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-envelope fa-2x text-warning mb-2"></i>
+                    <h6>Mailchimp</h6>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-building fa-2x text-success mb-2"></i>
+                    <h6>Zoho CRM</h6>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-database fa-2x text-secondary mb-2"></i>
+                    <h6>Demandbase</h6>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 col-6 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-upload fa-2x text-dark mb-2"></i>
+                    <h6>Excel Upload</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-dark text-white text-center">
+                <div class="card-body py-5">
+                    <h3 class="mb-3">Ready to Transform Your Marketing Analytics?</h3>
+                    <p class="lead mb-4">Join thousands of marketers who trust Targetorate for their data-driven decisions.</p>
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-rocket me-2"></i>Get Started Today
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -5,17 +5,33 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.views.decorators.http import require_POST
-from django.http import JsonResponse
-import json
+from django.contrib.auth.models import User
+from django.db.models import Q, Sum, Avg
+from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator
-from django.db.models import Sum, Avg
-from .models import Campaign, CampaignReport, UserProfile, Client, MLPrediction, ClientPrediction, MonthlySummary
-from .forms import CampaignFilterForm
-import requests
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.forms import AuthenticationForm
+from .forms import UserRegistrationForm, LoginForm, ClientForm, UserProfileForm, CampaignFilterForm, UserEditForm
+from .models import Client, Campaign, CampaignReport, UserProfile, MLPrediction, MonthlySummary, ClientPrediction
+import json
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import os
+from django.conf import settings
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+import io
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.utils.dataframe import dataframe_to_rows
+import matplotlib.pyplot as plt
+import seaborn as sns
+from io import BytesIO
+import base64
 
 # --- STUB for advanced_analytics ---
 class AdvancedAnalyticsStub:
@@ -92,6 +108,10 @@ def advanced_analytics_api(request):
 def health_check(request):
     return JsonResponse({'status': 'ok'})
 
+def landing_page(request):
+    """Public landing page for the application"""
+    return render(request, 'dashboard/landing_page.html')
+
 @login_required
 def client_portal(request):
     """Client portal view - shows only campaigns for the user's client"""
@@ -99,11 +119,20 @@ def client_portal(request):
         profile = request.user.profile
         client = profile.client
     except UserProfile.DoesNotExist:
-        messages.error(request, 'User profile not found.')
-        return render(request, 'dashboard/auth/client_portal.html', {'error': 'User profile not found.'})
+        # If user doesn't have a profile, redirect to login or show a message
+        messages.error(request, 'User profile not found. Please contact administrator.')
+        return render(request, 'dashboard/auth/client_portal.html', {
+            'error': 'User profile not found. Please contact administrator.',
+            'user': request.user
+        })
+    
     if not client:
         messages.error(request, 'No client associated with your account.')
-        return render(request, 'dashboard/auth/client_portal.html', {'error': 'No client found.'})
+        return render(request, 'dashboard/auth/client_portal.html', {
+            'error': 'No client found.',
+            'user': request.user
+        })
+    
     campaigns = Campaign.objects.filter(client=client)
     filter_form = CampaignFilterForm(request.GET)
     if filter_form.is_valid():

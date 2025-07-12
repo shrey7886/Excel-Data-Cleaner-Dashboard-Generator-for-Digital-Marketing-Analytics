@@ -6,9 +6,11 @@ from . import auth_views
 from .views import llama_chat
 
 urlpatterns = [
+    # Public landing page
+    path('', views.landing_page, name='landing_page'),
+    
     # Main views
-    path('', views.client_portal, name='client_portal'),
-    # path('dashboard/', views.dashboard, name='dashboard'),  # dashboard removed
+    path('dashboard/', views.client_portal, name='client_portal'),
     path('campaign/<int:campaign_id>/', views.campaign_detail, name='campaign_detail'),
     path('reports/', views.report_list, name='report_list'),
     
