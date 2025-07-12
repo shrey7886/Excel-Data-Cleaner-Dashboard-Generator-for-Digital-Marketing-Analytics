@@ -519,6 +519,9 @@ def ml_predictions_view(request):
         messages.error(request, 'No client associated with your account.')
         return redirect('client_portal')
     
+    # Import ML service
+    from .services import ml_service
+    
     # Get predictions for this client
     predictions = MLPrediction.objects.filter(client=client).order_by('-created_at')
     
@@ -563,6 +566,9 @@ def ml_predictions_view(request):
         # Refresh the predictions queryset
         predictions = MLPrediction.objects.filter(client=client).order_by('-created_at')
     
+    # Load model accuracy if available
+    ml_service.load_models()
+    
     # Prepare context for template
     context = {
         'predictions': predictions,
@@ -573,6 +579,8 @@ def ml_predictions_view(request):
         'monthly_forecast_data': {},  # Placeholder
         'future_forecasts': predictions.filter(prediction_type='monthly_forecast')[:5],
         'total_predictions': predictions.count(),
+        'model_accuracy': ml_service.model_accuracy,
+        'last_training': ml_service.last_training_date,
     }
     return render(request, 'dashboard/ml_predictions.html', context)
 
@@ -1221,3 +1229,35 @@ def llama_chat(request):
                 'reply': f'Sorry, there was an error connecting to the AI assistant. Please try again later. Error: {str(e)}'
             })
     return JsonResponse({'error': 'POST only'}) 
+
+@login_required
+@require_POST
+def train_ml_models(request):
+    """Trigger automatic ML model training"""
+    try:
+        profile = request.user.profile
+        client = profile.client
+    except UserProfile.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'User profile not found.'}, status=400)
+    
+    if not client:
+        return JsonResponse({'status': 'error', 'message': 'No client associated with your account.'}, status=400)
+    
+    # Import ML service
+    from .services import ml_service
+    
+    # Train models
+    success = ml_service.auto_train_models(client.id)
+    
+    if success:
+        return JsonResponse({
+            'status': 'success', 
+            'message': 'ML models trained successfully!',
+            'accuracy': ml_service.model_accuracy,
+            'last_training': ml_service.last_training_date.isoformat() if ml_service.last_training_date else None
+        })
+    else:
+        return JsonResponse({
+            'status': 'error', 
+            'message': 'Model training failed. Need at least 10 campaigns with sufficient data.'
+        }, status=400) 

@@ -9,9 +9,74 @@
         <h1 class="h3 mb-0 text-gray-800">
             <i class="fas fa-robot text-primary"></i> AI Predictions & Forecasts
         </h1>
-        <button class="btn btn-primary" onclick="generateNewPrediction()">
-            <i class="fas fa-plus"></i> Generate New Prediction
-        </button>
+        <div>
+            <button class="btn btn-success me-2" onclick="trainModels()">
+                <i class="fas fa-cogs"></i> Train Models
+            </button>
+            <button class="btn btn-primary" onclick="generateNewPrediction()">
+                <i class="fas fa-plus"></i> Generate New Prediction
+            </button>
+        </div>
+    </div>
+
+    <!-- Model Training Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-chart-line"></i> Model Training Status
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <h5 class="text-primary">CTR Model</h5>
+                                {% if model_accuracy.ctr %}
+                                    <div class="h4 text-success">{{ model_accuracy.ctr.r2|floatformat:3 }}</div>
+                                    <small class="text-muted">R² Score</small>
+                                {% else %}
+                                    <div class="h4 text-muted">Not Trained</div>
+                                    <small class="text-muted">Need more data</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <h5 class="text-primary">ROI Model</h5>
+                                {% if model_accuracy.roi %}
+                                    <div class="h4 text-success">{{ model_accuracy.roi.r2|floatformat:3 }}</div>
+                                    <small class="text-muted">R² Score</small>
+                                {% else %}
+                                    <div class="h4 text-muted">Not Trained</div>
+                                    <small class="text-muted">Need more data</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <h5 class="text-primary">Conversion Model</h5>
+                                {% if model_accuracy.conversion %}
+                                    <div class="h4 text-success">{{ model_accuracy.conversion.r2|floatformat:3 }}</div>
+                                    <small class="text-muted">R² Score</small>
+                                {% else %}
+                                    <div class="h4 text-muted">Not Trained</div>
+                                    <small class="text-muted">Need more data</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% if last_training %}
+                        <div class="text-center mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-clock"></i> Last trained: {{ last_training|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- AI Insights Section -->
@@ -248,6 +313,31 @@ function generateNewPrediction() {
         .catch(error => {
             console.error('Error:', error);
             alert('Error generating prediction');
+        });
+    }
+}
+
+function trainModels() {
+    if (confirm('Train ML models? This will retrain all models and may take a few minutes.')) {
+        fetch('{% url "train_ml_models" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Models trained successfully!');
+                location.reload();
+            } else {
+                alert('Error training models: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error training models');
         });
     }
 }

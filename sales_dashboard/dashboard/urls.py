@@ -37,6 +37,7 @@ urlpatterns = [
     path('ml-predictions/', views.ml_predictions_view, name='ml_predictions'),
     path('campaign-prediction/<int:prediction_id>/', views.campaign_prediction_detail, name='campaign_prediction_detail'),
     path('api/generate-prediction/', views.generate_ml_prediction, name='generate_ml_prediction'),
+    path('api/train-models/', views.train_ml_models, name='train_ml_models'),
     
     # API endpoints
     path('api/ml-insights/', views.ml_insights_api, name='ml_insights_api'),

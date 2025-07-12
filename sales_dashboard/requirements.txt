@@ -15,4 +15,6 @@ seaborn
 python-decouple
 dj-database-url
 celery
-redis 
+redis
+scikit-learn
+joblib 
