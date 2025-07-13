@@ -113,8 +113,8 @@ else:
 "
     
     # Create sample data
-    log_info "Creating sample data..."
-    docker-compose exec -T web python manage.py create_sample_auth_data || log_warning "Sample data creation failed (this is normal for first run)"
+    # log_info "Creating sample data..."
+    # docker-compose exec -T web python manage.py create_sample_auth_data || log_warning "Sample data creation failed (this is normal for first run)"
 }
 
 collect_static() {

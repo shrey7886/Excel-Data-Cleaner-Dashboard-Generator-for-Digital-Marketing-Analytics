@@ -34,7 +34,7 @@ docker-compose logs -f web
 docker-compose exec web python manage.py createsuperuser
 
 # Load sample data
-docker-compose exec web python manage.py load_demo_data
+# docker-compose exec web python manage.py load_demo_data
 ```
 
 ## 🖥️ Manual Deployment (Ubuntu/Debian)

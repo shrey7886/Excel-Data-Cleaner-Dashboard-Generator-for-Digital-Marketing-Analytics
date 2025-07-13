@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,9 @@
     <title>Sales Intelligence Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <meta name="description" content="Targetorate - Unified Digital Marketing Analytics Dashboard">
+    <meta name="keywords" content="marketing, analytics, dashboard, unified, digital, campaign, reporting, ML, AI">
     <style>
         /* Chatbot Widget Styles */
         .chat-widget {
@@ -43,17 +47,18 @@
             right: 20px;
             width: 350px;
             height: 500px;
-            background: white;
+            background: var(--dark-bg-secondary);
             border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 32px var(--dark-shadow);
             display: none;
             flex-direction: column;
             overflow: hidden;
+            border: 1px solid var(--dark-border);
         }
         
         .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--dark-accent) 0%, var(--dark-accent-hover) 100%);
+            color: var(--dark-bg-primary);
             padding: 15px;
             font-weight: bold;
             display: flex;
@@ -64,7 +69,7 @@
         .chat-close {
             background: none;
             border: none;
-            color: white;
+            color: var(--dark-bg-primary);
             font-size: 18px;
             cursor: pointer;
         }
@@ -73,7 +78,7 @@
             flex: 1;
             padding: 15px;
             overflow-y: auto;
-            background: #f8f9fa;
+            background: var(--dark-bg-primary);
         }
         
         .message {
@@ -85,24 +90,25 @@
         }
         
         .message.user {
-            background: #007bff;
-            color: white;
+            background: var(--dark-accent);
+            color: var(--dark-bg-primary);
             margin-left: auto;
             border-bottom-right-radius: 5px;
         }
         
         .message.bot {
-            background: white;
-            color: #333;
+            background: var(--dark-bg-tertiary);
+            color: var(--dark-text-primary);
             margin-right: auto;
             border-bottom-left-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px var(--dark-shadow);
+            border: 1px solid var(--dark-border);
         }
         
         .chat-input {
             padding: 15px;
-            border-top: 1px solid #e9ecef;
-            background: white;
+            border-top: 1px solid var(--dark-border);
+            background: var(--dark-bg-secondary);
         }
         
         .chat-input form {
@@ -113,28 +119,30 @@
         .chat-input input {
             flex: 1;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--dark-border);
             border-radius: 20px;
             outline: none;
+            background: var(--dark-bg-primary);
+            color: var(--dark-text-primary);
         }
         
         .chat-input button {
             padding: 10px 15px;
-            background: #007bff;
-            color: white;
+            background: var(--dark-accent);
+            color: var(--dark-bg-primary);
             border: none;
             border-radius: 20px;
             cursor: pointer;
         }
         
         .chat-input button:hover {
-            background: #0056b3;
+            background: var(--dark-accent-hover);
         }
         
         .typing-indicator {
             display: none;
             padding: 10px 15px;
-            color: #666;
+            color: var(--dark-text-muted);
             font-style: italic;
         }
         
@@ -172,29 +180,9 @@
 </div>
 <footer class="footer mt-auto py-3 bg-dark border-top border-secondary">
   <div class="container text-center">
-    <span class="text-muted">&copy; {{ year|default:2024 }} Targetorate. All rights reserved.</span>
+    <span class="text-muted">© 2024 Targetorate. All rights reserved.</span>
   </div>
 </footer>
-<style>
-body, .bg-dark {
-  background-color: #181a1b !important;
-  color: #f8f9fa !important;
-}
-.navbar, .footer {
-  background-color: #181a1b !important;
-}
-.card, .modal-content {
-  background-color: #23272b !important;
-  color: #f8f9fa !important;
-  border: 1px solid #343a40 !important;
-}
-.text-muted {
-  color: #adb5bd !important;
-}
-hr, .border-top, .border-secondary {
-  border-color: #343a40 !important;
-}
-</style>
 
     <!-- Chatbot Widget -->
     <div class="chat-widget" id="chatWidget" style="display: none;">
@@ -349,8 +337,8 @@ hr, .border-top, .border-secondary {
                 widget.style.right = '20px';
                 widget.style.width = '400px';
                 widget.style.height = '500px';
-                widget.style.backgroundColor = 'white';
-                widget.style.border = '3px solid red';
+                widget.style.backgroundColor = 'var(--dark-bg-secondary)';
+                widget.style.border = '3px solid var(--dark-accent)';
                 
                 statusDiv.innerHTML = 'Status: ✅ Chatbot forced visible!';
                 console.log('✅ Chatbot forced visible');

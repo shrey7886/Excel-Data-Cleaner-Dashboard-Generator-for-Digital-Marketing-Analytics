@@ -4,10 +4,10 @@ Startup script for the Django server with automatic Ollama/Llama 3 setup
 """
 import subprocess
 import time
-import sys
 import os
 import requests
 from pathlib import Path
+
 
 def check_ollama_installed():
     """Check if Ollama is installed"""
@@ -17,10 +17,11 @@ def check_ollama_installed():
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
+
 def start_ollama():
     """Start Ollama with Llama 3"""
     print("🦙 Starting Ollama with Llama 3...")
-    
+
     # Check if Ollama is installed
     if not check_ollama_installed():
         print("❌ Ollama is not installed.")
@@ -28,10 +29,12 @@ def start_ollama():
         print("   After installation, run this script again.")
         print("   For now, starting Django without chatbot support...")
         return False
-    
+
     # Check if Llama 3 model is available, if not pull it
     try:
-        result = subprocess.run(['ollama', 'list'], capture_output=True, text=True, check=True)
+        result = subprocess.run(
+            ['ollama', 'list'], capture_output=True, text=True, check=True
+        )
         if 'llama3' not in result.stdout:
             print("📥 Llama 3 model not found. Pulling...")
             print("   This may take a few minutes on first run...")
@@ -45,10 +48,12 @@ def start_ollama():
     # Start Ollama server in background
     try:
         print("🚀 Starting Ollama server...")
-        subprocess.Popen(['ollama', 'serve'], 
-                        stdout=subprocess.DEVNULL, 
-                        stderr=subprocess.DEVNULL)
-        
+        subprocess.Popen(
+            ['ollama', 'serve'],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+
         # Wait for Ollama to be ready
         print("⏳ Waiting for Ollama to be ready...")
         for i in range(30):  # Wait up to 30 seconds
@@ -60,13 +65,14 @@ def start_ollama():
             except requests.exceptions.RequestException:
                 pass
             time.sleep(1)
-        
+
         print("⚠️  Ollama may not be ready yet. The chatbot might not work.")
         return False
     except subprocess.CalledProcessError as e:
         print(f"❌ Error starting Ollama: {e}")
         print("   Starting Django without chatbot support...")
         return False
+
 
 def start_django():
     """Start Django development server"""
@@ -78,22 +84,23 @@ def start_django():
     except Exception as e:
         print(f"❌ Error starting Django server: {e}")
 
+
 def main():
     """Main function to start both Ollama and Django"""
     print("🚀 Starting Digital Marketing Analytics Dashboard...")
     print("=" * 50)
-    
+
     # Change to the sales_dashboard directory
     os.chdir(Path(__file__).parent)
-    
+
     # Start Ollama
     ollama_ready = start_ollama()
-    
+
     if ollama_ready:
         print("✅ Chatbot will be available!")
     else:
         print("⚠️  Chatbot will not be available. Install Ollama for full functionality.")
-    
+
     print("\n" + "=" * 50)
     print("🌐 Starting Django server...")
     print("📱 Access your dashboard at: http://127.0.0.1:8000")
@@ -103,9 +110,11 @@ def main():
         print("💬 Chatbot is disabled. Install Ollama for AI support.")
     print("🛑 Press Ctrl+C to stop the server")
     print("=" * 50)
-    
+
     # Start Django
     start_django()
 
+
 if __name__ == "__main__":
     main() 
+

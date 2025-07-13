@@ -20,9 +20,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.http import HttpResponse
 
+
 def health_check(request):
     """Health check endpoint for deployment monitoring."""
     return HttpResponse("OK", content_type="text/plain")
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,3 +34,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

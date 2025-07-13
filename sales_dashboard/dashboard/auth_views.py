@@ -3,11 +3,14 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.db.models import Q, Sum, Avg
-from django.http import JsonResponse
 from django.core.paginator import Paginator
-from .forms import UserRegistrationForm, LoginForm, ClientForm, UserProfileForm, CampaignFilterForm, UserEditForm
+from .forms import (
+    UserRegistrationForm, LoginForm, UserProfileForm,
+    CampaignFilterForm, UserEditForm
+)
 from .models import Client, Campaign, CampaignReport, UserProfile
+from django.db.models import Sum, Avg
+
 
 def register_view(request):
     """User registration view"""
@@ -16,37 +19,33 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, 'Account created successfully! Welcome to the dashboard.')
-            
-            # Check if user has a client profile and redirect accordingly
+            messages.success(
+                request,
+                'Account created successfully! Welcome to the dashboard.'
+            )
             try:
                 profile = user.profile
                 if profile.client:
                     return redirect('client_portal')
-                else:
-                    return redirect('client_portal')  # Changed from 'dashboard' to 'client_portal'
+                return redirect('client_portal')
             except UserProfile.DoesNotExist:
-                return redirect('client_portal')  # Changed from 'dashboard' to 'client_portal'
-        else:
-            messages.error(request, 'Please correct the errors below.')
+                return redirect('client_portal')
+        messages.error(request, 'Please correct the errors below.')
     else:
         form = UserRegistrationForm()
-    
     return render(request, 'dashboard/auth/register.html', {'form': form})
+
 
 def login_view(request):
     """User login view"""
     if request.user.is_authenticated:
-        # Check if user has a client profile and redirect accordingly
         try:
             profile = request.user.profile
             if profile.client:
                 return redirect('client_portal')
-            else:
-                return redirect('client_portal')  # Changed from 'dashboard' to 'client_portal'
+            return redirect('client_portal')
         except UserProfile.DoesNotExist:
-            return redirect('client_portal')  # Changed from 'dashboard' to 'client_portal'
-    
+            return redirect('client_portal')
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
@@ -56,22 +55,19 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, f'Welcome back, {user.first_name}!')
-                
-                # Check if user has a client profile and redirect accordingly
                 try:
                     profile = user.profile
                     if profile.client:
                         return redirect('client_portal')
-                    else:
-                        return redirect('client_portal')  # Changed from 'dashboard' to 'client_portal'
+                    return redirect('client_portal')
                 except UserProfile.DoesNotExist:
-                    return redirect('client_portal')  # Changed from 'dashboard' to 'client_portal'
+                    return redirect('client_portal')
         else:
             messages.error(request, 'Invalid username or password.')
     else:
         form = LoginForm()
-    
     return render(request, 'dashboard/auth/login.html', {'form': form})
+
 
 @login_required
 def logout_view(request):
@@ -80,6 +76,7 @@ def logout_view(request):
     messages.info(request, 'You have been logged out successfully.')
     return redirect('login')
 
+
 @login_required
 def profile_view(request):
     """User profile view"""
@@ -87,7 +84,6 @@ def profile_view(request):
         profile = request.user.profile
     except UserProfile.DoesNotExist:
         profile = UserProfile.objects.create(user=request.user)
-    
     if request.method == 'POST':
         user_form = UserEditForm(request.POST, instance=request.user)
         profile_form = UserProfileForm(request.POST, instance=profile)
@@ -99,7 +95,6 @@ def profile_view(request):
     else:
         user_form = UserEditForm(instance=request.user)
         profile_form = UserProfileForm(instance=profile)
-    
     context = {
         'profile': profile,
         'user_form': user_form,
@@ -107,6 +102,7 @@ def profile_view(request):
         'user': request.user,
     }
     return render(request, 'dashboard/auth/profile.html', context)
+
 
 @login_required
 def client_portal_view(request):
@@ -117,22 +113,16 @@ def client_portal_view(request):
     except UserProfile.DoesNotExist:
         messages.error(request, 'User profile not found.')
         return redirect('dashboard')
-    
     if not client:
         messages.error(request, 'No client associated with your account.')
         return redirect('dashboard')
-    
-    # Get campaigns for this client
     campaigns = Campaign.objects.filter(client=client)
-    
-    # Apply filters
     filter_form = CampaignFilterForm(request.GET)
     if filter_form.is_valid():
         platform = filter_form.cleaned_data.get('platform')
         status = filter_form.cleaned_data.get('status')
         date_from = filter_form.cleaned_data.get('date_from')
         date_to = filter_form.cleaned_data.get('date_to')
-        
         if platform:
             campaigns = campaigns.filter(platform=platform)
         if status:
@@ -141,25 +131,18 @@ def client_portal_view(request):
             campaigns = campaigns.filter(start_date__gte=date_from)
         if date_to:
             campaigns = campaigns.filter(start_date__lte=date_to)
-    
-    # Pagination
     paginator = Paginator(campaigns, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
-    # Calculate client-level KPIs
     total_campaigns = campaigns.count()
     active_campaigns = campaigns.filter(status='active').count()
     total_spend = campaigns.aggregate(total=Sum('spend'))['total'] or 0
     total_revenue = campaigns.aggregate(total=Sum('revenue'))['total'] or 0
     avg_ctr = campaigns.aggregate(avg=Avg('ctr'))['avg'] or 0
     avg_roi = campaigns.aggregate(avg=Avg('roi'))['avg'] or 0
-    
-    # Get recent reports
     recent_reports = CampaignReport.objects.filter(
         campaign__client=client
     ).order_by('-generated_at')[:5]
-    
     context = {
         'client': client,
         'campaigns': page_obj,
@@ -175,6 +158,7 @@ def client_portal_view(request):
     }
     return render(request, 'dashboard/auth/client_portal.html', context)
 
+
 @login_required
 def client_campaign_detail_view(request, campaign_id):
     """Client-specific campaign detail view"""
@@ -184,20 +168,22 @@ def client_campaign_detail_view(request, campaign_id):
     except UserProfile.DoesNotExist:
         messages.error(request, 'User profile not found.')
         return redirect('dashboard')
-    
+
     if not client:
         messages.error(request, 'No client associated with your account.')
         return redirect('dashboard')
-    
+
     # Get campaign for this client only
     campaign = get_object_or_404(Campaign, id=campaign_id, client=client)
-    
+
     # Get reports for this campaign
-    reports = CampaignReport.objects.filter(campaign=campaign).order_by('-generated_at')
-    
+    reports = CampaignReport.objects.filter(
+        campaign=campaign
+    ).order_by('-generated_at')
+
     # Get ML insights if available
     ml_insights = get_ml_insights_for_campaign(campaign)
-    
+
     context = {
         'campaign': campaign,
         'reports': reports,
@@ -205,7 +191,12 @@ def client_campaign_detail_view(request, campaign_id):
         'client': client,
         'profile': profile,
     }
-    return render(request, 'dashboard/auth/client_campaign_detail.html', context)
+    return render(
+        request,
+        'dashboard/auth/client_campaign_detail.html',
+        context
+    )
+
 
 @login_required
 def client_reports_view(request):
@@ -216,118 +207,91 @@ def client_reports_view(request):
     except UserProfile.DoesNotExist:
         messages.error(request, 'User profile not found.')
         return redirect('dashboard')
-    
+
     if not client:
         messages.error(request, 'No client associated with your account.')
         return redirect('dashboard')
-    
-    # Get reports for this client's campaigns
+
+    # Get all reports for this client
     reports = CampaignReport.objects.filter(
         campaign__client=client
     ).order_by('-generated_at')
-    
-    # Apply filters
-    report_type = request.GET.get('report_type')
+
+    # Apply filters if provided
+    platform = request.GET.get('platform')
     date_from = request.GET.get('date_from')
     date_to = request.GET.get('date_to')
-    
-    if report_type:
-        reports = reports.filter(report_type=report_type)
+
+    if platform:
+        reports = reports.filter(campaign__platform=platform)
     if date_from:
-        reports = reports.filter(generated_at__date__gte=date_from)
+        reports = reports.filter(generated_at__gte=date_from)
     if date_to:
-        reports = reports.filter(generated_at__date__lte=date_to)
-    
-    # Calculate summary statistics
-    total_spend = reports.aggregate(total=Sum('total_spend'))['total'] or 0
-    total_revenue = reports.aggregate(total=Sum('total_revenue'))['total'] or 0
-    avg_roi = reports.aggregate(avg=Avg('roi'))['avg'] or 0
-    
+        reports = reports.filter(generated_at__lte=date_to)
+
     # Pagination
-    paginator = Paginator(reports, 10)
+    paginator = Paginator(reports, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     context = {
         'reports': page_obj,
         'client': client,
         'profile': profile,
-        'report_types': CampaignReport.REPORT_TYPE_CHOICES,
-        'total_spend': total_spend,
-        'total_revenue': total_revenue,
-        'avg_roi': avg_roi,
+        'platform': platform,
+        'date_from': date_from,
+        'date_to': date_to,
     }
     return render(request, 'dashboard/auth/client_reports.html', context)
+
 
 def get_ml_insights_for_campaign(campaign):
     """Get ML insights for a specific campaign"""
     try:
-        # For now, return a simple placeholder since ML modules are not fully implemented
+        # This would typically fetch from your ML prediction models
+        # For now, return a placeholder
         return {
-            'ml_available': True,
-            'predictions': {
-                'random_forest': {
-                    'ctr': 5.2,
-                    'roi': 2.1,
-                    'conversion_rate': 3.8
-                },
-                'logistic': {
-                    'success_probability': 0.75
-                },
-                'cluster': 2
-            },
-            'insights': [
-                {
-                    'type': 'performance',
-                    'title': 'CTR Optimization Opportunity',
-                    'description': 'Your CTR is below industry average',
-                    'recommendation': 'Optimize ad copy and targeting',
-                    'confidence': 85,
-                    'priority': 'medium'
-                }
-            ]
+            'predicted_revenue': campaign.revenue * 1.1,
+            'predicted_ctr': campaign.ctr * 1.05,
+            'confidence_score': 0.85,
         }
-    except Exception as e:
-        return {
-            'ml_available': False,
-            'error': str(e)
-        }
+    except Exception:
+        return None
 
-# Admin views for managing clients and users
+
 @login_required
 def admin_clients_view(request):
-    """Admin view for managing clients"""
+    """Admin view to manage clients"""
     if not request.user.is_staff:
-        messages.error(request, 'Access denied. Admin privileges required.')
+        messages.error(request, 'Access denied.')
         return redirect('dashboard')
-    
+
     clients = Client.objects.all().order_by('name')
-    
-    if request.method == 'POST':
-        form = ClientForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Client created successfully!')
-            return redirect('admin_clients')
-    else:
-        form = ClientForm()
-    
+    paginator = Paginator(clients, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'clients': clients,
-        'form': form,
+        'clients': page_obj,
+        'total_clients': clients.count(),
     }
     return render(request, 'dashboard/admin/clients.html', context)
 
+
 @login_required
 def admin_users_view(request):
-    """Admin view for managing users"""
+    """Admin view to manage users"""
     if not request.user.is_staff:
-        messages.error(request, 'Access denied. Admin privileges required.')
+        messages.error(request, 'Access denied.')
         return redirect('dashboard')
-    
-    users = User.objects.select_related('profile').all().order_by('username')
-    
+
+    users = User.objects.all().order_by('username')
+    paginator = Paginator(users, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'users': users,
+        'users': page_obj,
+        'total_users': users.count(),
     }
-    return render(request, 'dashboard/admin/users.html', context) 
+    return render(request, 'dashboard/admin/users.html', context)

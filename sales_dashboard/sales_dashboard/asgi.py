@@ -16,7 +16,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
 # Set the Django settings module based on environment
-DJANGO_SETTINGS_MODULE = os.environ.get('DJANGO_SETTINGS_MODULE', 'sales_dashboard.settings')
+DJANGO_SETTINGS_MODULE = os.environ.get(
+    'DJANGO_SETTINGS_MODULE', 'sales_dashboard.settings'
+)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', DJANGO_SETTINGS_MODULE)
 
 # Import Django and configure settings

@@ -1,33 +1,364 @@
-/* Custom CSS for Sales Dashboard */
+/* Enhanced Dark Theme CSS for Sales Dashboard */
 
+/* Root variables for consistent theming */
+:root {
+  --dark-bg-primary: #0d1117;
+  --dark-bg-secondary: #161b22;
+  --dark-bg-tertiary: #21262d;
+  --dark-text-primary: #f0f6fc;
+  --dark-text-secondary: #c9d1d9;
+  --dark-text-muted: #8b949e;
+  --dark-border: #30363d;
+  --dark-border-hover: #484f58;
+  --dark-accent: #58a6ff;
+  --dark-accent-hover: #79c0ff;
+  --dark-success: #3fb950;
+  --dark-warning: #d29922;
+  --dark-danger: #f85149;
+  --dark-shadow: rgba(1, 4, 9, 0.3);
+}
+
+/* Global dark theme */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fc;
+  background-color: var(--dark-bg-primary) !important;
+  color: var(--dark-text-primary) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
 }
 
-.navbar-brand {
-    font-weight: bold;
+/* Navigation and layout components */
+.navbar, .top-navbar, .sidebar, .card, .modal-content, .dropdown-menu, .toast, .main-content, .chatbot-widget {
+  background-color: var(--dark-bg-secondary) !important;
+  color: var(--dark-text-primary) !important;
+  border-color: var(--dark-border) !important;
 }
 
-.card {
-    border: none;
-    border-radius: 1rem;
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-    transition: all 0.3s ease;
+.card-header, .card-footer, .modal-header, .modal-footer {
+  background-color: var(--dark-bg-tertiary) !important;
+  color: var(--dark-text-primary) !important;
+  border-color: var(--dark-border) !important;
 }
 
-.card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2);
+/* Tables */
+.table, .table-bordered, .table-hover, .table-light, .table-responsive {
+  background-color: var(--dark-bg-secondary) !important;
+  color: var(--dark-text-primary) !important;
+  border-color: var(--dark-border) !important;
 }
 
-.btn {
-    border-radius: 0.5rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
+.table thead th {
+  background-color: var(--dark-bg-tertiary) !important;
+  color: var(--dark-text-primary) !important;
+  border-color: var(--dark-border) !important;
+}
+
+.table tbody tr:hover {
+  background-color: var(--dark-bg-tertiary) !important;
+}
+
+/* Form elements */
+input, select, textarea, .form-control, .form-select {
+  background-color: var(--dark-bg-primary) !important;
+  color: var(--dark-text-primary) !important;
+  border-color: var(--dark-border) !important;
+  transition: border-color 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus, .form-control:focus, .form-select:focus {
+  background-color: var(--dark-bg-primary) !important;
+  color: var(--dark-text-primary) !important;
+  border-color: var(--dark-accent) !important;
+  box-shadow: 0 0 0 0.2rem rgba(88, 166, 255, 0.25) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--dark-text-muted) !important;
+}
+
+/* Buttons */
+.btn, .btn-primary, .btn-success, .btn-info, .btn-warning, .btn-danger, .btn-outline-primary, .btn-outline-success, .btn-outline-info, .btn-outline-warning, .btn-outline-danger {
+  color: var(--dark-text-primary) !important;
+  background-color: var(--dark-bg-tertiary) !important;
+  border-color: var(--dark-border) !important;
+  transition: all 0.2s ease;
 }
 
 .btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  background-color: var(--dark-bg-secondary) !important;
+  border-color: var(--dark-border-hover) !important;
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background-color: var(--dark-accent) !important;
+  border-color: var(--dark-accent) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--dark-accent-hover) !important;
+  border-color: var(--dark-accent-hover) !important;
+}
+
+.btn-success {
+  background-color: var(--dark-success) !important;
+  border-color: var(--dark-success) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+.btn-info {
+  background-color: var(--dark-accent) !important;
+  border-color: var(--dark-accent) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+.btn-warning {
+  background-color: var(--dark-warning) !important;
+  border-color: var(--dark-warning) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+.btn-danger {
+  background-color: var(--dark-danger) !important;
+  border-color: var(--dark-danger) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+/* Links */
+a, .nav-link, .navbar-brand, .dropdown-item {
+  color: var(--dark-accent) !important;
+  transition: color 0.2s ease;
+}
+
+a:hover, .nav-link:hover, .navbar-brand:hover, .dropdown-item:hover {
+  color: var(--dark-accent-hover) !important;
+  text-decoration: none;
+}
+
+/* Dividers and borders */
+hr {
+  border-color: var(--dark-border) !important;
+}
+
+/* Alerts */
+.alert {
+  background-color: var(--dark-bg-secondary) !important;
+  color: var(--dark-text-primary) !important;
+  border-color: var(--dark-border) !important;
+}
+
+.alert-success {
+  background-color: rgba(63, 185, 80, 0.1) !important;
+  border-color: var(--dark-success) !important;
+  color: var(--dark-success) !important;
+}
+
+.alert-warning {
+  background-color: rgba(210, 153, 34, 0.1) !important;
+  border-color: var(--dark-warning) !important;
+  color: var(--dark-warning) !important;
+}
+
+.alert-danger {
+  background-color: rgba(248, 81, 73, 0.1) !important;
+  border-color: var(--dark-danger) !important;
+  color: var(--dark-danger) !important;
+}
+
+.alert-info {
+  background-color: rgba(88, 166, 255, 0.1) !important;
+  border-color: var(--dark-accent) !important;
+  color: var(--dark-accent) !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  background: var(--dark-bg-secondary);
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--dark-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-border-hover);
+}
+
+/* Chatbot dark mode */
+#chatbot-widget, .chatbot-header, .chatbot-input, .chatbot-messages {
+  background-color: var(--dark-bg-secondary) !important;
+  color: var(--dark-text-primary) !important;
+}
+
+.chat-window {
+  background-color: var(--dark-bg-secondary) !important;
+  border: 1px solid var(--dark-border) !important;
+  box-shadow: 0 8px 32px var(--dark-shadow) !important;
+}
+
+.chat-header {
+  background: linear-gradient(135deg, var(--dark-accent) 0%, var(--dark-accent-hover) 100%) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+.chat-messages {
+  background-color: var(--dark-bg-primary) !important;
+}
+
+.message.bot {
+  background-color: var(--dark-bg-tertiary) !important;
+  color: var(--dark-text-primary) !important;
+  border: 1px solid var(--dark-border) !important;
+}
+
+.message.user {
+  background-color: var(--dark-accent) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+.chat-input {
+  background-color: var(--dark-bg-secondary) !important;
+  border-top: 1px solid var(--dark-border) !important;
+}
+
+.chat-input input {
+  background-color: var(--dark-bg-primary) !important;
+  color: var(--dark-text-primary) !important;
+  border: 1px solid var(--dark-border) !important;
+}
+
+.chat-input button {
+  background-color: var(--dark-accent) !important;
+  color: var(--dark-bg-primary) !important;
+  border: 1px solid var(--dark-accent) !important;
+}
+
+.chat-input button:hover {
+  background-color: var(--dark-accent-hover) !important;
+  border-color: var(--dark-accent-hover) !important;
+}
+
+/* Toast dark mode */
+#sync-toast {
+  background-color: var(--dark-bg-secondary) !important;
+  color: var(--dark-text-primary) !important;
+  border: 1px solid var(--dark-border) !important;
+}
+
+/* Dropdown menus */
+.dropdown-menu {
+  background-color: var(--dark-bg-secondary) !important;
+  border: 1px solid var(--dark-border) !important;
+  box-shadow: 0 8px 32px var(--dark-shadow) !important;
+}
+
+.dropdown-item:hover {
+  background-color: var(--dark-bg-tertiary) !important;
+}
+
+/* Modal dialogs */
+.modal-content {
+  background-color: var(--dark-bg-secondary) !important;
+  border: 1px solid var(--dark-border) !important;
+  box-shadow: 0 8px 32px var(--dark-shadow) !important;
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--dark-border) !important;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--dark-border) !important;
+}
+
+/* Progress bars */
+.progress {
+  background-color: var(--dark-bg-tertiary) !important;
+}
+
+.progress-bar {
+  background-color: var(--dark-accent) !important;
+}
+
+/* Badges */
+.badge {
+  background-color: var(--dark-bg-tertiary) !important;
+  color: var(--dark-text-primary) !important;
+}
+
+.badge-primary {
+  background-color: var(--dark-accent) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+.badge-success {
+  background-color: var(--dark-success) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+.badge-warning {
+  background-color: var(--dark-warning) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+.badge-danger {
+  background-color: var(--dark-danger) !important;
+  color: var(--dark-bg-primary) !important;
+}
+
+/* List groups */
+.list-group-item {
+  background-color: var(--dark-bg-secondary) !important;
+  color: var(--dark-text-primary) !important;
+  border-color: var(--dark-border) !important;
+}
+
+.list-group-item:hover {
+  background-color: var(--dark-bg-tertiary) !important;
+}
+
+/* Code blocks */
+code, pre {
+  background-color: var(--dark-bg-tertiary) !important;
+  color: var(--dark-text-primary) !important;
+  border: 1px solid var(--dark-border) !important;
+}
+
+/* Text utilities */
+.text-muted {
+  color: var(--dark-text-muted) !important;
+}
+
+.text-light {
+  color: var(--dark-text-primary) !important;
+}
+
+/* Background utilities */
+.bg-dark {
+  background-color: var(--dark-bg-primary) !important;
+}
+
+.bg-secondary {
+  background-color: var(--dark-bg-secondary) !important;
+}
+
+/* Border utilities */
+.border {
+  border-color: var(--dark-border) !important;
+}
+
+.border-secondary {
+  border-color: var(--dark-border) !important;
+}
+
+/* Focus states */
+*:focus {
+  outline: 2px solid var(--dark-accent) !important;
+  outline-offset: 2px;
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 } 

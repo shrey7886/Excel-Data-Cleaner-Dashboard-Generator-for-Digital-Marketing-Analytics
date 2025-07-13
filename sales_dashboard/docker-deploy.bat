@@ -106,8 +106,8 @@ call :log_info "Creating superuser..."
 docker-compose exec -T web python manage.py shell -c "from django.contrib.auth.models import User; User.objects.get_or_create(username='admin', defaults={'is_superuser': True, 'is_staff': True, 'email': 'admin@targetorate.com'})[0].set_password('admin123') if not User.objects.filter(username='admin').exists() else None"
 
 REM Create sample data
-call :log_info "Creating sample data..."
-docker-compose exec -T web python manage.py create_sample_auth_data 2>nul || call :log_warning "Sample data creation failed (this is normal for first run)"
+REM call :log_info "Creating sample data..."
+REM docker-compose exec -T web python manage.py create_sample_auth_data 2>nul || call :log_warning "Sample data creation failed (this is normal for first run)"
 goto :eof
 
 :collect_static

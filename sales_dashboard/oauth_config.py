@@ -33,7 +33,7 @@ For production, update the redirect URIs to your domain.
 """
 
 import os
-from django.conf import settings
+
 
 def get_oauth_config():
     """Get OAuth configuration from environment variables."""
@@ -41,7 +41,10 @@ def get_oauth_config():
         'google': {
             'client_id': os.environ.get('GOOGLE_OAUTH_CLIENT_ID', 'your-google-client-id'),
             'client_secret': os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET', 'your-google-client-secret'),
-            'redirect_uri': os.environ.get('GOOGLE_OAUTH_REDIRECT_URI', 'http://localhost:8000/dashboard/oauth/google/callback/'),
+            'redirect_uri': os.environ.get(
+                'GOOGLE_OAUTH_REDIRECT_URI',
+                'http://localhost:8000/dashboard/oauth/google/callback/'
+            ),
             'auth_url': 'https://accounts.google.com/o/oauth2/v2/auth',
             'token_url': 'https://oauth2.googleapis.com/token',
             'scope': 'https://www.googleapis.com/auth/adwords'
@@ -49,23 +52,32 @@ def get_oauth_config():
         'linkedin': {
             'client_id': os.environ.get('LINKEDIN_OAUTH_CLIENT_ID', 'your-linkedin-client-id'),
             'client_secret': os.environ.get('LINKEDIN_OAUTH_CLIENT_SECRET', 'your-linkedin-client-secret'),
-            'redirect_uri': os.environ.get('LINKEDIN_OAUTH_REDIRECT_URI', 'http://localhost:8000/dashboard/oauth/linkedin/callback/'),
+            'redirect_uri': os.environ.get(
+                'LINKEDIN_OAUTH_REDIRECT_URI',
+                'http://localhost:8000/dashboard/oauth/linkedin/callback/'
+            ),
             'auth_url': 'https://www.linkedin.com/oauth/v2/authorization',
             'token_url': 'https://www.linkedin.com/oauth/v2/accessToken',
             'scope': 'r_ads r_ads_reporting'
         }
     }
 
+
 def is_oauth_configured():
     """Check if OAuth is properly configured."""
     config = get_oauth_config()
-    google_configured = (config['google']['client_id'] != 'your-google-client-id' and 
-                        config['google']['client_secret'] != 'your-google-client-secret')
-    linkedin_configured = (config['linkedin']['client_id'] != 'your-linkedin-client-id' and 
-                          config['linkedin']['client_secret'] != 'your-linkedin-client-secret')
-    
+    google_configured = (
+        config['google']['client_id'] != 'your-google-client-id' and
+        config['google']['client_secret'] != 'your-google-client-secret'
+    )
+    linkedin_configured = (
+        config['linkedin']['client_id'] != 'your-linkedin-client-id' and
+        config['linkedin']['client_secret'] != 'your-linkedin-client-secret'
+    )
+
     return {
         'google': google_configured,
         'linkedin': linkedin_configured,
         'all_configured': google_configured and linkedin_configured
     } 
+

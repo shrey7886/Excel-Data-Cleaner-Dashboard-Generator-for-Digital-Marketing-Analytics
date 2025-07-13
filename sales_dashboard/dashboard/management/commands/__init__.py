@@ -1,1 +1,3 @@
-# This file makes the commands directory a Python package 
+# Management commands for the dashboard app 
+
+

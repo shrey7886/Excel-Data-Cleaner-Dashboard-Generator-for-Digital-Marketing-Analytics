@@ -25,7 +25,7 @@ app.conf.beat_schedule = {
         'task': 'dashboard.tasks.sync_all_platform_data',
         'schedule': crontab(minute=0, hour='*/6'),  # Every 6 hours
     },
-    
+
     # Individual platform syncs (every 4 hours)
     'sync-google-ads-data': {
         'task': 'dashboard.tasks.sync_google_ads_data',
@@ -47,13 +47,13 @@ app.conf.beat_schedule = {
         'task': 'dashboard.tasks.sync_demandbase_data',
         'schedule': crontab(minute=0, hour='*/4'),  # Every 4 hours
     },
-    
+
     # Cleanup old data daily at 2 AM
     'cleanup-old-data': {
         'task': 'dashboard.tasks.cleanup_old_data',
         'schedule': crontab(minute=0, hour=2),  # Daily at 2 AM
     },
-    
+
     # Refresh expired tokens every hour
     'refresh-expired-tokens': {
         'task': 'dashboard.tasks.refresh_expired_tokens',
@@ -61,7 +61,9 @@ app.conf.beat_schedule = {
     },
 }
 
+
 @app.task(bind=True)
 def debug_task(self):
     """Debug task for testing Celery."""
     pass 
+

@@ -54,7 +54,10 @@ except ImportError:
 DEBUG = False
 
 # Strong secret key for production (should be overridden by environment variable)
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'replace-this-with-a-very-strong-secret-key-1234567890!@#$%^&*()_+=-')
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'replace-this-with-a-very-strong-secret-key-1234567890!@#$%^&*()_+=-'
+)
 
 # Security settings
 SECURE_HSTS_SECONDS = 31536000  # 1 year
@@ -220,3 +223,4 @@ WSGI_APPLICATION = 'sales_dashboard.wsgi.application'
 # Ensure logs directory exists
 LOGS_DIR = BASE_DIR / 'logs'
 LOGS_DIR.mkdir(exist_ok=True) 
+

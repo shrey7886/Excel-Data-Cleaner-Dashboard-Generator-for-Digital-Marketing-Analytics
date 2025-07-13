@@ -41,7 +41,7 @@ docker-compose exec web python manage.py migrate
 docker-compose exec web python manage.py createsuperuser
 
 # Create sample data
-docker-compose exec web python manage.py create_sample_auth_data
+# docker-compose exec web python manage.py create_sample_auth_data
 ```
 
 ### 5. Access Application
@@ -112,7 +112,7 @@ docker-compose exec web python manage.py migrate
 docker-compose exec web python manage.py createsuperuser
 
 # Create sample data
-docker-compose exec web python manage.py create_sample_auth_data
+# docker-compose exec web python manage.py create_sample_auth_data
 ```
 
 5. **SSL Setup (Optional)**

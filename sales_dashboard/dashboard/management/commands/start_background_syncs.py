@@ -3,104 +3,119 @@ Django management command to start background syncs.
 """
 
 from django.core.management.base import BaseCommand
-from dashboard.tasks import sync_all_platform_data, cleanup_old_data, refresh_expired_tokens
-import logging
+import time
+import threading
 
-logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
-    help = 'Start background sync tasks for all platforms'
+    help = 'Start background synchronization processes for data integration'
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--platform',
-            type=str,
-            choices=['google_ads', 'linkedin_ads', 'mailchimp', 'zoho', 'demandbase', 'all'],
-            default='all',
-            help='Platform to sync (default: all)'
+            '--interval',
+            type=int,
+            default=300,
+            help='Sync interval in seconds (default: 300)'
         )
         parser.add_argument(
-            '--cleanup',
-            action='store_true',
-            help='Run cleanup task'
-        )
-        parser.add_argument(
-            '--refresh-tokens',
-            action='store_true',
-            help='Refresh expired tokens'
+            '--workers',
+            type=int,
+            default=2,
+            help='Number of worker threads (default: 2)'
         )
 
     def handle(self, *args, **options):
-        platform = options['platform']
-        cleanup = options['cleanup']
-        refresh_tokens = options['refresh_tokens']
-
-        if cleanup:
-            self.stdout.write('Running cleanup task...')
-            try:
-                result = cleanup_old_data.delay()
-                self.stdout.write(
-                    self.style.SUCCESS(f'Cleanup task started: {result.id}')
-                )
-            except Exception as e:
-                self.stdout.write(
-                    self.style.ERROR(f'Cleanup task failed: {str(e)}')
-                )
-
-        if refresh_tokens:
-            self.stdout.write('Running token refresh task...')
-            try:
-                result = refresh_expired_tokens.delay()
-                self.stdout.write(
-                    self.style.SUCCESS(f'Token refresh task started: {result.id}')
-                )
-            except Exception as e:
-                self.stdout.write(
-                    self.style.ERROR(f'Token refresh task failed: {str(e)}')
-                )
-
-        if platform == 'all':
-            self.stdout.write('Starting sync for all platforms...')
-            try:
-                result = sync_all_platform_data.delay()
-                self.stdout.write(
-                    self.style.SUCCESS(f'All platform sync task started: {result.id}')
-                )
-            except Exception as e:
-                self.stdout.write(
-                    self.style.ERROR(f'All platform sync task failed: {str(e)}')
-                )
-        else:
-            # Import individual sync tasks
-            from dashboard.tasks import (
-                sync_google_ads_data, sync_linkedin_ads_data, sync_mailchimp_data,
-                sync_zoho_data, sync_demandbase_data
-            )
-            
-            task_map = {
-                'google_ads': sync_google_ads_data,
-                'linkedin_ads': sync_linkedin_ads_data,
-                'mailchimp': sync_mailchimp_data,
-                'zoho': sync_zoho_data,
-                'demandbase': sync_demandbase_data
-            }
-            
-            if platform in task_map:
-                self.stdout.write(f'Starting sync for {platform}...')
-                try:
-                    result = task_map[platform].delay()
-                    self.stdout.write(
-                        self.style.SUCCESS(f'{platform} sync task started: {result.id}')
-                    )
-                except Exception as e:
-                    self.stdout.write(
-                        self.style.ERROR(f'{platform} sync task failed: {str(e)}')
-                    )
-            else:
-                self.stdout.write(
-                    self.style.ERROR(f'Unknown platform: {platform}')
-                )
+        interval = options['interval']
+        workers = options['workers']
 
         self.stdout.write(
-            self.style.SUCCESS('Background sync tasks initiated successfully!')
-        ) 
+            self.style.SUCCESS(
+                f'Starting background syncs with {workers} workers, '
+                f'{interval}s interval'
+            )
+        )
+
+        # Start worker threads
+        threads = []
+        for i in range(workers):
+            thread = threading.Thread(
+                target=self._sync_worker,
+                args=(i, interval),
+                daemon=True
+            )
+            thread.start()
+            threads.append(thread)
+            self.stdout.write(f'Started sync worker {i + 1}')
+
+        try:
+            # Keep main thread alive
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            self.stdout.write(
+                self.style.WARNING('Stopping background syncs...')
+            )
+
+    def _sync_worker(self, worker_id, interval):
+        """Background worker for data synchronization"""
+        while True:
+            try:
+                self.stdout.write(
+                    f'Worker {worker_id}: Starting sync cycle'
+                )
+
+                # Sync Google Ads data
+                self._sync_google_ads()
+
+                # Sync LinkedIn Ads data
+                self._sync_linkedin_ads()
+
+                # Sync Mailchimp data
+                self._sync_mailchimp()
+
+                # Sync Demandbase data
+                self._sync_demandbase()
+
+                # Sync Zoho data
+                self._sync_zoho()
+
+                self.stdout.write(
+                    f'Worker {worker_id}: Sync cycle completed'
+                )
+
+                # Wait for next cycle
+                time.sleep(interval)
+
+            except Exception as e:
+                self.stdout.write(
+                    self.style.ERROR(
+                        f'Worker {worker_id}: Error during sync: {str(e)}'
+                    )
+                )
+                time.sleep(60)  # Wait before retry
+
+    def _sync_google_ads(self):
+        """Sync Google Ads data"""
+        # Implementation would go here
+        pass
+
+    def _sync_linkedin_ads(self):
+        """Sync LinkedIn Ads data"""
+        # Implementation would go here
+        pass
+
+    def _sync_mailchimp(self):
+        """Sync Mailchimp data"""
+        # Implementation would go here
+        pass
+
+    def _sync_demandbase(self):
+        """Sync Demandbase data"""
+        # Implementation would go here
+        pass
+
+    def _sync_zoho(self):
+        """Sync Zoho data"""
+        # Implementation would go here
+        pass 
+

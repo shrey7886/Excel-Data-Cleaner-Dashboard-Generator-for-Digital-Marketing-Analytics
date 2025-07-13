@@ -2,9 +2,11 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .models import Client, UserProfile, Campaign, GoogleAdsCredential, LinkedInAdsCredential, MailchimpCredential, ZohoCredential
-import os
-import pandas as pd
+from .models import (
+    Client, UserProfile, Campaign, GoogleAdsCredential,
+    LinkedInAdsCredential, MailchimpCredential, ZohoCredential
+)
+
 
 class UserRegistrationForm(UserCreationForm):
     """Custom user registration form with client association"""
@@ -17,7 +19,7 @@ class UserRegistrationForm(UserCreationForm):
         })
     )
     first_name = forms.CharField(
-        max_length=30, 
+        max_length=30,
         required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -26,7 +28,7 @@ class UserRegistrationForm(UserCreationForm):
         })
     )
     last_name = forms.CharField(
-        max_length=30, 
+        max_length=30,
         required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -35,7 +37,7 @@ class UserRegistrationForm(UserCreationForm):
         })
     )
     phone = forms.CharField(
-        max_length=20, 
+        max_length=20,
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -44,7 +46,7 @@ class UserRegistrationForm(UserCreationForm):
         })
     )
     company = forms.CharField(
-        max_length=200, 
+        max_length=200,
         required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -53,7 +55,7 @@ class UserRegistrationForm(UserCreationForm):
         })
     )
     department = forms.CharField(
-        max_length=100, 
+        max_length=100,
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -68,7 +70,7 @@ class UserRegistrationForm(UserCreationForm):
             'placeholder': 'Role (optional)'
         })
     )
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Enhance password fields
@@ -87,7 +89,7 @@ class UserRegistrationForm(UserCreationForm):
             'placeholder': 'Choose a username',
             'autocomplete': 'username'
         })
-        
+
         # Add help text
         self.fields['password1'].help_text = """
         <ul class="password-help">
@@ -96,41 +98,49 @@ class UserRegistrationForm(UserCreationForm):
             <li>Can't be entirely numeric</li>
         </ul>
         """
-    
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email address is already registered.")
+            raise forms.ValidationError(
+                "This email address is already registered."
+            )
         return email
-    
+
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if User.objects.filter(username=username).exists():
             raise forms.ValidationError("This username is already taken.")
         return username
-    
+
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
-    
+        fields = (
+            'username', 'email', 'first_name', 'last_name',
+            'password1', 'password2'
+        )
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
-        
+
         if commit:
             user.save()
-            
+
             # Create or get client
             client, created = Client.objects.get_or_create(
                 company=self.cleaned_data['company'],
                 defaults={
-                    'name': f"{self.cleaned_data['first_name']} {self.cleaned_data['last_name']}",
+                    'name': (
+                        f"{self.cleaned_data['first_name']} "
+                        f"{self.cleaned_data['last_name']}"
+                    ),
                     'email': self.cleaned_data['email'],
                 }
             )
-            
+
             # Use provided role or default to 'viewer'
             role = self.cleaned_data.get('role') or 'viewer'
             # Create user profile
@@ -142,18 +152,26 @@ class UserRegistrationForm(UserCreationForm):
                 department=self.cleaned_data.get('department', ''),
                 is_client_user=True
             )
-        
+
         return user
+
 
 class UserEditForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'}),
+            'first_name': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'First Name'}
+            ),
+            'last_name': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Last Name'}
+            ),
+            'email': forms.EmailInput(
+                attrs={'class': 'form-control', 'placeholder': 'Email Address'}
+            ),
         }
+
 
 class ClientForm(forms.ModelForm):
     """Form for creating and editing clients"""
@@ -184,6 +202,7 @@ class ClientForm(forms.ModelForm):
             }),
         }
 
+
 class UserProfileForm(forms.ModelForm):
     """Form for editing user profiles"""
     class Meta:
@@ -202,6 +221,7 @@ class UserProfileForm(forms.ModelForm):
             }),
         }
 
+
 class LoginForm(AuthenticationForm):
     """Custom login form with Bootstrap styling"""
     username = forms.CharField(
@@ -218,45 +238,51 @@ class LoginForm(AuthenticationForm):
             'autocomplete': 'current-password'
         })
     )
-    
+
     def clean(self):
-        cleaned_data = super().clean()
-        username = cleaned_data.get('username')
-        password = cleaned_data.get('password')
-        
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
         if username and password:
             # Try to authenticate with username
             user = authenticate(username=username, password=password)
-            if not user:
-                # Try with email
+            if user is None:
+                # Try to authenticate with email
                 try:
                     user_obj = User.objects.get(email=username)
-                    user = authenticate(username=user_obj.username, password=password)
+                    user = authenticate(
+                        username=user_obj.username, password=password
+                    )
                 except User.DoesNotExist:
                     user = None
-            
-            if not user:
-                raise forms.ValidationError("Invalid username/email or password.")
+
+            if user is None:
+                raise forms.ValidationError(
+                    'Invalid username/email or password.'
+                )
             elif not user.is_active:
-                raise forms.ValidationError("This account is inactive.")
-        
-        return cleaned_data
+                raise forms.ValidationError('This account is inactive.')
+
+        return self.cleaned_data
+
 
 class PasswordResetRequestForm(forms.Form):
     """Form for requesting password reset"""
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Enter your email address',
-            'autocomplete': 'email'
+            'placeholder': 'Enter your email address'
         })
     )
-    
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if not User.objects.filter(email=email).exists():
-            raise forms.ValidationError("No user found with this email address.")
+            raise forms.ValidationError(
+                "No user found with this email address."
+            )
         return email
+
 
 class CampaignFilterForm(forms.Form):
     """Form for filtering campaigns in client portal"""
@@ -285,42 +311,77 @@ class CampaignFilterForm(forms.Form):
         })
     )
 
+
 class GoogleAdsCredentialForm(forms.ModelForm):
     class Meta:
         model = GoogleAdsCredential
-        fields = ['refresh_token', 'google_client_id', 'client_secret', 'developer_token']
+        fields = [
+            'refresh_token', 'google_client_id',
+            'client_secret', 'developer_token'
+        ]
         widgets = {
-            'refresh_token': forms.TextInput(attrs={'class': 'form-control'}),
-            'google_client_id': forms.TextInput(attrs={'class': 'form-control'}),
-            'client_secret': forms.TextInput(attrs={'class': 'form-control'}),
-            'developer_token': forms.TextInput(attrs={'class': 'form-control'}),
+            'refresh_token': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Refresh Token'}
+            ),
+            'google_client_id': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Client ID'}
+            ),
+            'client_secret': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Client Secret'}
+            ),
+            'developer_token': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Developer Token'}
+            ),
         }
+
 
 class LinkedInAdsCredentialForm(forms.ModelForm):
     class Meta:
         model = LinkedInAdsCredential
         fields = ['access_token', 'expires_at']
         widgets = {
-            'access_token': forms.TextInput(attrs={'class': 'form-control'}),
-            'expires_at': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'access_token': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Access Token'}
+            ),
+            'expires_at': forms.DateTimeInput(
+                attrs={'class': 'form-control', 'type': 'datetime-local'}
+            ),
         }
+
 
 class MailchimpCredentialForm(forms.ModelForm):
     class Meta:
         model = MailchimpCredential
         fields = ['api_key', 'server_prefix']
         widgets = {
-            'api_key': forms.TextInput(attrs={'class': 'form-control'}),
-            'server_prefix': forms.TextInput(attrs={'class': 'form-control'}),
+            'api_key': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'API Key'}
+            ),
+            'server_prefix': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Server Prefix'}
+            ),
         }
+
 
 class ZohoCredentialForm(forms.ModelForm):
     class Meta:
         model = ZohoCredential
-        fields = ['access_token', 'refresh_token', 'zoho_client_id', 'client_secret']
+        fields = [
+            'access_token', 'refresh_token',
+            'zoho_client_id', 'client_secret'
+        ]
         widgets = {
-            'access_token': forms.TextInput(attrs={'class': 'form-control'}),
-            'refresh_token': forms.TextInput(attrs={'class': 'form-control'}),
-            'zoho_client_id': forms.TextInput(attrs={'class': 'form-control'}),
-            'client_secret': forms.TextInput(attrs={'class': 'form-control'}),
-        } 
+            'access_token': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Access Token'}
+            ),
+            'refresh_token': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Refresh Token'}
+            ),
+            'zoho_client_id': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Client ID'}
+            ),
+            'client_secret': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Client Secret'}
+            ),
+        }
+
