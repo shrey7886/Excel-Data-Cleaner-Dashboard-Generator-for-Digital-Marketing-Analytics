@@ -202,43 +202,64 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
-        // Show loading spinner for form submissions and navigation
+        // Optimized loading spinner - only show for operations that actually take time
         document.addEventListener('DOMContentLoaded', function() {
-            // Show loading spinner for form submissions
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            // Only show loading spinner for specific heavy operations
             const forms = document.querySelectorAll('form');
             forms.forEach(form => {
-                form.addEventListener('submit', function() {
-                    document.getElementById('loadingSpinner').style.display = 'flex';
+                form.addEventListener('submit', function(e) {
+                    const action = this.action || '';
+                    const method = this.method || 'GET';
+                    
+                    // Only show spinner for operations that might take time
+                    if (action.includes('generate') || 
+                        action.includes('sync') || 
+                        action.includes('train') ||
+                        action.includes('upload') ||
+                        action.includes('download') ||
+                        method === 'POST') {
+                        loadingSpinner.style.display = 'flex';
+                    }
                 });
             });
             
-            // Show loading spinner only for specific navigation links that need it
+            // Smart navigation - only show spinner for heavy operations
             const navLinks = document.querySelectorAll('a[href^="/"]');
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
-                    // Don't show spinner for dropdown toggles, modal triggers, or back buttons
-                    if (!this.getAttribute('data-bs-toggle') && 
-                        !this.getAttribute('data-bs-target') && 
-                        !this.classList.contains('back-btn') &&
-                        !this.classList.contains('dropdown-toggle')) {
-                        // Only show spinner for specific actions that might take time
-                        const href = this.getAttribute('href');
-                        if (href && (href.includes('generate') || 
-                                   href.includes('sync') || 
-                                   href.includes('train'))) {
-                            document.getElementById('loadingSpinner').style.display = 'flex';
+                    // Skip for dropdown toggles, modal triggers, and back buttons
+                    if (this.getAttribute('data-bs-toggle') || 
+                        this.getAttribute('data-bs-target') || 
+                        this.classList.contains('back-btn') ||
+                        this.classList.contains('dropdown-toggle')) {
+                        return;
+                    }
+                    
+                    const href = this.getAttribute('href');
+                    if (href) {
+                        // Only show spinner for operations that might take time
+                        if (href.includes('generate') || 
+                            href.includes('sync') || 
+                            href.includes('train') ||
+                            href.includes('download') ||
+                            href.includes('upload') ||
+                            href.includes('ml-predictions') ||
+                            href.includes('advanced-analytics')) {
+                            loadingSpinner.style.display = 'flex';
                         }
                     }
                 });
             });
             
-            // Auto-hide alerts after 5 seconds
+            // Auto-hide alerts after 3 seconds (faster)
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
                 setTimeout(() => {
                     const bsAlert = new bootstrap.Alert(alert);
                     bsAlert.close();
-                }, 5000);
+                }, 3000);
             });
             
             // Mobile sidebar toggle
@@ -251,7 +272,7 @@
                 });
             }
             
-            // Sync button functionality
+            // Optimized sync button functionality
             const syncBtn = document.querySelector('.sync-all-btn');
             const toast = document.getElementById('sync-toast');
             const toastBody = document.getElementById('sync-toast-body');
@@ -259,8 +280,18 @@
             if (syncBtn) {
                 syncBtn.addEventListener('click', function() {
                     syncBtn.disabled = true;
+                    syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Syncing...';
                     toastBody.textContent = 'Syncing all data...';
                     toast.style.display = 'block';
+                    
+                    // Set a timeout to prevent infinite loading
+                    const timeout = setTimeout(() => {
+                        syncBtn.disabled = false;
+                        syncBtn.innerHTML = '<i class="fas fa-sync me-2"></i>Sync All Data';
+                        toastBody.textContent = 'Sync timeout - please try again';
+                        setTimeout(() => { toast.style.display = 'none'; }, 2000);
+                    }, 10000); // 10 second timeout
+                    
                     fetch('/dashboard/sync-all/', {
                         method: 'POST',
                         headers: {
@@ -270,28 +301,52 @@
                     })
                     .then(response => response.json())
                     .then(data => {
+                        clearTimeout(timeout);
                         if (data.status === 'ok') {
                             toastBody.textContent = 'Sync complete!';
                         } else {
                             toastBody.textContent = 'Sync failed: ' + (data.message || 'Unknown error');
                         }
-                        setTimeout(() => { toast.style.display = 'none'; syncBtn.disabled = false; }, 3000);
+                        setTimeout(() => { 
+                            toast.style.display = 'none'; 
+                            syncBtn.disabled = false; 
+                            syncBtn.innerHTML = '<i class="fas fa-sync me-2"></i>Sync All Data';
+                        }, 2000);
                     })
                     .catch(err => {
+                        clearTimeout(timeout);
                         toastBody.textContent = 'Sync failed: ' + err;
-                        setTimeout(() => { toast.style.display = 'none'; syncBtn.disabled = false; }, 3000);
+                        setTimeout(() => { 
+                            toast.style.display = 'none'; 
+                            syncBtn.disabled = false; 
+                            syncBtn.innerHTML = '<i class="fas fa-sync me-2"></i>Sync All Data';
+                        }, 2000);
                     });
                 });
             }
+            
+            // Hide loading spinner when page is fully loaded
+            window.addEventListener('load', function() {
+                loadingSpinner.style.display = 'none';
+            });
+            
+            // Hide loading spinner after a maximum time (safety net)
+            setTimeout(() => {
+                loadingSpinner.style.display = 'none';
+            }, 5000);
         });
         
         // Error handling for AJAX requests
         window.addEventListener('error', function(e) {
             console.error('JavaScript error:', e.error);
-            // You can add custom error handling here
+            // Hide loading spinner on error
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'none';
+            }
         });
 
-        // Chatbot functionality
+        // Optimized Chatbot functionality
         function toggleChatbot() {
             const widget = document.getElementById('chatbot-widget');
             const toggleBtn = document.getElementById('chatbot-toggle');
@@ -299,6 +354,11 @@
             if (widget.style.display === 'none' || widget.style.display === '') {
                 widget.style.display = 'flex';
                 toggleBtn.classList.add('hidden');
+                // Focus on input when opening
+                setTimeout(() => {
+                    const input = document.getElementById('chatbot-input');
+                    if (input) input.focus();
+                }, 100);
             } else {
                 widget.style.display = 'none';
                 toggleBtn.classList.remove('hidden');
@@ -311,12 +371,18 @@
             
             if (!message) return;
             
-            // Add user message
+            // Add user message immediately
             addMessage(message, 'user');
             input.value = '';
             
             // Show typing indicator
             addTypingIndicator();
+            
+            // Set a timeout for the chatbot response
+            const timeout = setTimeout(() => {
+                removeTypingIndicator();
+                addMessage('Sorry, the response is taking too long. Please try again.', 'bot');
+            }, 15000); // 15 second timeout
             
             // Send to backend
             fetch('/llama-chat/', {
@@ -329,6 +395,7 @@
             })
             .then(response => response.json())
             .then(data => {
+                clearTimeout(timeout);
                 removeTypingIndicator();
                 if (data.response) {
                     addMessage(data.response, 'bot');
@@ -337,6 +404,7 @@
                 }
             })
             .catch(error => {
+                clearTimeout(timeout);
                 removeTypingIndicator();
                 addMessage('Sorry, I\'m having trouble connecting. Please check if Ollama is running.', 'bot');
                 console.error('Chatbot error:', error);
@@ -360,8 +428,11 @@
             messageDiv.appendChild(contentDiv);
             messagesContainer.appendChild(messageDiv);
             
-            // Scroll to bottom
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            // Smooth scroll to bottom
+            messagesContainer.scrollTo({
+                top: messagesContainer.scrollHeight,
+                behavior: 'smooth'
+            });
         }
 
         function addTypingIndicator() {
@@ -376,7 +447,10 @@
             
             typingDiv.appendChild(contentDiv);
             messagesContainer.appendChild(typingDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            messagesContainer.scrollTo({
+                top: messagesContainer.scrollHeight,
+                behavior: 'smooth'
+            });
         }
 
         function removeTypingIndicator() {
