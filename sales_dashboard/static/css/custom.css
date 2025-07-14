@@ -683,3 +683,82 @@ code, pre {
     background-color: rgba(13, 17, 23, 0.8);
   }
 } 
+
+/* --- Fix Navbar Visibility and Color --- */
+.navbar, .top-navbar {
+  background-color: var(--dark-bg-secondary) !important;
+  color: var(--dark-text-primary) !important;
+  border-bottom: 2px solid var(--dark-border) !important;
+  box-shadow: 0 2px 8px var(--dark-shadow) !important;
+}
+
+.navbar .navbar-brand, .navbar .nav-link, .top-navbar .navbar-brand, .top-navbar .nav-link {
+  color: var(--dark-accent) !important;
+  font-weight: 600;
+}
+
+.navbar .nav-link.active, .top-navbar .nav-link.active {
+  color: var(--dark-accent-hover) !important;
+  border-bottom: 2px solid var(--dark-accent-hover) !important;
+}
+
+.navbar .nav-link:hover, .top-navbar .nav-link:hover {
+  color: var(--dark-accent-hover) !important;
+}
+
+/* --- Fix Chatbot Widget and Toggle Button --- */
+.chatbot-widget {
+  display: none !important;
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  width: 380px !important;
+  height: 500px !important;
+  background-color: var(--dark-bg-secondary) !important;
+  border: 1.5px solid var(--dark-accent) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px var(--chat-shadow) !important;
+  flex-direction: column !important;
+  z-index: 9999 !important;
+  overflow: hidden !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.chatbot-widget[style*="display: flex"] {
+  display: flex !important;
+}
+
+.chatbot-toggle-btn {
+  position: fixed !important;
+  bottom: 30px !important;
+  right: 30px !important;
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, var(--dark-accent) 0%, var(--dark-accent-hover) 100%) !important;
+  color: var(--dark-bg-primary) !important;
+  font-size: 2rem !important;
+  border: none !important;
+  box-shadow: 0 4px 16px var(--dark-shadow) !important;
+  z-index: 10000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.chatbot-toggle-btn:hover {
+  background: linear-gradient(135deg, var(--dark-accent-hover) 0%, var(--dark-accent) 100%) !important;
+  box-shadow: 0 6px 24px var(--dark-shadow) !important;
+}
+
+.chatbot-toggle-btn.hidden {
+  display: none !important;
+}
+
+/* Ensure only one chatbot widget is visible at a time */
+.chatbot-widget:not([style*="display: flex"]) {
+  display: none !important;
+}
+
+/* --- End Fixes --- */ 
