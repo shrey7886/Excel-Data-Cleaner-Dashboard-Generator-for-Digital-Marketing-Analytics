@@ -1,0 +1,9 @@
+faiss-cpu
+sentence-transformers
+transformers
+celery
+redis
+numpy
+pandas
+scikit-learn
+# If using Django Q or other async, add as needed 
