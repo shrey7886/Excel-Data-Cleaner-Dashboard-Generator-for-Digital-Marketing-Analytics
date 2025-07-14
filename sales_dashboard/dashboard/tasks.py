@@ -10,32 +10,11 @@ from .models import (
     GoogleAdsData, LinkedInAdsData, MailchimpData, ZohoData, 
     DemandbaseData, UnifiedClientData
 )
-
-
-# Placeholder functions for API integrations
-def fetch_google_ads_data(client):
-    """Placeholder for Google Ads data fetching"""
-    return None
-
-
-def fetch_linkedin_ads_data(client):
-    """Placeholder for LinkedIn Ads data fetching"""
-    return None
-
-
-def fetch_mailchimp_data(client):
-    """Placeholder for Mailchimp data fetching"""
-    return None
-
-
-def fetch_zoho_data(client):
-    """Placeholder for Zoho data fetching"""
-    return None
-
-
-def fetch_demandbase_data(client):
-    """Placeholder for Demandbase data fetching"""
-    return None
+from api_integrations.google_ads import fetch_google_ads_data
+from api_integrations.linkedin_ads import fetch_linkedin_ads_data
+from api_integrations.mailchimp import fetch_mailchimp_data
+from api_integrations.zoho import fetch_zoho_data
+from api_integrations.demandbase import fetch_demandbase_data
 
 
 logger = logging.getLogger(__name__)
@@ -114,7 +93,7 @@ def sync_google_ads_data():
                 )
 
                 # Fetch data from Google Ads API
-                df = fetch_google_ads_data()
+                df = fetch_google_ads_data(client)
 
                 # Save to database
                 GoogleAdsData.objects.create(
@@ -158,7 +137,7 @@ def sync_linkedin_ads_data():
                 )
 
                 # Fetch data from LinkedIn Ads API
-                df = fetch_linkedin_ads_data()
+                df = fetch_linkedin_ads_data(client)
 
                 # Save to database
                 LinkedInAdsData.objects.create(
@@ -201,7 +180,7 @@ def sync_mailchimp_data():
                 )
 
                 # Fetch data from Mailchimp API
-                df = fetch_mailchimp_data()
+                df = fetch_mailchimp_data(client)
 
                 # Save to database
                 MailchimpData.objects.create(
@@ -242,7 +221,7 @@ def sync_zoho_data():
                 logger.info(f"Syncing Zoho data for client: {client.company}")
 
                 # Fetch data from Zoho API
-                df = fetch_zoho_data()
+                df = fetch_zoho_data(client)
 
                 # Save to database
                 ZohoData.objects.create(
@@ -285,7 +264,7 @@ def sync_demandbase_data():
                 )
 
                 # Fetch data from Demandbase API
-                df = fetch_demandbase_data()
+                df = fetch_demandbase_data(client)
 
                 # Save to database
                 DemandbaseData.objects.create(
