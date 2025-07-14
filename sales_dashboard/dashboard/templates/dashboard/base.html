@@ -183,6 +183,10 @@
             <button onclick="sendMessage()" class="btn btn-primary">
                 <i class="fas fa-paper-plane"></i>
             </button>
+            <span id="chatbot-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
+            <span id="chatbot-typing" style="display:none;">
+                <span class="typing-dot">.</span><span class="typing-dot">.</span><span class="typing-dot">.</span>
+            </span>
         </div>
     </div>
 
@@ -365,53 +369,11 @@
             }
         }
 
-        function sendMessage() {
-            const input = document.getElementById('chatbot-input');
-            const message = input.value.trim();
-            
-            if (!message) return;
-            
-            // Add user message immediately
-            addMessage(message, 'user');
-            input.value = '';
-            
-            // Show typing indicator
-            addTypingIndicator();
-            
-            // Set a timeout for the chatbot response
-            const timeout = setTimeout(() => {
-                removeTypingIndicator();
-                addMessage('Sorry, the response is taking too long. Please try again.', 'bot');
-            }, 15000); // 15 second timeout
-            
-            // Send to backend
-            fetch('/llama-chat/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                },
-                body: JSON.stringify({ message: message })
-            })
-            .then(response => response.json())
-            .then(data => {
-                clearTimeout(timeout);
-                removeTypingIndicator();
-                if (data.response) {
-                    addMessage(data.response, 'bot');
-                } else {
-                    addMessage('Sorry, I encountered an error. Please try again.', 'bot');
-                }
-            })
-            .catch(error => {
-                clearTimeout(timeout);
-                removeTypingIndicator();
-                addMessage('Sorry, I\'m having trouble connecting. Please check if Ollama is running.', 'bot');
-                console.error('Chatbot error:', error);
-            });
-        }
+        // --- Chatbot Conversation Memory ---
+        let conversationHistory = [];
+        let lastUserMessage = null;
 
-        function addMessage(text, sender) {
+        function addMessage(text, sender, context, feedbackId, showContextCollapsed = true) {
             const messagesContainer = document.getElementById('chatbot-messages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}-message`;
@@ -421,6 +383,24 @@
             
             if (sender === 'bot') {
                 contentDiv.innerHTML = `<i class="fas fa-robot me-2"></i>${text}`;
+                // Show context with toggle
+                if (context && context.length) {
+                    const contextId = `context-${Date.now()}-${Math.floor(Math.random()*10000)}`;
+                    contentDiv.innerHTML += `<div class='chatbot-context mt-2'>
+                        <small>Context used:</small>
+                        <button class='btn btn-link btn-sm' onclick="toggleContext('${contextId}')">${showContextCollapsed ? 'Show More' : 'Hide'} Context</button>
+                        <ul id='${contextId}' style='display:${showContextCollapsed ? 'none' : 'block'};'>` +
+                        context.map(c => `<li>${c}</li>`).join('') + '</ul></div>';
+                }
+                // Regenerate button
+                contentDiv.innerHTML += `<button class='btn btn-outline-secondary btn-sm mt-2' onclick='regenerateAnswer()'>Regenerate Answer</button>`;
+                // Feedback buttons
+                if (feedbackId) {
+                    contentDiv.innerHTML += `<div class='chatbot-feedback mt-2'>
+                        <button onclick="sendFeedback(${feedbackId},1)" class="btn btn-sm btn-success me-1">👍</button>
+                        <button onclick="sendFeedback(${feedbackId},-1)" class="btn btn-sm btn-danger">👎</button>
+                    </div>`;
+                }
             } else {
                 contentDiv.textContent = text;
             }
@@ -432,6 +412,69 @@
             messagesContainer.scrollTo({
                 top: messagesContainer.scrollHeight,
                 behavior: 'smooth'
+            });
+        }
+
+        function showTyping() {
+            document.getElementById('chatbot-typing').style.display = 'inline-block';
+        }
+        function hideTyping() {
+            document.getElementById('chatbot-typing').style.display = 'none';
+        }
+
+        function sendMessage(isRegenerate = false) {
+            const input = document.getElementById('chatbot-input');
+            const message = isRegenerate ? lastUserMessage : input.value.trim();
+            const loading = document.getElementById('chatbot-loading');
+            if (!message) return;
+            if (!isRegenerate) {
+                addMessage(message, 'user');
+                lastUserMessage = message;
+                conversationHistory.push({role: 'user', content: message});
+            }
+            input.value = '';
+            loading.style.display = 'inline-block';
+            showTyping();
+            fetch('/api/rag-chatbot/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+                body: JSON.stringify({ query: message, history: conversationHistory.slice(-5) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                hideTyping();
+                // Add bot message with context and feedback
+                addMessage(data.answer, 'bot', data.context, data.feedback_id);
+                conversationHistory.push({role: 'bot', content: data.answer});
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                hideTyping();
+                addMessage('Sorry, I\'m having trouble connecting to the AI assistant.', 'bot');
+                console.error('Chatbot error:', error);
+            });
+        }
+
+        function regenerateAnswer() {
+            sendMessage(true);
+        }
+
+        function sendFeedback(feedbackId, rating) {
+            fetch('/api/chatbot-feedback/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+                body: JSON.stringify({ feedback_id: feedbackId, rating: rating })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Optionally show a thank you message or update UI
             });
         }
 

@@ -211,3 +211,13 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Celery Beat Settings (commented out - not installed)
 # CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# --- RAG Pipeline Settings ---
+RAG_EMBEDDING_MODEL = os.environ.get('RAG_EMBEDDING_MODEL', 'sentence-transformers/all-MiniLM-L6-v2')
+RAG_LLM_MODEL = os.environ.get('RAG_LLM_MODEL', 'mistralai/Mixtral-8x7B-Instruct-v0.1')
+RAG_FAISS_INDEX_PATH = os.environ.get('RAG_FAISS_INDEX_PATH', str(BASE_DIR / 'faiss_index.bin'))
+RAG_TEXTS_PATH = os.environ.get('RAG_TEXTS_PATH', str(BASE_DIR / 'faiss_texts.npy'))
+RAG_META_PATH = os.environ.get('RAG_META_PATH', str(BASE_DIR / 'faiss_meta.npy'))
+RAG_CHUNK_SIZE = int(os.environ.get('RAG_CHUNK_SIZE', 512))  # For future chunking granularity
+RAG_TOP_K = int(os.environ.get('RAG_TOP_K', 5))  # Number of context chunks to retrieve
+RAG_RATE_LIMIT = int(os.environ.get('RAG_RATE_LIMIT', 5))  # Requests per minute per user/IP

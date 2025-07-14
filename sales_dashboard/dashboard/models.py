@@ -515,3 +515,15 @@ class UnifiedClientData(models.Model):
     class Meta:
         ordering = ['-uploaded_at']
         unique_together = ['client', 'date_range_start', 'date_range_end']
+
+
+class ChatbotFeedback(models.Model):
+    user = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True)
+    query = models.TextField()
+    answer = models.TextField()
+    context = models.TextField()
+    rating = models.IntegerField(null=True, blank=True)  # 1=upvote, -1=downvote, 0=neutral
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Feedback by {self.user} on {self.created_at.strftime('%Y-%m-%d %H:%M')}"

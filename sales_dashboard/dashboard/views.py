@@ -13,10 +13,17 @@ from .models import (
     Campaign, CampaignReport, Client, UserProfile,
     MLPrediction, MonthlySummary, ClientPrediction,
     GoogleAdsData, LinkedInAdsData, MailchimpData, ZohoData, 
-    DemandbaseData
+    DemandbaseData, ChatbotFeedback
 )
 from .forms import CampaignFilterForm
 import json
+from dashboard.rag_pipeline import rag_answer
+from django.core.cache import cache
+from django.conf import settings
+from functools import wraps
+from time import time
+import logging
+logger = logging.getLogger(__name__)
 
 
 def health_check(request):
@@ -1014,6 +1021,79 @@ def llama_chat(request):
                 'reply': f'Sorry, there was an error connecting to the AI assistant. Please try again later. Error: {str(e)}'
             })
     return JsonResponse({'error': 'POST only'})
+
+
+# --- Rate Limiting Decorator ---
+def rate_limit(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        user = request.user if request.user.is_authenticated else None
+        ident = f'user_{user.id}' if user else f'ip_{request.META.get("REMOTE_ADDR")}'
+        key = f'rag_rate_{ident}'
+        window = 60  # seconds
+        limit = getattr(settings, 'RAG_RATE_LIMIT', 5)
+        now = int(time())
+        bucket = cache.get(key, {'count': 0, 'start': now})
+        if now - bucket['start'] >= window:
+            bucket = {'count': 0, 'start': now}
+        bucket['count'] += 1
+        cache.set(key, bucket, timeout=window)
+        if bucket['count'] > limit:
+            return JsonResponse({'error': 'Rate limit exceeded. Please wait before sending more queries.'}, status=429)
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+
+@csrf_exempt
+@rate_limit
+def rag_chatbot(request):
+    if request.method == "POST":
+        import json
+        data = json.loads(request.body)
+        query = data.get("query", "")
+        history = data.get("history", [])
+        user = request.user if request.user.is_authenticated else None
+        user_ident = user.username if user else request.META.get("REMOTE_ADDR")
+        if not query:
+            logger.warning(f"[RAG] No query provided by {user_ident}")
+            return JsonResponse({"error": "No query provided."}, status=400)
+        try:
+            context_chunks = retrieve_context(query)
+            answer = rag_answer(query, history=history)
+            ChatbotFeedback.objects.create(
+                user=user,
+                query=query,
+                answer=answer,
+                context='\n'.join(context_chunks),
+                rating=None
+            )
+            logger.info(f"[RAG] Query by {user_ident}: '{query}' | Answer: '{answer[:100]}...'")
+            return JsonResponse({"answer": answer, "context": context_chunks})
+        except Exception as e:
+            logger.error(f"[RAG] Error processing query by {user_ident}: {e}")
+            return JsonResponse({"error": "Internal server error."}, status=500)
+    return JsonResponse({"error": "POST only."}, status=405)
+
+@csrf_exempt
+def chatbot_feedback(request):
+    if request.method == "POST":
+        import json
+        data = json.loads(request.body)
+        feedback_id = data.get("feedback_id")
+        rating = data.get("rating")
+        if feedback_id is None or rating not in [-1, 0, 1]:
+            logger.warning(f"[RAG] Invalid feedback: {data}")
+            return JsonResponse({"error": "Invalid feedback."}, status=400)
+        try:
+            feedback = ChatbotFeedback.objects.get(id=feedback_id)
+            feedback.rating = rating
+            feedback.save()
+            logger.info(f"[RAG] Feedback received: id={feedback_id}, rating={rating}")
+            return JsonResponse({"status": "success"})
+        except ChatbotFeedback.DoesNotExist:
+            logger.error(f"[RAG] Feedback not found: id={feedback_id}")
+            return JsonResponse({"error": "Feedback not found."}, status=404)
+    return JsonResponse({"error": "POST only."}, status=405)
 
 
 @login_required

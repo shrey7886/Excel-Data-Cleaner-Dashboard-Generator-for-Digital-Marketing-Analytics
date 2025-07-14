@@ -762,3 +762,25 @@ code, pre {
 }
 
 /* --- End Fixes --- */ 
+
+/* Chatbot loading indicator */
+#chatbot-loading {
+  display: none;
+  color: var(--dark-accent);
+  font-size: 1.2rem;
+  margin-left: 10px;
+} 
+
+.typing-dot {
+  display: inline-block;
+  font-size: 1.5rem;
+  color: var(--dark-accent);
+  animation: typing 1s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing {
+  0% { opacity: 0.2; }
+  20% { opacity: 1; }
+  100% { opacity: 0.2; }
+} 
