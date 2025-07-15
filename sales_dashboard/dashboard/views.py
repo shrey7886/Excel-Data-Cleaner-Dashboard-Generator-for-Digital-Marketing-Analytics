@@ -17,7 +17,7 @@ from .models import (
 )
 from .forms import CampaignFilterForm
 import json
-from dashboard.rag_pipeline import rag_answer
+# from dashboard.rag_pipeline import rag_answer
 from django.core.cache import cache
 from django.conf import settings
 from functools import wraps
@@ -1044,35 +1044,35 @@ def rate_limit(view_func):
     return _wrapped_view
 
 
-@csrf_exempt
-@rate_limit
-def rag_chatbot(request):
-    if request.method == "POST":
-        import json
-        data = json.loads(request.body)
-        query = data.get("query", "")
-        history = data.get("history", [])
-        user = request.user if request.user.is_authenticated else None
-        user_ident = user.username if user else request.META.get("REMOTE_ADDR")
-        if not query:
-            logger.warning(f"[RAG] No query provided by {user_ident}")
-            return JsonResponse({"error": "No query provided."}, status=400)
-        try:
-            context_chunks = retrieve_context(query)
-            answer = rag_answer(query, history=history)
-            ChatbotFeedback.objects.create(
-                user=user,
-                query=query,
-                answer=answer,
-                context='\n'.join(context_chunks),
-                rating=None
-            )
-            logger.info(f"[RAG] Query by {user_ident}: '{query}' | Answer: '{answer[:100]}...'")
-            return JsonResponse({"answer": answer, "context": context_chunks})
-        except Exception as e:
-            logger.error(f"[RAG] Error processing query by {user_ident}: {e}")
-            return JsonResponse({"error": "Internal server error."}, status=500)
-    return JsonResponse({"error": "POST only."}, status=405)
+# @csrf_exempt
+# @rate_limit
+# def rag_chatbot(request):
+#     if request.method == "POST":
+#         import json
+#         data = json.loads(request.body)
+#         query = data.get("query", "")
+#         history = data.get("history", [])
+#         user = request.user if request.user.is_authenticated else None
+#         user_ident = user.username if user else request.META.get("REMOTE_ADDR")
+#         if not query:
+#             logger.warning(f"[RAG] No query provided by {user_ident}")
+#             return JsonResponse({"error": "No query provided."}, status=400)
+#         try:
+#             context_chunks = retrieve_context(query)
+#             answer = rag_answer(query, history=history)
+#             ChatbotFeedback.objects.create(
+#                 user=user,
+#                 query=query,
+#                 answer=answer,
+#                 context='\n'.join(context_chunks),
+#                 rating=None
+#             )
+#             logger.info(f"[RAG] Query by {user_ident}: '{query}' | Answer: '{answer[:100]}...'")
+#             return JsonResponse({"answer": answer, "context": context_chunks})
+#         except Exception as e:
+#             logger.error(f"[RAG] Error processing query by {user_ident}: {e}")
+#             return JsonResponse({"error": "Internal server error."}, status=500)
+#     return JsonResponse({"error": "POST only."}, status=405)
 
 @csrf_exempt
 def chatbot_feedback(request):

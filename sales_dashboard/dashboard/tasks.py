@@ -15,7 +15,9 @@ from api_integrations.linkedin_ads import fetch_linkedin_ads_data
 from api_integrations.mailchimp import fetch_mailchimp_data
 from api_integrations.zoho import fetch_zoho_data
 from api_integrations.demandbase import fetch_demandbase_data
-from dashboard.rag_pipeline import update_rag_index_from_db
+# from dashboard.rag_pipeline import update_rag_index_from_db
+
+# RAG update task is disabled for low-memory deployment.
 
 
 logger = logging.getLogger(__name__)
@@ -409,7 +411,7 @@ def refresh_expired_tokens():
 @shared_task
 def update_rag_index_task():
     """Background task to update the RAG FAISS index from marketing data."""
-    update_rag_index_from_db()
+    # update_rag_index_from_db()
     return "RAG index updated successfully." 
 
 
