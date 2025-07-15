@@ -18,6 +18,7 @@ urlpatterns = [
     path('profile/', auth_views.profile_view, name='profile'),
     path('client-portal/', views.client_portal, name='client_portal'),
     path('client-reports/', auth_views.client_reports_view, name='client_reports'),
+    path('client-upload-history/', auth_views.client_upload_history, name='client_upload_history'),
 
     # Admin
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),

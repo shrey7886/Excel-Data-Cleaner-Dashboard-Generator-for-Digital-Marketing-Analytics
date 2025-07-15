@@ -295,3 +295,9 @@ def admin_users_view(request):
         'total_users': users.count(),
     }
     return render(request, 'dashboard/admin/users.html', context)
+
+
+@login_required
+def client_upload_history(request):
+    """Placeholder view for client upload history."""
+    return render(request, 'dashboard/auth/client_upload_history.html')
