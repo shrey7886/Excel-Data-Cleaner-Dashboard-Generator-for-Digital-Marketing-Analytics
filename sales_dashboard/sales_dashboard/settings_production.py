@@ -224,3 +224,5 @@ WSGI_APPLICATION = 'sales_dashboard.wsgi.application'
 LOGS_DIR = BASE_DIR / 'logs'
 LOGS_DIR.mkdir(exist_ok=True) 
 
+ROOT_URLCONF = 'sales_dashboard.sales_dashboard.urls' 
+
