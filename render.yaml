@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: dashflow
+    env: python
+    rootDir: sales_dashboard
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn sales_dashboard.wsgi:application
+    envVars:
+      - key: ALLOWED_HOSTS
+        value: DashFlow.onrender.com
+      - key: DATABASE_URL
+        value: <your_database_url>
+      - key: DEBUG
+        value: False
+      - key: DJANGO_SETTINGS_MODULE
+        value: sales_dashboard.settings
+      - key: HUGGINGFACE_API_KEY
+        value: <your_huggingface_api_key>
+      - key: SECRET_KEY
+        value: <your_secret_key> 
