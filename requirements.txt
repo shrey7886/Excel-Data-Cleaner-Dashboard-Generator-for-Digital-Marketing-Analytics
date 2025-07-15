@@ -1,24 +1,42 @@
-Django==5.2.4
-django-crispy-forms==2.1
-crispy-bootstrap5==0.7
-Pillow
-requests==2.31.0
+# Core Django and database
+Django>=4.2,<5.3
+dj-database-url
+psycopg2-binary
+
+# Django REST and forms
+djangorestframework
+django-crispy-forms
+crispy-bootstrap5
+django-cors-headers
+
+# Data science/analytics (for your dashboard and ML features)
 pandas
 numpy
-djangorestframework==3.14.0
-django-cors-headers==4.3.1
-gunicorn==21.2.0
-whitenoise==6.6.0
-openpyxl
+scikit-learn
 matplotlib
 seaborn
-python-decouple
-dj-database-url
+openpyxl
+
+# Production server and static files
+gunicorn
+whitenoise
+
+# Task queue (if you use Celery)
 celery
 redis
-scikit-learn
-joblib 
+
+# Utilities
+python-decouple
+requests
+
+# (Optional) If you use Pillow for image processing
+Pillow 
+
+# --- RAG Pipeline & LLM dependencies (commented out for production) ---
 # faiss-cpu
+# transformers
 # sentence-transformers
-# transformers 
-psycopg2-binary 
+# accelerate
+# torch
+# huggingface-hub
+# --- End RAG dependencies --- 
