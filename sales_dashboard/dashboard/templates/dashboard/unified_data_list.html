@@ -11,9 +11,14 @@
             <h2 class="mb-1"><i class="fas fa-database me-2"></i>Unified Data Management</h2>
             <p class="mb-0">Manage your marketing data from multiple platforms</p>
           </div>
-          <a href="{% url 'client_portal' %}" class="btn btn-light">
-            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-          </a>
+          <div>
+            <a href="{% url 'unified_data_upload' %}" class="btn btn-success btn-lg">
+              <i class="fas fa-upload me-2"></i>Upload Data
+            </a>
+            <a href="{% url 'client_portal' %}" class="btn btn-light">
+              <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+          </div>
         </div>
       </div>
     </div>

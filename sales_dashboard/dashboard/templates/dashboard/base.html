@@ -21,25 +21,23 @@
     </div>
 
     <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg top-navbar">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'client_portal' %}">
-                <i class="fas fa-chart-line me-2"></i>Targetorate
+            <a class="navbar-brand text-dark" href="{% url 'client_portal' %}">
+                <i class="fas fa-chart-line me-2 text-primary"></i>Targetorate
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <!-- No extra links beside Targetorate -->
-                </ul>
+                <ul class="navbar-nav me-auto"></ul>
                 <!-- User Menu (unchanged) -->
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button" 
                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle me-1"></i>
+                                <i class="fas fa-user-circle me-1 text-primary"></i>
                                 {{ user.first_name|default:user.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -55,12 +53,12 @@
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">
+                            <a class="nav-link text-dark" href="{% url 'login' %}">
                                 <i class="fas fa-sign-in-alt me-1"></i>Login
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">
+                            <a class="nav-link text-dark" href="{% url 'register' %}">
                                 <i class="fas fa-user-plus me-1"></i>Register
                             </a>
                         </li>
@@ -350,23 +348,50 @@
             }
         });
 
-        // Optimized Chatbot functionality
+        // Simple FAQ/help agent for the chatbot
+        const faqAnswers = {
+          'how do i upload data': 'To upload data, click the Upload Data button on the Unified Data page and select your CSV file.',
+          'how do i connect google ads': 'Go to Connect Tools, select Google Ads, and fill in your account details to connect.',
+          'how do i view analytics': 'After uploading data, go to Unified Analytics or Platform Analytics to view insights.',
+          'how do i train ml models': 'After uploading data, go to ML Predictions and click Train Models to build predictive models.',
+          'how do i download reports': 'After analysis, use the Download Dashboard button next to your data file to get a report.',
+          'help': 'You can ask about uploading data, connecting tools, viewing analytics, or training ML models.'
+        };
+
         function toggleChatbot() {
-            const widget = document.getElementById('chatbot-widget');
-            const toggleBtn = document.getElementById('chatbot-toggle');
-            
-            if (widget.style.display === 'none' || widget.style.display === '') {
-                widget.style.display = 'flex';
-                toggleBtn.classList.add('hidden');
-                // Focus on input when opening
-                setTimeout(() => {
-                    const input = document.getElementById('chatbot-input');
-                    if (input) input.focus();
-                }, 100);
-            } else {
-                widget.style.display = 'none';
-                toggleBtn.classList.remove('hidden');
+          const widget = document.getElementById('chatbot-widget');
+          widget.style.display = (widget.style.display === 'none' || !widget.style.display) ? 'block' : 'none';
+        }
+
+        function sendMessage() {
+          const input = document.getElementById('chatbot-input');
+          const messages = document.getElementById('chatbot-messages');
+          const userMsg = input.value.trim();
+          if (!userMsg) return;
+          // Add user message
+          const userDiv = document.createElement('div');
+          userDiv.className = 'message user-message';
+          userDiv.innerHTML = `<div class='message-content'>${userMsg}</div>`;
+          messages.appendChild(userDiv);
+          input.value = '';
+          // Scroll to bottom
+          messages.scrollTop = messages.scrollHeight;
+          // Bot response
+          setTimeout(() => {
+            const botDiv = document.createElement('div');
+            botDiv.className = 'message bot-message';
+            let answer = 'Sorry, I can only answer questions about using the dashboard.';
+            const lower = userMsg.toLowerCase();
+            for (const key in faqAnswers) {
+              if (lower.includes(key)) {
+                answer = faqAnswers[key];
+                break;
+              }
             }
+            botDiv.innerHTML = `<div class='message-content'><i class='fas fa-robot me-2'></i>${answer}</div>`;
+            messages.appendChild(botDiv);
+            messages.scrollTop = messages.scrollHeight;
+          }, 600);
         }
 
         // --- Chatbot Conversation Memory ---
