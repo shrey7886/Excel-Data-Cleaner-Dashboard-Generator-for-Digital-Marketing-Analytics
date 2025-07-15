@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from . import auth_views
+from sales_dashboard.dashboard import auth_views
 
 urlpatterns = [
     # Public landing page
