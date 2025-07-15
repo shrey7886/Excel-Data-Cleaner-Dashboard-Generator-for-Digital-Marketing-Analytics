@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from . import auth_views
-from .views import rag_chatbot, chatbot_feedback
+# from .views import rag_chatbot, chatbot_feedback
 
 urlpatterns = [
     # Public landing page
@@ -216,10 +216,10 @@ urlpatterns = [
     path('llama-chat/', views.llama_chat, name='llama_chat'),
 ]
 
-urlpatterns += [
-    path("api/rag-chatbot/", rag_chatbot, name="rag_chatbot"),
-    path("api/chatbot-feedback/", chatbot_feedback, name="chatbot_feedback"),
-] 
+# urlpatterns += [
+#     path("api/rag-chatbot/", rag_chatbot, name="rag_chatbot"),
+#     path("api/chatbot-feedback/", chatbot_feedback, name="chatbot_feedback"),
+# ] 
 
 
 
