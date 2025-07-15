@@ -1,0 +1,101 @@
+platform,campaign_or_account,date,metric_1,metric_2,metric_3,metric_4,metric_5
+Google Ads,Brand Awareness,2024-05-01,12000,1200,1500,30,
+Google Ads,Spring Sale,2024-05-02,8000,900,1100,22,
+Google Ads,Retargeting,2024-05-03,5000,600,700,15,
+Google Ads,Product Launch,2024-05-04,15000,1800,2000,40,
+Google Ads,Holiday Promo,2024-05-05,11000,1000,1300,25,
+Google Ads,Summer Sale,2024-05-06,9000,950,1200,20,
+Google Ads,Remarketing,2024-05-07,6000,700,800,16,
+Google Ads,Lead Gen,2024-05-08,13000,1400,1600,35,
+Google Ads,Brand Push,2024-05-09,10000,1100,1250,28,
+Google Ads,Awareness Plus,2024-05-10,14000,1500,1700,38,
+Google Ads,Conversion Max,2024-05-11,7000,800,900,18,
+Google Ads,Click Surge,2024-05-12,8000,850,1000,19,
+Google Ads,Engage More,2024-05-13,9500,1000,1100,21,
+Google Ads,Spring Boost,2024-05-14,10500,1200,1350,27,
+Google Ads,Q2 Launch,2024-05-15,11500,1300,1450,29,
+Google Ads,Brand Surge,2024-05-16,12500,1350,1550,32,
+Google Ads,Awareness Pro,2024-05-17,13500,1450,1650,36,
+Google Ads,Lead Magnet,2024-05-18,14500,1550,1750,39,
+Google Ads,Conversion Drive,2024-05-19,15500,1650,1850,41,
+Google Ads,Summer Push,2024-05-20,16500,1750,1950,44,
+LinkedIn Ads,B2B Outreach,2024-05-01,7000,350,900,12,
+LinkedIn Ads,Webinar Promo,2024-05-02,6000,300,800,10,
+LinkedIn Ads,Recruitment,2024-05-03,4000,200,500,7,
+LinkedIn Ads,Branding,2024-05-04,9000,400,1000,15,
+LinkedIn Ads,Lead Gen,2024-05-05,8000,370,950,13,
+LinkedIn Ads,Event Boost,2024-05-06,7500,360,920,12,
+LinkedIn Ads,Content Push,2024-05-07,7200,340,910,11,
+LinkedIn Ads,Awareness,2024-05-08,9500,410,1050,16,
+LinkedIn Ads,Engagement,2024-05-09,8200,380,970,14,
+LinkedIn Ads,Q2 Drive,2024-05-10,8800,390,990,15,
+LinkedIn Ads,Brand Surge,2024-05-11,9300,420,1080,17,
+LinkedIn Ads,Lead Magnet,2024-05-12,9700,430,1120,18,
+LinkedIn Ads,Conversion Max,2024-05-13,9900,440,1150,19,
+LinkedIn Ads,Spring Connect,2024-05-14,10100,450,1170,20,
+LinkedIn Ads,Summer Launch,2024-05-15,10300,460,1190,21,
+LinkedIn Ads,Recruitment Pro,2024-05-16,10500,470,1210,22,
+LinkedIn Ads,Webinar Surge,2024-05-17,10700,480,1230,23,
+LinkedIn Ads,Brand Pro,2024-05-18,10900,490,1250,24,
+LinkedIn Ads,Engage More,2024-05-19,11100,500,1270,25,
+LinkedIn Ads,Lead Surge,2024-05-20,11300,510,1290,26,
+Mailchimp,Spring Newsletter,2024-05-01,5000,0.35,0.07,,5
+Mailchimp,Promo Blast,2024-05-02,4000,0.32,0.06,,3
+Mailchimp,Event Invite,2024-05-03,3000,0.40,0.09,,2
+Mailchimp,Product Update,2024-05-04,3500,0.38,0.08,,4
+Mailchimp,Summer Sale,2024-05-05,4500,0.36,0.07,,3
+Mailchimp,Holiday Promo,2024-05-06,4200,0.34,0.06,,2
+Mailchimp,Brand Push,2024-05-07,4800,0.37,0.08,,4
+Mailchimp,Lead Magnet,2024-05-08,5100,0.39,0.09,,5
+Mailchimp,Awareness,2024-05-09,5300,0.36,0.07,,3
+Mailchimp,Engage More,2024-05-10,5500,0.38,0.08,,4
+Mailchimp,Q2 Launch,2024-05-11,5700,0.37,0.08,,4
+Mailchimp,Spring Boost,2024-05-12,5900,0.39,0.09,,5
+Mailchimp,Conversion Max,2024-05-13,6100,0.40,0.10,,6
+Mailchimp,Click Surge,2024-05-14,6300,0.41,0.11,,6
+Mailchimp,Engagement,2024-05-15,6500,0.42,0.12,,7
+Mailchimp,Brand Surge,2024-05-16,6700,0.43,0.13,,7
+Mailchimp,Lead Surge,2024-05-17,6900,0.44,0.14,,8
+Mailchimp,Awareness Pro,2024-05-18,7100,0.45,0.15,,8
+Mailchimp,Summer Push,2024-05-19,7300,0.46,0.16,,9
+Mailchimp,Holiday Connect,2024-05-20,7500,0.47,0.17,,9
+Zoho CRM,Acme Corp,2024-05-01,Google Ads,Won,5000,,
+Zoho CRM,Beta LLC,2024-05-02,LinkedIn,Lost,0,,
+Zoho CRM,Gamma Inc,2024-05-03,Mailchimp,Won,3000,,
+Zoho CRM,Delta Ltd,2024-05-04,Website,Open,0,,
+Zoho CRM,Epsilon Co,2024-05-05,Google Ads,Won,4500,,
+Zoho CRM,Zeta Group,2024-05-06,LinkedIn,Lost,0,,
+Zoho CRM,Eta Inc,2024-05-07,Mailchimp,Won,3200,,
+Zoho CRM,Theta LLC,2024-05-08,Website,Open,0,,
+Zoho CRM,Iota Corp,2024-05-09,Google Ads,Won,5100,,
+Zoho CRM,Kappa Ltd,2024-05-10,LinkedIn,Lost,0,,
+Zoho CRM,Lambda Inc,2024-05-11,Mailchimp,Won,3500,,
+Zoho CRM,Mu Group,2024-05-12,Website,Open,0,,
+Zoho CRM,Nu Co,2024-05-13,Google Ads,Won,4700,,
+Zoho CRM,Xi LLC,2024-05-14,LinkedIn,Lost,0,,
+Zoho CRM,Omicron Inc,2024-05-15,Mailchimp,Won,3300,,
+Zoho CRM,Pi Ltd,2024-05-16,Website,Open,0,,
+Zoho CRM,Rho Corp,2024-05-17,Google Ads,Won,5200,,
+Zoho CRM,Sigma LLC,2024-05-18,LinkedIn,Lost,0,,
+Zoho CRM,Tau Inc,2024-05-19,Mailchimp,Won,3400,,
+Zoho CRM,Upsilon Ltd,2024-05-20,Website,Open,0,,
+Demandbase,Acme Corp,2024-05-01,85,12,2,,
+Demandbase,Beta LLC,2024-05-02,70,8,1,,
+Demandbase,Gamma Inc,2024-05-03,90,15,3,,
+Demandbase,Delta Ltd,2024-05-04,60,5,0,,
+Demandbase,Epsilon Co,2024-05-05,88,13,2,,
+Demandbase,Zeta Group,2024-05-06,75,9,1,,
+Demandbase,Eta Inc,2024-05-07,92,16,3,,
+Demandbase,Theta LLC,2024-05-08,65,6,0,,
+Demandbase,Iota Corp,2024-05-09,87,11,2,,
+Demandbase,Kappa Ltd,2024-05-10,72,7,1,,
+Demandbase,Lambda Inc,2024-05-11,91,15,3,,
+Demandbase,Mu Group,2024-05-12,63,4,0,,
+Demandbase,Nu Co,2024-05-13,89,14,2,,
+Demandbase,Xi LLC,2024-05-14,74,8,1,,
+Demandbase,Omicron Inc,2024-05-15,93,17,3,,
+Demandbase,Pi Ltd,2024-05-16,66,5,0,,
+Demandbase,Rho Corp,2024-05-17,86,12,2,,
+Demandbase,Sigma LLC,2024-05-18,71,7,1,,
+Demandbase,Tau Inc,2024-05-19,94,18,3,,
+Demandbase,Upsilon Ltd,2024-05-20,68,6,0,, 

@@ -1,0 +1,21 @@
+lead_name,date,lead_source,status,deal_value
+Acme Corp,2024-05-01,Google Ads,Won,5000
+Beta LLC,2024-05-02,LinkedIn,Lost,0
+Gamma Inc,2024-05-03,Mailchimp,Won,3000
+Delta Ltd,2024-05-04,Website,Open,0
+Epsilon Co,2024-05-05,Google Ads,Won,4500
+Zeta Group,2024-05-06,LinkedIn,Lost,0
+Eta Inc,2024-05-07,Mailchimp,Won,3200
+Theta LLC,2024-05-08,Website,Open,0
+Iota Corp,2024-05-09,Google Ads,Won,5100
+Kappa Ltd,2024-05-10,LinkedIn,Lost,0
+Lambda Inc,2024-05-11,Mailchimp,Won,3500
+Mu Group,2024-05-12,Website,Open,0
+Nu Co,2024-05-13,Google Ads,Won,4700
+Xi LLC,2024-05-14,LinkedIn,Lost,0
+Omicron Inc,2024-05-15,Mailchimp,Won,3300
+Pi Ltd,2024-05-16,Website,Open,0
+Rho Corp,2024-05-17,Google Ads,Won,5200
+Sigma LLC,2024-05-18,LinkedIn,Lost,0
+Tau Inc,2024-05-19,Mailchimp,Won,3400
+Upsilon Ltd,2024-05-20,Website,Open,0 
