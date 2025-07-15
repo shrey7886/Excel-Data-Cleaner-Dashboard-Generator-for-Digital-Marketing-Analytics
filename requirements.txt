@@ -21,3 +21,4 @@ joblib
 # faiss-cpu
 # sentence-transformers
 # transformers 
+psycopg2-binary 
