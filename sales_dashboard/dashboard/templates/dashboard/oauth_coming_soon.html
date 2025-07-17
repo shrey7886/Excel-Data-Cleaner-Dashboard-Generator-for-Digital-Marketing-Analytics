@@ -1,0 +1,17 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}OAuth Coming Soon - {{ platform }}{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-lg p-4 text-center">
+    <h2 class="mb-3"><i class="fas fa-shield-alt text-primary"></i> OAuth Integration Coming Soon!</h2>
+    <p class="lead mb-4">We're working hard to bring secure OAuth integration for <strong>{{ platform }}</strong>.<br>
+    For now, please use the manual connection form to link your account and sync your data.</p>
+    <a href="{{ manual_url }}" class="btn btn-primary btn-lg fw-bold">
+      <i class="fas fa-link"></i> Use Manual Connection
+    </a>
+    <div class="mt-4 text-muted">
+      <i class="fas fa-info-circle"></i> Your credentials are never stored on our servers.
+    </div>
+  </div>
+</div>
+{% endblock %} 

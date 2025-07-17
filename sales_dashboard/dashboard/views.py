@@ -597,8 +597,11 @@ def connect_demandbase(request):
 @login_required
 def google_oauth_initiate(request):
     """Google OAuth initiate view"""
-    # OAuth implementation
-    return JsonResponse({'status': 'success', 'message': 'OAuth initiated'})
+    # Render a friendly page instead of JSON
+    return render(request, 'dashboard/oauth_coming_soon.html', {
+        'platform': 'Google Ads',
+        'manual_url': '/connect/google-ads/'
+    })
 
 
 @login_required
